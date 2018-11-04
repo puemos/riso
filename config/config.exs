@@ -25,7 +25,7 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :riso, RisoWeb.Gettext, default_locale: "fr"
+config :riso, RisoWeb.Gettext, default_locale: "en"
 
 # Prometheus
 config :prometheus, Riso.PhoenixInstrumenter,

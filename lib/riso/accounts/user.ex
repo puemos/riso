@@ -2,27 +2,29 @@ defmodule Riso.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Riso.Accounts.User
+  alias Riso.Campaigns.{Campaign, CampaignUser}
 
   schema "users" do
-    field(:email, :string)
-    field(:name, :string)
+    field :email, :string
+    field :name, :string
 
-    field(:password, :string, virtual: true)
-    field(:password_confirmation, :string, virtual: true)
-    field(:password_hash, :string)
-    field(:access_token, :string)
+    field :password, :string, virtual: true
+    field :password_confirmation, :string, virtual: true
+    field :password_hash, :string
+    field :access_token, :string
 
-    field(:current_sign_in_at, :utc_datetime)
-    field(:last_sign_in_at, :utc_datetime)
-    field(:sign_in_count, :integer, default: 0)
-    field(:current_sign_in_ip, :string)
-    field(:last_sign_in_ip, :string)
+    field :current_sign_in_at, :utc_datetime
+    field :last_sign_in_at, :utc_datetime
+    field :sign_in_count, :integer, default: 0
+    field :current_sign_in_ip, :string
+    field :last_sign_in_ip, :string
 
-    field(:confirmation_code, :string)
-    field(:inputed_code, :string, virtual: true)
-    field(:confirmed_at, :utc_datetime)
-    field(:confirmation_sent_at, :utc_datetime)
+    field :confirmation_code, :string
+    field :inputed_code, :string, virtual: true
+    field :confirmed_at, :utc_datetime
+    field :confirmation_sent_at, :utc_datetime
 
+    many_to_many :campaigns, Campaign, join_through: CampaignUser
 
     timestamps(type: :utc_datetime)
   end

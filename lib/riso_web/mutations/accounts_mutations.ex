@@ -23,7 +23,7 @@ defmodule RisoWeb.Mutations.AccountsMutations do
           {:ok, user_with_code}
         else
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          _ -> {:error, "Oups, nous sommes désolés, mais quelque chose s'est mal passé"}
+          _ -> {:error, "Ops, error"}
         end
       end)
     end
@@ -55,7 +55,7 @@ defmodule RisoWeb.Mutations.AccountsMutations do
           {:ok, user}
         else
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          {:error, _msg} -> {:ok, message(:current_password, "Le mot de passe n'est pas valide")}
+          {:error, _msg} -> {:ok, message(:current_password, "your password is not valid")}
         end
       end)
     end
@@ -82,9 +82,9 @@ defmodule RisoWeb.Mutations.AccountsMutations do
              {:ok, _tracked_user} <- Accounts.update_tracked_fields(user_with_token, context[:remote_ip]) do
           {:ok, %{token: token}}
         else
-          {:error, %Ecto.Query{} = _query} -> {:ok, generic_message("L'email #{args[:email]} n'a pas été trouvé")}
+          {:error, %Ecto.Query{} = _query} -> {:ok, generic_message("The email #{args[:email]} was not found")}
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          _ -> {:error, "Oups, nous sommes désolés, mais quelque chose s'est mal passé"}
+          _ -> {:error, "Ops, error"}
         end
       end)
     end
@@ -100,9 +100,9 @@ defmodule RisoWeb.Mutations.AccountsMutations do
           Mailer.deliver_now(confirmation_email)
           {:ok, true}
         else
-          {:error, %Ecto.Query{}} -> {:ok, generic_message("L'email #{args[:email]} n'a pas été trouvé")}
+          {:error, %Ecto.Query{}} -> {:ok, generic_message("The email #{args[:email]} was not found")}
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          _ -> {:error, "Oups, nous sommes désolés, mais quelque chose s'est mal passé"}
+          _ -> {:error, "Ops, error"}
         end
       end)
     end

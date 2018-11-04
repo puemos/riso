@@ -10,7 +10,7 @@ defmodule RisoWeb.Schema.Middleware.Authorize do
         resolution
 
       _ ->
-        message = "Vous devez vous connecter ou vous inscrire pour continuer."
+        message = "You must login or register to continue."
         resolution |> Absinthe.Resolution.put_result({:ok, generic_message(message)})
     end
   end
