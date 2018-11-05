@@ -1,23 +1,11 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     Riso.Repo.insert!(%Riso.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
-# credo:disable-for-this-file
-
 alias Riso.Repo
 alias Riso.Accounts
 alias Riso.Accounts.User
 alias Riso.Campaigns
+alias Riso.Campaigns.CampaignUser
 alias Riso.Campaigns.Campaign
 
-images_path = Riso.ReleaseTasks.priv_path_for(Riso.Repo, "images")
+CampaignUser |> Repo.delete_all()
 
 User |> Repo.delete_all()
 {:ok, unconfirmed_user} = Accounts.create_user(%{name: "Shy", email: "shy@riso.com", password: "password", password_confirmation: "password"})
@@ -26,7 +14,6 @@ User |> Repo.delete_all()
 
 Campaign |> Repo.delete_all()
 
-Campaigns.change_campaign(%{
-  name: "DevOps developer",
-  users: [user]
+Campaigns.create([user], %{
+  name: "DevOps developer"
 })

@@ -1,62 +1,57 @@
 defmodule Riso.Campaigns do
-  @moduledoc """
-  The Campaigns context.
-  """
-
   import Ecto.Query, warn: false
   alias Riso.Repo
+  alias Riso.Campaigns.{Campaign}
+  alias Riso.Accounts.{User}
 
-  alias Riso.Campaigns.{Campaign, CampaignUser}
+  def search(query, nil), do: query
 
-  def list_campaigns do
+  def search(query, keywords) do
+    from(
+      r in query,
+      where: ilike(r.title, ^"%#{keywords}%") or ilike(r.content, ^"%#{keywords}%")
+    )
+  end
+
+  def data() do
+    Dataloader.Ecto.new(Repo, query: &query/2)
+  end
+
+  def query(queryable, _) do
+    queryable
+  end
+
+  def list do
     Repo.all(Campaign)
   end
 
-  def get_campaign!(id), do: Repo.get!(Campaign, id)
-
-  def create_campaign(attrs \\ %{}) do
+  def create(users, attrs \\ %{}) do
     %Campaign{}
     |> Campaign.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:users, users)
     |> Repo.insert()
   end
 
-  def update_campaign(%Campaign{} = campaign, attrs) do
+  def update(%Campaign{} = campaign, attrs) do
     campaign
     |> Campaign.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_campaign(%Campaign{} = campaign) do
+  def delete(%Campaign{} = campaign) do
     Repo.delete(campaign)
   end
 
-  def change_campaign(%Campaign{} = campaign) do
+  def change(%Campaign{} = campaign) do
     Campaign.changeset(campaign, %{})
   end
 
-  def list_campaigns_users do
-    Repo.all(CampaignUser)
-  end
-
-  def get_campaign_user!(id), do: Repo.get!(CampaignUser, id)
-
-  def create_campaign_user(attrs \\ %{}) do
-    %CampaignUser{}
-    |> CampaignUser.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  def update_campaign_user(%CampaignUser{} = campaign_user, attrs) do
-    campaign_user
-    |> CampaignUser.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete_campaign_user(%CampaignUser{} = campaign_user) do
-    Repo.delete(campaign_user)
-  end
-
-  def change_campaign_user(%CampaignUser{} = campaign_user) do
-    CampaignUser.changeset(campaign_user, %{})
+  @spec is_user(User.t(), Campaign.t()) :: true | {:error, String.t()}
+  def is_user(%User{} = user, %Campaign{} = campaign) do
+    if Enum.any?(campaign.users, fn campaign_user -> campaign_user == user.id end) do
+      true
+    else
+      {:error, "not authorise"}
+    end
   end
 end
