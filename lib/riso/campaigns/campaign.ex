@@ -5,7 +5,7 @@ defmodule Riso.Campaigns.Campaign do
   alias Riso.Campaigns.CampaignUser
 
   schema "campaigns" do
-    field :name, :string
+    field :title, :string
 
     many_to_many :users, User, join_through: CampaignUser
 
@@ -15,7 +15,7 @@ defmodule Riso.Campaigns.Campaign do
   @doc false
   def changeset(campaign, attrs) do
     campaign
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, [:title])
+    |> validate_required([:title])
   end
 end
