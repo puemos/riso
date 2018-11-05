@@ -4,6 +4,9 @@ defmodule Riso.Campaigns.Campaign do
   alias Riso.Accounts.User
   alias Riso.Campaigns.CampaignUser
 
+  @options %{}
+  @default_values %{}
+
   schema "campaigns" do
     field :title, :string
 
@@ -11,6 +14,9 @@ defmodule Riso.Campaigns.Campaign do
 
     timestamps()
   end
+
+  def options(), do: @options
+  def default_values(), do: @default_values
 
   @doc false
   def changeset(campaign, attrs) do

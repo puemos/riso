@@ -7,8 +7,10 @@ defmodule RisoWeb.Schema do
   import_types(Absinthe.Type.Custom)
   import_types(Kronky.ValidationMessageTypes)
   import_types(RisoWeb.Schema.OptionTypes)
+  import_types(RisoWeb.Schema.CampaignsTypes)
   import_types(RisoWeb.Schema.AccountsTypes)
   import_types(RisoWeb.Queries.AccountsQueries)
+  import_types(RisoWeb.Queries.CampaignsQueries)
   import_types(RisoWeb.Mutations.AuthMutations)
   import_types(RisoWeb.Mutations.AccountsMutations)
   import_types(Absinthe.Plug.Types)
@@ -19,14 +21,13 @@ defmodule RisoWeb.Schema do
 
   query do
     import_fields(:accounts_queries)
+    import_fields(:campaigns_queries)
   end
 
   mutation do
     import_fields(:auth_mutations)
     import_fields(:accounts_mutations)
   end
-
-
 
   def middleware(middleware, _field, %Absinthe.Type.Object{identifier: :mutation}) do
     middleware ++ [&build_payload/2, TranslateMessages]
@@ -41,8 +42,8 @@ defmodule RisoWeb.Schema do
   end
 
   def dataloader() do
-
     Dataloader.new()
+    |> Dataloader.add_source(Riso.Campaigns, Riso.Campaigns.data())
   end
 
   def context(ctx) do

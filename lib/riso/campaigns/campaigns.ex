@@ -9,7 +9,7 @@ defmodule Riso.Campaigns do
   def search(query, keywords) do
     from(
       r in query,
-      where: ilike(r.title, ^"%#{keywords}%") or ilike(r.content, ^"%#{keywords}%")
+      where: ilike(r.title, ^"%#{keywords}%")
     )
   end
 
