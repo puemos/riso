@@ -1,7 +1,7 @@
 defmodule Riso.Campaigns do
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Campaigns.{Campaign}
+  alias Riso.Campaigns.{Campaign, Stage}
   alias Riso.Accounts.{User}
 
   def search(query, nil), do: query
@@ -25,10 +25,10 @@ defmodule Riso.Campaigns do
     Repo.all(Campaign)
   end
 
-  def create(users, attrs \\ %{}) do
+  def create(user, attrs \\ %{}) do
     %Campaign{}
     |> Campaign.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:users, users)
+    |> Ecto.Changeset.put_assoc(:users, [user])
     |> Repo.insert()
   end
 
@@ -51,7 +51,26 @@ defmodule Riso.Campaigns do
     if Enum.any?(campaign.users, fn campaign_user -> campaign_user == user.id end) do
       true
     else
-      {:error, "not authorise"}
+      {:error, "not authorize"}
     end
+  end
+
+  def get_stage!(id), do: Repo.get!(Stage, id)
+
+  def create_stage(campaign, attrs \\ %{}) do
+    %Stage{}
+    |> Stage.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:campaign, campaign)
+    |> Repo.insert()
+  end
+
+  def update_stage(%Stage{} = stage, attrs) do
+    stage
+    |> Stage.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_stage(%Stage{} = stage) do
+    Repo.delete(stage)
   end
 end

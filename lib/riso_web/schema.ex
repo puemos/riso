@@ -18,6 +18,9 @@ defmodule RisoWeb.Schema do
   payload_object(:boolean_payload, :boolean)
   payload_object(:session_payload, :session)
   payload_object(:user_payload, :user)
+  payload_object(:stage_payload, :stage)
+  payload_object(:campaign_payload, :campaign)
+
 
   query do
     import_fields(:accounts_queries)

@@ -3,6 +3,7 @@ defmodule RisoWeb.Queries.CampaignsQueries do
 
   import Ecto.Query, warn: false
 
+  alias RisoWeb.Schema.Middleware
   alias Riso.Repo
   alias Riso.Campaigns
   alias Riso.Campaigns.Campaign
@@ -10,6 +11,7 @@ defmodule RisoWeb.Queries.CampaignsQueries do
   object :campaigns_queries do
     @desc "get campaigns list"
     field :campaigns, list_of(:campaign) do
+      middleware(Middleware.Authorize)
       arg(:offset, :integer, default_value: 0)
       arg(:keywords, :string, default_value: nil)
 
@@ -27,6 +29,7 @@ defmodule RisoWeb.Queries.CampaignsQueries do
 
     @desc "Number of campaigns"
     field :campaigns_count, :integer do
+      middleware(Middleware.Authorize)
       arg(:keywords, :string, default_value: nil)
 
       resolve(fn args, _ ->
@@ -41,6 +44,7 @@ defmodule RisoWeb.Queries.CampaignsQueries do
 
     @desc "fetch a campaign by id"
     field :campaign, :campaign do
+      middleware(Middleware.Authorize)
       arg(:id, non_null(:id))
 
       resolve(fn args, _ ->
@@ -51,6 +55,7 @@ defmodule RisoWeb.Queries.CampaignsQueries do
 
     @desc "Campaign options for a field"
     field :campaign_options, list_of(:option) do
+      middleware(Middleware.Authorize)
       arg(:field, non_null(:string))
 
       resolve(fn args, _ ->

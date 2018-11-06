@@ -120,4 +120,64 @@ defmodule Riso.CampaignsTest do
       assert %Ecto.Changeset{} = Campaigns.change_campaign_user(campaign_user)
     end
   end
+
+  describe "stages" do
+    alias Riso.Campaigns.Stage
+
+    @valid_attrs %{title: "some title"}
+    @update_attrs %{title: "some updated title"}
+    @invalid_attrs %{title: nil}
+
+    def stage_fixture(attrs \\ %{}) do
+      {:ok, stage} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Campaigns.create_stage()
+
+      stage
+    end
+
+    test "list_stages/0 returns all stages" do
+      stage = stage_fixture()
+      assert Campaigns.list_stages() == [stage]
+    end
+
+    test "get_stage!/1 returns the stage with given id" do
+      stage = stage_fixture()
+      assert Campaigns.get_stage!(stage.id) == stage
+    end
+
+    test "create_stage/1 with valid data creates a stage" do
+      assert {:ok, %Stage{} = stage} = Campaigns.create_stage(@valid_attrs)
+      assert stage.title == "some title"
+    end
+
+    test "create_stage/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Campaigns.create_stage(@invalid_attrs)
+    end
+
+    test "update_stage/2 with valid data updates the stage" do
+      stage = stage_fixture()
+      assert {:ok, stage} = Campaigns.update_stage(stage, @update_attrs)
+      assert %Stage{} = stage
+      assert stage.title == "some updated title"
+    end
+
+    test "update_stage/2 with invalid data returns error changeset" do
+      stage = stage_fixture()
+      assert {:error, %Ecto.Changeset{}} = Campaigns.update_stage(stage, @invalid_attrs)
+      assert stage == Campaigns.get_stage!(stage.id)
+    end
+
+    test "delete_stage/1 deletes the stage" do
+      stage = stage_fixture()
+      assert {:ok, %Stage{}} = Campaigns.delete_stage(stage)
+      assert_raise Ecto.NoResultsError, fn -> Campaigns.get_stage!(stage.id) end
+    end
+
+    test "change_stage/1 returns a stage changeset" do
+      stage = stage_fixture()
+      assert %Ecto.Changeset{} = Campaigns.change_stage(stage)
+    end
+  end
 end

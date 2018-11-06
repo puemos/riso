@@ -14,6 +14,6 @@ User |> Repo.delete_all()
 
 Campaign |> Repo.delete_all()
 
-Campaigns.create([user], %{
+Campaigns.create(user, %{
   title: "DevOps developer"
 })
