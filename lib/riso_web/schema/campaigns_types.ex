@@ -7,9 +7,16 @@ defmodule RisoWeb.Schema.CampaignsTypes do
     field(:id, :id)
     field(:title, :string)
     field(:inserted_at, :datetime)
-    field(:author, :user)
-    field(:members, list_of(:user), resolve: dataloader(Riso.Campaigns))
+    field(:members, list_of(:member), resolve: dataloader(Riso.Campaigns))
     field(:stages, list_of(:stage), resolve: dataloader(Riso.Campaigns))
+  end
+
+  @desc "A memebr of a campaign"
+  object :member do
+    field(:id, :id)
+    field(:user, :user, resolve: dataloader(Riso.Campaigns))
+    field(:role, :string)
+    field(:inserted_at, :datetime)
   end
 
   @desc "A stage of a campaign"

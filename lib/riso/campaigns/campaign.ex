@@ -1,8 +1,7 @@
 defmodule Riso.Campaigns.Campaign do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Riso.Accounts.User
-  alias Riso.Campaigns.{CampaignUser, Stage}
+  alias Riso.Campaigns.{CampaignMember, Stage}
 
   @options %{}
   @default_values %{}
@@ -12,7 +11,7 @@ defmodule Riso.Campaigns.Campaign do
 
     has_many :stages, Stage
 
-    many_to_many :members, User, join_through: CampaignUser
+    has_many :members, CampaignMember
 
     timestamps()
   end

@@ -4,7 +4,7 @@ defmodule Riso.Repo.Migrations.CreateStages do
   def change do
     create table(:stages) do
       add :title, :string
-      add :campaign_id, references(:campaigns, on_delete: :nothing)
+      add :campaign_id, references(:campaigns, on_delete: :delete_all)
 
       timestamps()
     end

@@ -1,7 +1,7 @@
 defmodule Riso.Campaigns do
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Campaigns.{Campaign, Stage}
+  alias Riso.Campaigns.{Campaign, CampaignUser, Stage}
   alias Riso.Accounts.{User}
 
   def search(query, nil), do: query
@@ -26,10 +26,16 @@ defmodule Riso.Campaigns do
   end
 
   def create(user, attrs \\ %{}) do
-    %Campaign{}
-    |> Campaign.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:members, [user])
-    |> Repo.insert()
+    with {:ok, campaign} <-
+           %Campaign{}
+           |> Campaign.changeset(attrs)
+           |> Repo.insert() do
+      add_member(campaign, user, "editor")
+      {:ok, campaign}
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
+      _ -> {:error, "Ops, error"}
+    end
   end
 
   def update(%Campaign{} = campaign, attrs) do
@@ -55,6 +61,13 @@ defmodule Riso.Campaigns do
     end
   end
 
+  @spec add_member(Campaign.t(), User.t(), String.t()) :: CampaignUser.t() | {:error, String.t()}
+  def add_member(campaign, user, role) do
+    %CampaignUser{}
+    |> CampaignUser.changeset(%{role: role, user_id: user.id, campaign_id: campaign.id})
+    |> Repo.insert()
+  end
+
   def get_stage!(id), do: Repo.get!(Stage, id)
 
   def create_stage(campaign, attrs \\ %{}) do
@@ -72,5 +85,101 @@ defmodule Riso.Campaigns do
 
   def delete_stage(%Stage{} = stage) do
     Repo.delete(stage)
+  end
+
+  alias Riso.Campaigns.CampaignMember
+
+  @doc """
+  Returns the list of campaigns_members.
+
+  ## Examples
+
+      iex> list_campaigns_members()
+      [%CampaignMember{}, ...]
+
+  """
+  def list_campaigns_members do
+    Repo.all(CampaignMember)
+  end
+
+  @doc """
+  Gets a single campaign_member.
+
+  Raises `Ecto.NoResultsError` if the Campaign member does not exist.
+
+  ## Examples
+
+      iex> get_campaign_member!(123)
+      %CampaignMember{}
+
+      iex> get_campaign_member!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_campaign_member!(id), do: Repo.get!(CampaignMember, id)
+
+  @doc """
+  Creates a campaign_member.
+
+  ## Examples
+
+      iex> create_campaign_member(%{field: value})
+      {:ok, %CampaignMember{}}
+
+      iex> create_campaign_member(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_campaign_member(attrs \\ %{}) do
+    %CampaignMember{}
+    |> CampaignMember.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a campaign_member.
+
+  ## Examples
+
+      iex> update_campaign_member(campaign_member, %{field: new_value})
+      {:ok, %CampaignMember{}}
+
+      iex> update_campaign_member(campaign_member, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_campaign_member(%CampaignMember{} = campaign_member, attrs) do
+    campaign_member
+    |> CampaignMember.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a CampaignMember.
+
+  ## Examples
+
+      iex> delete_campaign_member(campaign_member)
+      {:ok, %CampaignMember{}}
+
+      iex> delete_campaign_member(campaign_member)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_campaign_member(%CampaignMember{} = campaign_member) do
+    Repo.delete(campaign_member)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking campaign_member changes.
+
+  ## Examples
+
+      iex> change_campaign_member(campaign_member)
+      %Ecto.Changeset{source: %CampaignMember{}}
+
+  """
+  def change_campaign_member(%CampaignMember{} = campaign_member) do
+    CampaignMember.changeset(campaign_member, %{})
   end
 end

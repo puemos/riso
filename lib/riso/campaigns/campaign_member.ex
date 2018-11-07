@@ -1,7 +1,6 @@
-defmodule Riso.Campaigns.CampaignUser do
+defmodule Riso.Campaigns.CampaignMember do
   use Ecto.Schema
   import Ecto.Changeset
-
   alias Riso.Campaigns.Campaign
   alias Riso.Accounts.User
 
@@ -13,7 +12,7 @@ defmodule Riso.Campaigns.CampaignUser do
   }
 
   @primary_key false
-  schema "campaigns_users" do
+  schema "campaigns_members" do
     field :role, :string
 
     belongs_to :user, User
