@@ -12,7 +12,7 @@ defmodule Riso.Campaigns.Campaign do
 
     has_many :stages, Stage
 
-    many_to_many :users, User, join_through: CampaignUser
+    many_to_many :members, User, join_through: CampaignUser
 
     timestamps()
   end

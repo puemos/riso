@@ -8,7 +8,7 @@ defmodule RisoWeb.Schema.CampaignsTypes do
     field(:title, :string)
     field(:inserted_at, :datetime)
     field(:author, :user)
-    field(:users, list_of(:user), resolve: dataloader(Riso.Campaigns))
+    field(:members, list_of(:user), resolve: dataloader(Riso.Campaigns))
     field(:stages, list_of(:stage), resolve: dataloader(Riso.Campaigns))
   end
 

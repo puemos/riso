@@ -28,7 +28,7 @@ defmodule Riso.Campaigns do
   def create(user, attrs \\ %{}) do
     %Campaign{}
     |> Campaign.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:users, [user])
+    |> Ecto.Changeset.put_assoc(:members, [user])
     |> Repo.insert()
   end
 
