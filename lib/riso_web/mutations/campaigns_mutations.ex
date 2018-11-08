@@ -35,15 +35,21 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
       resolve(fn %{input: params} = args, %{context: context} ->
         campaign =
           Campaign
-          |> preload(:author)
+          |> preload(:members)
           |> Repo.get!(args[:id])
 
         with true <- Campaigns.can(:edit, context[:current_user], campaign),
              {:ok, campaign_updated} <- Campaigns.update(campaign, params) do
           {:ok, campaign_updated}
         else
-          {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          {:error, msg} -> {:ok, generic_message(msg)}
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
+
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "no you can not"}
         end
       end)
     end
@@ -56,12 +62,18 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
       resolve(fn args, %{context: context} ->
         campaign =
           Campaign
-          |> preload(:author)
+          |> preload(:members)
           |> Repo.get!(args[:id])
 
         case Campaigns.can(:edit, context[:current_user], campaign) do
-          true -> campaign |> Campaigns.delete()
-          {:error, msg} -> {:ok, generic_message(msg)}
+          true ->
+            campaign |> Campaigns.delete()
+
+          false ->
+            {:error, "no you can not"}
+
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
         end
       end)
     end
@@ -75,7 +87,7 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
       resolve(fn args, %{context: context} ->
         campaign =
           Campaign
-          |> preload(:author)
+          |> preload(:members)
           |> Repo.get!(args[:campaign_id])
 
         case Campaigns.can(:edit, context[:current_user], campaign) do
@@ -84,6 +96,9 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
               {:ok, stage} -> {:ok, stage}
               {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
             end
+
+          false ->
+            {:error, "no you can not"}
 
           {:error, msg} ->
             {:ok, generic_message(msg)}

@@ -13,6 +13,7 @@ defmodule RisoWeb.Schema do
   import_types(RisoWeb.Queries.CampaignsQueries)
   import_types(RisoWeb.Mutations.AuthMutations)
   import_types(RisoWeb.Mutations.AccountsMutations)
+  import_types(RisoWeb.Mutations.CampaignsMutations)
   import_types(Absinthe.Plug.Types)
 
   payload_object(:boolean_payload, :boolean)
@@ -30,6 +31,7 @@ defmodule RisoWeb.Schema do
   mutation do
     import_fields(:auth_mutations)
     import_fields(:accounts_mutations)
+    import_fields(:campaigns_mutations)
   end
 
   def middleware(middleware, _field, %Absinthe.Type.Object{identifier: :mutation}) do

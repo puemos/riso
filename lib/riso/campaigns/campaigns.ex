@@ -61,6 +61,7 @@ defmodule Riso.Campaigns do
   @spec can(Atom.t(), User.t(), Campaign.t()) :: boolean
   def can(:edit, %User{} = user, %Campaign{} = campaign) do
     roles = get_member_roles(user, campaign)
+    IO.inspect(roles)
     Enum.member?(roles, "editor")
   end
 
@@ -96,7 +97,7 @@ defmodule Riso.Campaigns do
         where: cm.campaign_id == ^campaign.id and cm.user_id == ^user.id
       )
 
-    case Repo.all(query) do
+    case Repo.fetch(query) do
       {:ok, members} -> Enum.map(members, fn m -> m.role end)
       _ -> []
     end
