@@ -79,11 +79,6 @@ defmodule Riso.CampaignsTest do
       campaign_user
     end
 
-    test "list_campaigns_users/0 returns all campaigns_users" do
-      campaign_user = campaign_user_fixture()
-      assert Campaigns.list_campaigns_users() == [campaign_user]
-    end
-
     test "get_campaign_user!/1 returns the campaign_user with given id" do
       campaign_user = campaign_user_fixture()
       assert Campaigns.get_campaign_user!(campaign_user.id) == campaign_user

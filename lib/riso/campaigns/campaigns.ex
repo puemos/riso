@@ -1,7 +1,7 @@
 defmodule Riso.Campaigns do
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Campaigns.{Campaign, CampaignUser, Stage}
+  alias Riso.Campaigns.{Campaign, CampaignMember, Stage}
   alias Riso.Accounts.{User}
 
   def search(query, nil), do: query
@@ -61,10 +61,10 @@ defmodule Riso.Campaigns do
     end
   end
 
-  @spec add_member(Campaign.t(), User.t(), String.t()) :: CampaignUser.t() | {:error, String.t()}
+  @spec add_member(Campaign.t(), User.t(), String.t()) :: CampaignMember.t() | {:error, String.t()}
   def add_member(campaign, user, role) do
-    %CampaignUser{}
-    |> CampaignUser.changeset(%{role: role, user_id: user.id, campaign_id: campaign.id})
+    %CampaignMember{}
+    |> CampaignMember.changeset(%{role: role, user_id: user.id, campaign_id: campaign.id})
     |> Repo.insert()
   end
 

@@ -2,10 +2,10 @@ alias Riso.Repo
 alias Riso.Accounts
 alias Riso.Accounts.User
 alias Riso.Campaigns
-alias Riso.Campaigns.CampaignUser
+alias Riso.Campaigns.CampaignMember
 alias Riso.Campaigns.Campaign
 
-CampaignUser |> Repo.delete_all()
+CampaignMember |> Repo.delete_all()
 
 User |> Repo.delete_all()
 {:ok, unconfirmed_user} = Accounts.create_user(%{name: "Shy", email: "shy@riso.com", password: "password", password_confirmation: "password"})
