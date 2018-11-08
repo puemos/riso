@@ -52,20 +52,21 @@ defmodule Riso.Campaigns do
     Campaign.changeset(campaign, %{})
   end
 
-  @spec is_user(User.t(), Campaign.t()) :: true | {:error, String.t()}
-  def is_user(%User{} = user, %Campaign{} = campaign) do
-    if Enum.any?(campaign.users, fn campaign_user -> campaign_user == user.id end) do
-      true
-    else
-      {:error, "not authorize"}
-    end
+  @spec can(Atom.t(), User.t(), Campaign.t()) :: boolean
+  def can(:view, %User{} = user, %Campaign{} = campaign) do
+    roles = get_member_roles(user, campaign)
+    Enum.member?(roles, "viewer") or Enum.member?(roles, "editor")
+  end
+
+  @spec can(Atom.t(), User.t(), Campaign.t()) :: boolean
+  def can(:edit, %User{} = user, %Campaign{} = campaign) do
+    roles = get_member_roles(user, campaign)
+    Enum.member?(roles, "editor")
   end
 
   @spec add_member(Campaign.t(), User.t(), String.t()) :: CampaignMember.t() | {:error, String.t()}
-  def add_member(campaign, user, role) do
-    %CampaignMember{}
-    |> CampaignMember.changeset(%{role: role, user_id: user.id, campaign_id: campaign.id})
-    |> Repo.insert()
+  def add_member(campaign, user, role \\ "viewer") do
+    create_campaign_member(%{role: role, user_id: user.id, campaign_id: campaign.id})
   end
 
   def get_stage!(id), do: Repo.get!(Stage, id)
@@ -87,99 +88,33 @@ defmodule Riso.Campaigns do
     Repo.delete(stage)
   end
 
-  alias Riso.Campaigns.CampaignMember
+  @spec get_member_roles(User.t(), Campaign.t()) :: list(String.t()) | {:error, String.t()}
+  defp get_member_roles(%User{} = user, %Campaign{} = campaign) do
+    query =
+      from(
+        cm in CampaignMember,
+        where: cm.campaign_id == ^campaign.id and cm.user_id == ^user.id
+      )
 
-  @doc """
-  Returns the list of campaigns_members.
-
-  ## Examples
-
-      iex> list_campaigns_members()
-      [%CampaignMember{}, ...]
-
-  """
-  def list_campaigns_members do
-    Repo.all(CampaignMember)
+    case Repo.all(query) do
+      {:ok, members} -> Enum.map(members, fn m -> m.role end)
+      _ -> []
+    end
   end
 
-  @doc """
-  Gets a single campaign_member.
-
-  Raises `Ecto.NoResultsError` if the Campaign member does not exist.
-
-  ## Examples
-
-      iex> get_campaign_member!(123)
-      %CampaignMember{}
-
-      iex> get_campaign_member!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_campaign_member!(id), do: Repo.get!(CampaignMember, id)
-
-  @doc """
-  Creates a campaign_member.
-
-  ## Examples
-
-      iex> create_campaign_member(%{field: value})
-      {:ok, %CampaignMember{}}
-
-      iex> create_campaign_member(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_campaign_member(attrs \\ %{}) do
     %CampaignMember{}
     |> CampaignMember.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a campaign_member.
-
-  ## Examples
-
-      iex> update_campaign_member(campaign_member, %{field: new_value})
-      {:ok, %CampaignMember{}}
-
-      iex> update_campaign_member(campaign_member, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_campaign_member(%CampaignMember{} = campaign_member, attrs) do
     campaign_member
     |> CampaignMember.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a CampaignMember.
-
-  ## Examples
-
-      iex> delete_campaign_member(campaign_member)
-      {:ok, %CampaignMember{}}
-
-      iex> delete_campaign_member(campaign_member)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_campaign_member(%CampaignMember{} = campaign_member) do
     Repo.delete(campaign_member)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking campaign_member changes.
-
-  ## Examples
-
-      iex> change_campaign_member(campaign_member)
-      %Ecto.Changeset{source: %CampaignMember{}}
-
-  """
-  def change_campaign_member(%CampaignMember{} = campaign_member) do
-    CampaignMember.changeset(campaign_member, %{})
   end
 end

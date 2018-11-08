@@ -47,8 +47,9 @@ defmodule RisoWeb.Queries.CampaignsQueries do
       middleware(Middleware.Authorize)
       arg(:id, non_null(:id))
 
-      resolve(fn args, _ ->
+      resolve(fn args, %{context: context} ->
         campaign = Campaign |> Repo.get!(args[:id])
+        Campaigns.can(:view, context[:current_user], campaign)
         {:ok, campaign}
       end)
     end

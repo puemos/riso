@@ -38,7 +38,7 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
           |> preload(:author)
           |> Repo.get!(args[:id])
 
-        with true <- Campaigns.is_user(context[:current_user], campaign),
+        with true <- Campaigns.can(:edit, context[:current_user], campaign),
              {:ok, campaign_updated} <- Campaigns.update(campaign, params) do
           {:ok, campaign_updated}
         else
@@ -59,7 +59,7 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
           |> preload(:author)
           |> Repo.get!(args[:id])
 
-        case Campaigns.is_user(context[:current_user], campaign) do
+        case Campaigns.can(:edit, context[:current_user], campaign) do
           true -> campaign |> Campaigns.delete()
           {:error, msg} -> {:ok, generic_message(msg)}
         end
@@ -78,7 +78,7 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
           |> preload(:author)
           |> Repo.get!(args[:campaign_id])
 
-        case Campaigns.is_user(context[:current_user], campaign) do
+        case Campaigns.can(:edit, context[:current_user], campaign) do
           true ->
             case Campaigns.create_stage(campaign, %{title: args[:title]}) do
               {:ok, stage} -> {:ok, stage}
