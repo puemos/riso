@@ -36,14 +36,8 @@ config :ex_aws,
   secret_access_key: [{:system, "S3_SECRET"}, :instance_role],
   region: "eu-central-1"
 
-config :arc,
-  storage: Arc.Storage.S3,
-  virtual_host: true,
-  bucket: {:system, "S3_BUCKET"}
-
 # Configure your database
 config :riso, Riso.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: "${POSTGRES_USER}",
   password: "${POSTGRES_PASSWORD}",
   database: "${POSTGRES_DB}",

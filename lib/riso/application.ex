@@ -1,29 +1,11 @@
 defmodule Riso.Application do
   use Application
 
-  alias Riso.{
-    PhoenixInstrumenter,
-    PipelineInstrumenter,
-    PrometheusExporter,
-    RepoInstrumenter
-  }
 
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
     import Supervisor.Spec
-
-    # Prometheus
-    require Prometheus.Registry
-    PhoenixInstrumenter.setup()
-    PipelineInstrumenter.setup()
-    RepoInstrumenter.setup()
-
-    if :os.type() == {:unix, :linux} do
-      Prometheus.Registry.register_collector(:prometheus_process_collector)
-    end
-
-    PrometheusExporter.setup()
 
     # Define workers and child supervisors to be supervised
     children = [

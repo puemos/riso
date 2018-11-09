@@ -34,11 +34,14 @@ defmodule Riso.Mixfile do
   defp deps do
     [
       # Framework
-      {:phoenix, "~> 1.3.3"},
+      {:phoenix, "~> 1.4.0"},
       {:phoenix_pubsub, "~> 1.0"},
-      {:phoenix_ecto, "~> 3.2"},
+      {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 2.10"},
-      {:cowboy, "~> 1.1.2"},
+      {:ecto_sql, "~> 3.0"},
+      {:ecto, "~> 3.0"},
+      {:plug_cowboy, "~> 2.0"},
+      {:plug, "~> 1.7"},
       {:postgrex, "~> 0.13"},
 
       # Plugs
@@ -47,8 +50,8 @@ defmodule Riso.Mixfile do
       # GraphQL
       {:absinthe, "~> 1.4.12", override: true},
       {:absinthe_plug, "~> 1.4.4"},
-      {:absinthe_phoenix, "~> 1.4.2"},
-      {:dataloader, "~> 1.0.1"},
+      {:absinthe_phoenix, "~> 1.4.3"},
+      {:dataloader, "~> 1.0.4"},
       {:kronky, "~> 0.5.0"},
 
       # Utils
@@ -61,14 +64,10 @@ defmodule Riso.Mixfile do
       {:sweet_xml, "~> 0.6"},
       {:timex, "~> 3.1"},
       {:distillery, "~> 1.5", runtime: false},
+      {:jason, "~> 1.0"},
 
       # Mails
       {:bamboo, "~> 1.0.0"},
-
-      # Upload
-      {:arc, "~> 0.8.0"},
-      {:arc_ecto, "~> 0.8.0"},
-      {:ex_aws, "~> 1.1.3"},
 
       # Dev
       {:credo, "~> 0.9.3", only: :dev, runtime: false},
@@ -76,15 +75,7 @@ defmodule Riso.Mixfile do
       # Tests
       {:wallaby, github: "keathley/wallaby", runtime: false, only: :test},
       {:ex_machina, "~> 2.2", only: :test},
-      {:faker, "~> 0.10", only: :test},
-
-      # Prometheus
-      {:prometheus, "~> 4.2", override: true},
-      {:prometheus_ex, "~> 3.0.3"},
-      {:prometheus_ecto, "~> 1.3.0"},
-      {:prometheus_phoenix, "~> 1.2.1"},
-      {:prometheus_plugs, "~> 1.1.5"},
-      {:prometheus_process_collector, "~> 1.3.1"}
+      {:faker, "~> 0.10", only: :test}
     ]
   end
 

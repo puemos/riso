@@ -18,7 +18,6 @@ config :logger, level: :warn
 
 # Configure your database
 config :riso, Riso.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: System.get_env("POSTGRES_USER") || "postgres",
   password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   database: System.get_env("POSTGRES_DB") || "riso_graphql_test",
@@ -37,8 +36,3 @@ config :ex_aws, :s3,
   scheme: "http://",
   host: "localhost",
   port: 4567
-
-config :arc,
-  storage: Arc.Storage.S3,
-  asset_host: "http://localhost:4567/riso-phoenix-graphql",
-  bucket: "riso-phoenix-graphql"

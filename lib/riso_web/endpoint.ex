@@ -2,10 +2,7 @@ defmodule RisoWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :riso
   use Absinthe.Phoenix.Endpoint
 
-  socket("/socket", RisoWeb.UserSocket)
-
-  plug(Riso.PipelineInstrumenter)
-  plug(Riso.PrometheusExporter)
+  socket "/socket", RisoWeb.UserSocket
 
   if Application.get_env(:riso, :sql_sandbox) do
     plug(Phoenix.Ecto.SQL.Sandbox)

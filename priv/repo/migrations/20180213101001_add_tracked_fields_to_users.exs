@@ -3,8 +3,8 @@ defmodule Riso.Repo.Migrations.AddTrackedFieldsToUsers do
 
   def up do
     alter table(:users) do
-      add :current_sign_in_at, :timestamptz
-      add :last_sign_in_at, :timestamptz
+      add :current_sign_in_at, :naive_datetime
+      add :last_sign_in_at, :naive_datetime
       add :sign_in_count, :integer, default: 0, null: false
       add :current_sign_in_ip, :string
       add :last_sign_in_ip, :string

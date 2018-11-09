@@ -13,20 +13,20 @@ defmodule Riso.Accounts.User do
     field :password_hash, :string
     field :access_token, :string
 
-    field :current_sign_in_at, :utc_datetime
-    field :last_sign_in_at, :utc_datetime
+    field :current_sign_in_at, :naive_datetime
+    field :last_sign_in_at, :naive_datetime
     field :sign_in_count, :integer, default: 0
     field :current_sign_in_ip, :string
     field :last_sign_in_ip, :string
 
     field :confirmation_code, :string
     field :inputed_code, :string, virtual: true
-    field :confirmed_at, :utc_datetime
-    field :confirmation_sent_at, :utc_datetime
+    field :confirmed_at, :naive_datetime
+    field :confirmation_sent_at, :naive_datetime
 
     many_to_many :campaigns, Campaign, join_through: CampaignMember
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   def changeset(%User{} = user, attrs \\ %{}) do

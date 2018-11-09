@@ -38,7 +38,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
 config :riso, Riso.Repo,
-  adapter: Ecto.Adapters.Postgres,
   username: System.get_env("POSTGRES_USER") || "postgres",
   password: System.get_env("POSTGRES_PASSWORD") || "postgres",
   database: System.get_env("POSTGRES_DB") || "riso_graphql_dev",
@@ -47,6 +46,3 @@ config :riso, Riso.Repo,
 
 # Configures Bamboo
 config :riso, Riso.Mailer, adapter: Bamboo.LocalAdapter
-
-config :arc,
-  storage: RisoWeb.Arc.Storage.Local

@@ -1,5 +1,8 @@
 defmodule Riso.Repo do
-  use Ecto.Repo, otp_app: :riso
+  use Ecto.Repo,
+    otp_app: :riso,
+    adapter: Ecto.Adapters.Postgres
+
   import Ecto.Query, warn: false
   @per_page 5
 
