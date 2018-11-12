@@ -21,8 +21,9 @@ defmodule Riso.Campaigns do
     queryable
   end
 
-  def list do
-    Repo.all(Campaign)
+  def get!(id) do
+    Campaign
+    |> Repo.get!(id)
   end
 
   def create(user, attrs \\ %{}) do
@@ -33,7 +34,7 @@ defmodule Riso.Campaigns do
       add_member(campaign, user, "editor")
       {:ok, campaign}
     else
-      {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
       _ -> {:error, "Ops, error"}
     end
   end
@@ -87,6 +88,10 @@ defmodule Riso.Campaigns do
 
   def delete_stage(%Stage{} = stage) do
     Repo.delete(stage)
+  end
+
+  def change_stage(%Stage{} = stage) do
+    Stage.changeset(stage, %{})
   end
 
   @spec get_member_roles(User.t(), Campaign.t()) :: list(String.t()) | {:error, String.t()}

@@ -26,13 +26,3 @@ config :riso, Riso.Repo,
 
 # Configures Bamboo
 config :riso, Riso.Mailer, adapter: Bamboo.TestAdapter
-
-config :ex_aws,
-  access_key_id: ["fake", :instance_role],
-  secret_access_key: ["fake", :instance_role],
-  region: "fakes3"
-
-config :ex_aws, :s3,
-  scheme: "http://",
-  host: "localhost",
-  port: 4567
