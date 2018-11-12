@@ -2,12 +2,11 @@ defmodule Riso.CampaignsTest do
   use Riso.DataCase
 
   alias Riso.Campaigns
+  alias Riso.Campaigns.{Campaign, Stage, CampaignMember}
   alias Riso.Accounts
+  alias Riso.Accounts.User
 
   describe "campaigns" do
-    alias Riso.Campaigns.Campaign
-    alias Riso.Accounts.User
-
     @user_attrs %{name: "name", email: "email@riso.com", password: "password", password_confirmation: "password"}
 
     @valid_attrs %{title: "some title"}
@@ -67,55 +66,50 @@ defmodule Riso.CampaignsTest do
     end
   end
 
-  # describe "stages" do
-  #   alias Riso.Campaigns.Stage
+  describe "stages" do
+    @valid_attrs %{title: "some title"}
+    @update_attrs %{title: "some updated title"}
+    @invalid_attrs %{title: nil}
 
-  #   @valid_attrs %{title: "some title"}
-  #   @update_attrs %{title: "some updated title"}
-  #   @invalid_attrs %{title: nil}
+    def stage_fixture(attrs \\ %{}, campagin \\ %Campaign{}) do
+      attrs = attrs |> Enum.into(@valid_attrs)
+      {:ok, stage} = Campaigns.create_stage(campagin, attrs)
+      stage
+    end
 
-  #   def stage_fixture(attrs \\ %{}) do
-  #     {:ok, stage} =
-  #       attrs
-  #       |> Enum.into(@valid_attrs)
-  #       |> Campaigns.create_stage()
+    test "create_stage/1 with valid data creates a stage" do
+      assert {:ok, %Stage{} = stage} = Campaigns.create_stage(%Campaign{}, @valid_attrs)
+      assert stage.title == "some title"
+    end
 
-  #     stage
-  #   end
+    test "create_stage/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Campaigns.create_stage(%Campaign{}, @invalid_attrs)
+    end
 
-  #   test "create_stage/1 with valid data creates a stage" do
-  #     assert {:ok, %Stage{} = stage} = Campaigns.create_stage(@valid_attrs)
-  #     assert stage.title == "some title"
-  #   end
+    test "update_stage/2 with valid data updates the stage" do
+      stage = stage_fixture()
+      assert {:ok, stage} = Campaigns.update_stage(stage, @update_attrs)
+      assert %Stage{} = stage
+      assert stage.title == "some updated title"
+    end
 
-  #   test "create_stage/1 with invalid data returns error changeset" do
-  #     assert {:error, %Ecto.Changeset{}} = Campaigns.create_stage(@invalid_attrs)
-  #   end
+    test "update_stage/2 with invalid data returns error changeset" do
+      stage = stage_fixture()
+      assert {:error, %Ecto.Changeset{}} = Campaigns.update_stage(stage, @invalid_attrs)
+      assert stage == Campaigns.get_stage!(stage.id)
+    end
 
-  #   test "update_stage/2 with valid data updates the stage" do
-  #     stage = stage_fixture()
-  #     assert {:ok, stage} = Campaigns.update_stage(stage, @update_attrs)
-  #     assert %Stage{} = stage
-  #     assert stage.title == "some updated title"
-  #   end
+    test "delete_stage/1 deletes the stage" do
+      stage = stage_fixture()
+      assert {:ok, %Stage{}} = Campaigns.delete_stage(stage)
+      assert_raise Ecto.NoResultsError, fn -> Campaigns.get_stage!(stage.id) end
+    end
 
-  #   test "update_stage/2 with invalid data returns error changeset" do
-  #     stage = stage_fixture()
-  #     assert {:error, %Ecto.Changeset{}} = Campaigns.update_stage(stage, @invalid_attrs)
-  #     assert stage == Campaigns.get_stage!(stage.id)
-  #   end
-
-  #   test "delete_stage/1 deletes the stage" do
-  #     stage = stage_fixture()
-  #     assert {:ok, %Stage{}} = Campaigns.delete_stage(stage)
-  #     assert_raise Ecto.NoResultsError, fn -> Campaigns.get_stage!(stage.id) end
-  #   end
-
-  #   test "change_stage/1 returns a stage changeset" do
-  #     stage = stage_fixture()
-  #     assert %Ecto.Changeset{} = Campaigns.change_stage(stage)
-  #   end
-  # end
+    test "change_stage/1 returns a stage changeset" do
+      stage = stage_fixture()
+      assert %Ecto.Changeset{} = Campaigns.change_stage(stage)
+    end
+  end
 
   # describe "campaigns_members" do
   #   alias Riso.Campaigns.CampaignMember
