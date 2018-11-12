@@ -91,16 +91,12 @@ defmodule Riso.Campaigns do
 
   @spec get_member_roles(User.t(), Campaign.t()) :: list(String.t()) | {:error, String.t()}
   defp get_member_roles(%User{} = user, %Campaign{} = campaign) do
-    query =
-      from(
-        cm in CampaignMember,
-        where: cm.campaign_id == ^campaign.id and cm.user_id == ^user.id
-      )
-
-    case Repo.fetch(query) do
-      {:ok, members} -> Enum.map(members, fn m -> m.role end)
-      _ -> []
-    end
+    from(
+      cm in CampaignMember,
+      where: cm.campaign_id == ^campaign.id and cm.user_id == ^user.id
+    )
+    |> Repo.all()
+    |> Enum.map(fn m -> m.role end)
   end
 
   def create_campaign_member(attrs \\ %{}) do

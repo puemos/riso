@@ -26,6 +26,7 @@ defmodule Riso.Repo do
     case all(query) do
       [] -> {:error, query}
       [obj] -> {:ok, obj}
+      xs -> {:ok, xs}
     end
   end
 end
