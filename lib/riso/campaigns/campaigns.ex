@@ -104,6 +104,8 @@ defmodule Riso.Campaigns do
     |> Enum.map(fn m -> m.role end)
   end
 
+  def get_campaign_member!(id), do: Repo.get!(CampaignMember, id)
+
   def create_campaign_member(attrs \\ %{}) do
     %CampaignMember{}
     |> CampaignMember.changeset(attrs)

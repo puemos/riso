@@ -11,7 +11,6 @@ defmodule Riso.Campaigns.CampaignMember do
     role: "viewer"
   }
 
-  @primary_key false
   schema "campaigns_members" do
     field :role, :string
 
@@ -28,6 +27,6 @@ defmodule Riso.Campaigns.CampaignMember do
     struct
     |> cast(params, [:user_id, :campaign_id, :role])
     |> validate_inclusion(:role, @options[:role])
-    |> validate_required([:user_id, :campaign_id])
+    |> validate_required([:user_id, :campaign_id, :role])
   end
 end
