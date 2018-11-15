@@ -187,10 +187,5 @@ defmodule Riso.CampaignsTest do
       assert {:ok, %CampaignMember{}} = Campaigns.delete_campaign_member(campaign_member)
       assert_raise Ecto.NoResultsError, fn -> Campaigns.get_campaign_member!(campaign_member.id) end
     end
-
-    #   test "change_campaign_member/1 returns a campaign_member changeset" do
-    #     campaign_member = campaign_member_fixture()
-    #     assert %Ecto.Changeset{} = Campaigns.change_campaign_member(campaign_member)
-    #   end
   end
 end
