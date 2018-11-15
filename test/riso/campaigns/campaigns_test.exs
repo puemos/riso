@@ -3,7 +3,6 @@ defmodule Riso.CampaignsTest do
 
   alias Riso.Campaigns
   alias Riso.Campaigns.{Campaign, Stage, CampaignMember}
-  alias Riso.Accounts
   alias Riso.Accounts.User
 
   describe "campaigns" do
@@ -95,8 +94,9 @@ defmodule Riso.CampaignsTest do
 
     test "update_stage/2 with invalid data returns error changeset" do
       stage = stage_fixture()
+      before_change_stage = Campaigns.get_stage!(stage.id)
       assert {:error, %Ecto.Changeset{}} = Campaigns.update_stage(stage, @invalid_attrs)
-      assert stage == Campaigns.get_stage!(stage.id)
+      assert before_change_stage == Campaigns.get_stage!(stage.id)
     end
 
     test "delete_stage/1 deletes the stage" do
