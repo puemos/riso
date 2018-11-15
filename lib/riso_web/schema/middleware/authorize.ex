@@ -1,7 +1,6 @@
 defmodule RisoWeb.Schema.Middleware.Authorize do
   @behaviour Absinthe.Middleware
 
-  import RisoWeb.Helpers.ValidationMessageHelpers
   alias Riso.Accounts.User
 
   def call(resolution, _config) do
@@ -11,7 +10,7 @@ defmodule RisoWeb.Schema.Middleware.Authorize do
 
       _ ->
         message = "You must login or register to continue."
-        resolution |> Absinthe.Resolution.put_result({:ok, generic_message(message)})
+        resolution |> Absinthe.Resolution.put_result({:error, message})
     end
   end
 end

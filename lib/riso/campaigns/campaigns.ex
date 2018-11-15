@@ -106,6 +106,7 @@ defmodule Riso.Campaigns do
 
   def get_campaign_member!(id), do: Repo.get!(CampaignMember, id)
 
+
   def create_campaign_member(attrs \\ %{}) do
     %CampaignMember{}
     |> CampaignMember.changeset(attrs)

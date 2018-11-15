@@ -23,6 +23,7 @@ defmodule RisoWeb.Queries.CampaignsQueries do
           |> Repo.paginate(args[:offset])
           |> Repo.all()
 
+        IO.inspect(campaigns)
         {:ok, campaigns}
       end)
     end
