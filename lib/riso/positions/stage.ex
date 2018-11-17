@@ -1,11 +1,11 @@
-defmodule Riso.Campaigns.Stage do
+defmodule Riso.Positions.Stage do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Riso.Campaigns.Campaign
+  alias Riso.Positions.Position
 
   schema "stages" do
     field :title, :string
-    belongs_to :campaign, Campaign
+    belongs_to :position, Position
 
     timestamps()
   end

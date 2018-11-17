@@ -1,46 +1,46 @@
-defmodule RisoWeb.Mutations.CampaignsMutations do
+defmodule RisoWeb.Mutations.PositionsMutations do
   use Absinthe.Schema.Notation
   import Ecto.Query, warn: false
   import RisoWeb.Helpers.ValidationMessageHelpers
 
   alias RisoWeb.Schema.Middleware
   alias Riso.Repo
-  alias Riso.Campaigns
-  alias Riso.Campaigns.Campaign
+  alias Riso.Positions
+  alias Riso.Positions.Position
 
-  input_object :campaign_input do
+  input_object :position_input do
     field(:title, :string)
   end
 
-  object :campaigns_mutations do
-    @desc "Create a campaign"
-    field :create_campaign, :campaign_payload do
-      arg(:input, :campaign_input)
+  object :positions_mutations do
+    @desc "Create a position"
+    field :create_position, :position_payload do
+      arg(:input, :position_input)
       middleware(Middleware.Authorize)
 
       resolve(fn %{input: params}, %{context: context} ->
-        case context[:current_user] |> Campaigns.create(params) do
-          {:ok, campaign} -> {:ok, campaign}
+        case context[:current_user] |> Positions.create(params) do
+          {:ok, position} -> {:ok, position}
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
         end
       end)
     end
 
-    @desc "Update a Campaign and return Campaign"
-    field :update_campaign, :campaign_payload do
+    @desc "Update a Position and return Position"
+    field :update_position, :position_payload do
       arg(:id, non_null(:id))
-      arg(:input, :campaign_input)
+      arg(:input, :position_input)
       middleware(Middleware.Authorize)
 
       resolve(fn %{input: params} = args, %{context: context} ->
-        campaign =
-          Campaign
+        position =
+          Position
           |> preload(:members)
           |> Repo.get!(args[:id])
 
-        with true <- Campaigns.can(:edit, context[:current_user], campaign),
-             {:ok, campaign_updated} <- Campaigns.update(campaign, params) do
-          {:ok, campaign_updated}
+        with true <- Positions.can(:edit, context[:current_user], position),
+             {:ok, position_updated} <- Positions.update(position, params) do
+          {:ok, position_updated}
         else
           {:error, %Ecto.Changeset{} = changeset} ->
             {:ok, changeset}
@@ -54,20 +54,20 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
       end)
     end
 
-    @desc "Destroy a Campaign"
-    field :delete_campaign, :campaign_payload do
+    @desc "Destroy a Position"
+    field :delete_position, :position_payload do
       arg(:id, non_null(:id))
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        campaign =
-          Campaign
+        position =
+          Position
           |> preload(:members)
           |> Repo.get!(args[:id])
 
-        case Campaigns.can(:edit, context[:current_user], campaign) do
+        case Positions.can(:edit, context[:current_user], position) do
           true ->
-            campaign |> Campaigns.delete()
+            position |> Positions.delete()
 
           false ->
             {:error, "no you can not"}
@@ -78,21 +78,21 @@ defmodule RisoWeb.Mutations.CampaignsMutations do
       end)
     end
 
-    @desc "Create a stage to campaign"
+    @desc "Create a stage to position"
     field :create_stage, :stage_payload do
       arg(:title, :string)
-      arg(:campaign_id, non_null(:id))
+      arg(:position_id, non_null(:id))
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        campaign =
-          Campaign
+        position =
+          Position
           |> preload(:members)
-          |> Repo.get!(args[:campaign_id])
+          |> Repo.get!(args[:position_id])
 
-        case Campaigns.can(:edit, context[:current_user], campaign) do
+        case Positions.can(:edit, context[:current_user], position) do
           true ->
-            case Campaigns.create_stage(campaign, %{title: args[:title]}) do
+            case Positions.create_stage(position, %{title: args[:title]}) do
               {:ok, stage} -> {:ok, stage}
               {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
             end

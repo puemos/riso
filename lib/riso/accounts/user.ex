@@ -2,7 +2,7 @@ defmodule Riso.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Riso.Accounts.User
-  alias Riso.Campaigns.{Campaign, CampaignMember}
+  alias Riso.Positions.{Position, PositionMember}
 
   schema "users" do
     field :email, :string
@@ -24,7 +24,7 @@ defmodule Riso.Accounts.User do
     field :confirmed_at, :naive_datetime
     field :confirmation_sent_at, :naive_datetime
 
-    many_to_many :campaigns, Campaign, join_through: CampaignMember
+    many_to_many :positions, Position, join_through: PositionMember
 
     timestamps()
   end

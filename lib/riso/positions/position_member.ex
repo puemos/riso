@@ -1,7 +1,7 @@
-defmodule Riso.Campaigns.CampaignMember do
+defmodule Riso.Positions.PositionMember do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Riso.Campaigns.Campaign
+  alias Riso.Positions.Position
   alias Riso.Accounts.User
 
   @options %{
@@ -11,11 +11,11 @@ defmodule Riso.Campaigns.CampaignMember do
     role: "viewer"
   }
 
-  schema "campaigns_members" do
+  schema "positions_members" do
     field :role, :string
 
     belongs_to :user, User
-    belongs_to :campaign, Campaign
+    belongs_to :position, Position
 
     timestamps()
   end
@@ -25,8 +25,8 @@ defmodule Riso.Campaigns.CampaignMember do
 
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:user_id, :campaign_id, :role])
+    |> cast(params, [:user_id, :position_id, :role])
     |> validate_inclusion(:role, @options[:role])
-    |> validate_required([:user_id, :campaign_id, :role])
+    |> validate_required([:user_id, :position_id, :role])
   end
 end

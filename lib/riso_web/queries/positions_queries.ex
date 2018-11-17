@@ -1,62 +1,62 @@
-defmodule RisoWeb.Queries.CampaignsQueries do
+defmodule RisoWeb.Queries.PositionsQueries do
   use Absinthe.Schema.Notation
 
   import Ecto.Query, warn: false
 
   alias RisoWeb.Schema.Middleware
   alias Riso.Repo
-  alias Riso.Campaigns
-  alias Riso.Campaigns.Campaign
+  alias Riso.Positions
+  alias Riso.Positions.Position
 
-  object :campaigns_queries do
-    @desc "get campaigns list"
-    field :campaigns, list_of(:campaign) do
+  object :positions_queries do
+    @desc "get positions list"
+    field :positions, list_of(:position) do
       middleware(Middleware.Authorize)
       arg(:offset, :integer, default_value: 0)
       arg(:keywords, :string, default_value: nil)
 
       resolve(fn args, _ ->
-        campaigns =
-          Campaign
-          |> Campaigns.search(args[:keywords])
+        positions =
+          Position
+          |> Positions.search(args[:keywords])
           |> order_by(desc: :inserted_at)
           |> Repo.paginate(args[:offset])
           |> Repo.all()
 
-        IO.inspect(campaigns)
-        {:ok, campaigns}
+        IO.inspect(positions)
+        {:ok, positions}
       end)
     end
 
-    @desc "Number of campaigns"
-    field :campaigns_count, :integer do
+    @desc "Number of positions"
+    field :positions_count, :integer do
       middleware(Middleware.Authorize)
       arg(:keywords, :string, default_value: nil)
 
       resolve(fn args, _ ->
-        campaigns_count =
-          Campaign
-          |> Campaigns.search(args[:keywords])
+        positions_count =
+          Position
+          |> Positions.search(args[:keywords])
           |> Repo.count()
 
-        {:ok, campaigns_count}
+        {:ok, positions_count}
       end)
     end
 
-    @desc "fetch a campaign by id"
-    field :campaign, :campaign do
+    @desc "fetch a position by id"
+    field :position, :position do
       middleware(Middleware.Authorize)
       arg(:id, non_null(:id))
 
       resolve(fn args, %{context: context} ->
-        campaign = Campaign |> Repo.get!(args[:id])
-        Campaigns.can(:view, context[:current_user], campaign)
-        {:ok, campaign}
+        position = Position |> Repo.get!(args[:id])
+        Positions.can(:view, context[:current_user], position)
+        {:ok, position}
       end)
     end
 
-    @desc "Campaign options for a field"
-    field :campaign_options, list_of(:option) do
+    @desc "Position options for a field"
+    field :position_options, list_of(:option) do
       middleware(Middleware.Authorize)
       arg(:field, non_null(:string))
 
@@ -64,7 +64,7 @@ defmodule RisoWeb.Queries.CampaignsQueries do
         field = String.to_existing_atom(args[:field])
 
         options =
-          Enum.map(Campaign.options()[field], fn opt ->
+          Enum.map(Position.options()[field], fn opt ->
             %{label: opt, value: opt}
           end)
 
