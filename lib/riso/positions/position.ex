@@ -1,7 +1,7 @@
 defmodule Riso.Positions.Position do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Riso.Positions.{PositionMember, Stage}
+  alias Riso.Positions.{PositionMember, PositionStage}
 
   @options %{}
   @default_values %{}
@@ -9,7 +9,7 @@ defmodule Riso.Positions.Position do
   schema "positions" do
     field :title, :string
 
-    has_many :stages, Stage
+    has_many :position_stages, PositionStage
 
     has_many :members, PositionMember
 

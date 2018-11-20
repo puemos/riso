@@ -65,49 +65,49 @@ defmodule Riso.PositionsTest do
     end
   end
 
-  describe "stages" do
+  describe "position_stages" do
     @valid_attrs %{title: "some title"}
     @update_attrs %{title: "some updated title"}
     @invalid_attrs %{title: nil}
 
-    def stage_fixture(attrs \\ %{}, campagin \\ %Position{}) do
+    def position_stage_fixture(attrs \\ %{}, campagin \\ %Position{}) do
       attrs = attrs |> Enum.into(@valid_attrs)
-      {:ok, stage} = Positions.create_stage(campagin, attrs)
-      stage
+      {:ok, position_stage} = Positions.create_position_stage(campagin, attrs)
+      position_stage
     end
 
-    test "create_stage/1 with valid data creates a stage" do
-      assert {:ok, %Stage{} = stage} = Positions.create_stage(%Position{}, @valid_attrs)
-      assert stage.title == "some title"
+    test "create_position_stage/1 with valid data creates a position_stage" do
+      assert {:ok, %Stage{} = position_stage} = Positions.create_position_stage(%Position{}, @valid_attrs)
+      assert position_stage.title == "some title"
     end
 
-    test "create_stage/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Positions.create_stage(%Position{}, @invalid_attrs)
+    test "create_position_stage/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Positions.create_position_stage(%Position{}, @invalid_attrs)
     end
 
-    test "update_stage/2 with valid data updates the stage" do
-      stage = stage_fixture()
-      assert {:ok, stage} = Positions.update_stage(stage, @update_attrs)
-      assert %Stage{} = stage
-      assert stage.title == "some updated title"
+    test "update_position_stage/2 with valid data updates the position_stage" do
+      position_stage = position_stage_fixture()
+      assert {:ok, position_stage} = Positions.update_position_stage(position_stage, @update_attrs)
+      assert %Stage{} = position_stage
+      assert position_stage.title == "some updated title"
     end
 
-    test "update_stage/2 with invalid data returns error changeset" do
-      stage = stage_fixture()
-      before_change_stage = Positions.get_stage!(stage.id)
-      assert {:error, %Ecto.Changeset{}} = Positions.update_stage(stage, @invalid_attrs)
-      assert before_change_stage == Positions.get_stage!(stage.id)
+    test "update_position_stage/2 with invalid data returns error changeset" do
+      position_stage = position_stage_fixture()
+      before_change_position_stage = Positions.get_position_stage!(position_stage.id)
+      assert {:error, %Ecto.Changeset{}} = Positions.update_position_stage(position_stage, @invalid_attrs)
+      assert before_change_position_stage == Positions.get_position_stage!(position_stage.id)
     end
 
-    test "delete_stage/1 deletes the stage" do
-      stage = stage_fixture()
-      assert {:ok, %Stage{}} = Positions.delete_stage(stage)
-      assert_raise Ecto.NoResultsError, fn -> Positions.get_stage!(stage.id) end
+    test "delete_position_stage/1 deletes the position_stage" do
+      position_stage = position_stage_fixture()
+      assert {:ok, %Stage{}} = Positions.delete_position_stage(position_stage)
+      assert_raise Ecto.NoResultsError, fn -> Positions.get_position_stage!(position_stage.id) end
     end
 
-    test "change_stage/1 returns a stage changeset" do
-      stage = stage_fixture()
-      assert %Ecto.Changeset{} = Positions.change_stage(stage)
+    test "change_position_stage/1 returns a position_stage changeset" do
+      position_stage = position_stage_fixture()
+      assert %Ecto.Changeset{} = Positions.change_position_stage(position_stage)
     end
   end
 

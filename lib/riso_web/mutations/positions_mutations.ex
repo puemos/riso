@@ -79,7 +79,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
     end
 
     @desc "Create a stage to position"
-    field :create_stage, :stage_payload do
+    field :create_position_stage, :position_stage_payload do
       arg(:title, :string)
       arg(:position_id, non_null(:id))
       middleware(Middleware.Authorize)
@@ -92,8 +92,8 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
         case Positions.can(:edit, context[:current_user], position) do
           true ->
-            case Positions.create_stage(position, %{title: args[:title]}) do
-              {:ok, stage} -> {:ok, stage}
+            case Positions.create_position_stage(position, %{title: args[:title]}) do
+              {:ok, position_stage} -> {:ok, position_stage}
               {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
             end
 

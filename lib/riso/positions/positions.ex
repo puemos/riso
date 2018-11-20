@@ -1,7 +1,7 @@
 defmodule Riso.Positions do
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Positions.{Position, PositionMember, Stage}
+  alias Riso.Positions.{Position, PositionMember, PositionStage}
   alias Riso.Accounts.{User}
 
   def search(query, nil), do: query
@@ -71,27 +71,27 @@ defmodule Riso.Positions do
     create_position_member(%{role: role, user_id: user.id, position_id: position.id})
   end
 
-  def get_stage!(id), do: Repo.get!(Stage, id)
+  def get_position_stage!(id), do: Repo.get!(PositionStage, id)
 
-  def create_stage(position, attrs \\ %{}) do
-    %Stage{}
-    |> Stage.changeset(attrs)
+  def create_position_stage(position, attrs \\ %{}) do
+    %PositionStage{}
+    |> PositionStage.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:position, position)
     |> Repo.insert()
   end
 
-  def update_stage(%Stage{} = stage, attrs) do
-    stage
-    |> Stage.changeset(attrs)
+  def update_position_stage(%PositionStage{} = position_stage, attrs) do
+    position_stage
+    |> PositionStage.changeset(attrs)
     |> Repo.update()
   end
 
-  def delete_stage(%Stage{} = stage) do
-    Repo.delete(stage)
+  def delete_position_stage(%PositionStage{} = position_stage) do
+    Repo.delete(position_stage)
   end
 
-  def change_stage(%Stage{} = stage) do
-    Stage.changeset(stage, %{})
+  def change_position_stage(%PositionStage{} = position_stage) do
+    PositionStage.changeset(position_stage, %{})
   end
 
   @spec get_member_roles(User.t(), Position.t()) :: list(String.t()) | {:error, String.t()}
