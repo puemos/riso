@@ -128,6 +128,27 @@ defmodule Riso.PositionsTest do
     test "should fail to create a position stage with no position id" do
       assert {:error, changeset} = Positions.create_position_stage(%{title: "super test"})
     end
+
+    test "should update a position stage" do
+      position = position_fixture()
+
+      {:ok, position_stage} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
+      Positions.update_position_stage(position_stage, %{title: "updated title"})
+      position_stage_after = Positions.get_position_stage!(position_stage.id)
+
+      assert position_stage_after.title != position_stage.title
+      assert position_stage_after.title == "updated title"
+    end
+
+    test "should delete a position stage" do
+      position = position_fixture()
+
+      {:ok, position_stage} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
+
+      assert Positions.get_position_stage!(position_stage.id)
+      Positions.delete_position_stage(position_stage)
+      assert_raise Ecto.NoResultsError, fn -> Positions.get_position_stage!(position_stage.id) end
+    end
   end
 
   describe "position kpis" do
@@ -147,6 +168,27 @@ defmodule Riso.PositionsTest do
 
     test "should fail to create a position kpi with no position id" do
       assert {:error, changeset} = Positions.create_position_kpi(%{title: "super test"})
+    end
+
+    test "should update a position kpi" do
+      position = position_fixture()
+
+      {:ok, position_kpi} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
+      Positions.update_position_kpi(position_kpi, %{title: "updated title"})
+      position_kpi_after = Positions.get_position_kpi!(position_kpi.id)
+
+      assert position_kpi_after.title != position_kpi.title
+      assert position_kpi_after.title == "updated title"
+    end
+
+    test "should delete a position kpi" do
+      position = position_fixture()
+
+      {:ok, position_kpi} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
+
+      assert Positions.get_position_kpi!(position_kpi.id)
+      Positions.delete_position_kpi(position_kpi)
+      assert_raise Ecto.NoResultsError, fn -> Positions.get_position_kpi!(position_kpi.id) end
     end
   end
 end
