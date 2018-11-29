@@ -1,9 +1,9 @@
-defmodule Riso.Positions.PositionStage do
+defmodule Riso.Positions.PositionKpi do
   use Ecto.Schema
   import Ecto.Changeset
   alias Riso.Positions.Position
 
-  schema "positions_stages" do
+  schema "positions_kpis" do
     field :title, :string
     belongs_to :position, Position
 
@@ -11,8 +11,8 @@ defmodule Riso.Positions.PositionStage do
   end
 
   @doc false
-  def changeset(position_stage, attrs) do
-    position_stage
+  def changeset(position_kpi, attrs) do
+    position_kpi
     |> cast(attrs, [:title, :position_id])
     |> validate_required([:title, :position_id])
   end

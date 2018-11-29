@@ -1,7 +1,7 @@
 defmodule Riso.Positions do
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Positions.{Position, PositionMember, PositionStage}
+  alias Riso.Positions.{Position, PositionMember, PositionStage, PositionKpi}
   alias Riso.Accounts.{User}
 
   def search(query, nil), do: query
@@ -21,62 +21,47 @@ defmodule Riso.Positions do
     queryable
   end
 
-  def get!(id) do
-    Position
-    |> Repo.get!(id)
-  end
-
-  def create(user, attrs \\ %{}) do
-    with {:ok, position} <-
-           %Position{}
-           |> Position.changeset(attrs)
-           |> Repo.insert() do
-      add_member(position, user, "editor")
-      {:ok, position}
-    else
-      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
-      _ -> {:error, "Ops, error"}
-    end
-  end
-
-  def update(%Position{} = position, attrs) do
-    position
-    |> Position.changeset(attrs)
-    |> Repo.update()
-  end
-
-  def delete(%Position{} = position) do
-    Repo.delete(position)
-  end
-
-  def change(%Position{} = position) do
-    Position.changeset(position, %{})
-  end
-
-  @spec can(Atom.t(), User.t(), Position.t()) :: boolean
-  def can(:view, %User{} = user, %Position{} = position) do
+  def can_view?(%User{} = user, %Position{} = position) do
     roles = get_member_roles(user, position)
     Enum.member?(roles, "viewer") or Enum.member?(roles, "editor")
   end
 
-  @spec can(Atom.t(), User.t(), Position.t()) :: boolean
-  def can(:edit, %User{} = user, %Position{} = position) do
+  def can_edit?(%User{} = user, %Position{} = position) do
     roles = get_member_roles(user, position)
     IO.inspect(roles)
     Enum.member?(roles, "editor")
   end
 
-  @spec add_member(Position.t(), User.t(), String.t()) :: PositionMember.t() | {:error, String.t()}
-  def add_member(position, user, role \\ "viewer") do
-    create_position_member(%{role: role, user_id: user.id, position_id: position.id})
+  def get_position!(id) do
+    Position
+    |> Repo.get!(id)
+  end
+
+  def create_position(attrs \\ %{}) do
+    %Position{}
+    |> Position.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_position(%Position{} = position, attrs) do
+    position
+    |> Position.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_position(%Position{} = position) do
+    Repo.delete(position)
+  end
+
+  def change_position(%Position{} = position) do
+    Position.changeset(position, %{})
   end
 
   def get_position_stage!(id), do: Repo.get!(PositionStage, id)
 
-  def create_position_stage(position, attrs \\ %{}) do
+  def create_position_stage(attrs \\ %{}) do
     %PositionStage{}
     |> PositionStage.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:position, position)
     |> Repo.insert()
   end
 
@@ -94,7 +79,10 @@ defmodule Riso.Positions do
     PositionStage.changeset(position_stage, %{})
   end
 
-  @spec get_member_roles(User.t(), Position.t()) :: list(String.t()) | {:error, String.t()}
+  def add_member(%Position{} = position, %User{} = user, role \\ "viewer") do
+    create_position_member(%{role: role, user_id: user.id, position_id: position.id})
+  end
+
   defp get_member_roles(%User{} = user, %Position{} = position) do
     from(
       cm in PositionMember,
@@ -105,7 +93,6 @@ defmodule Riso.Positions do
   end
 
   def get_position_member!(id), do: Repo.get!(PositionMember, id)
-
 
   def create_position_member(attrs \\ %{}) do
     %PositionMember{}
@@ -121,5 +108,35 @@ defmodule Riso.Positions do
 
   def delete_position_member(%PositionMember{} = position_member) do
     Repo.delete(position_member)
+  end
+
+  def list_positions_kpis(position) do
+    from(
+      cm in PositionKpi,
+      where: cm.position_id == ^position.id
+    )
+    |> Repo.all()
+  end
+
+  def get_position_kpi!(id), do: Repo.get!(PositionKpi, id)
+
+  def create_position_kpi(attrs \\ %{}) do
+    %PositionKpi{}
+    |> PositionKpi.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_position_kpi(%PositionKpi{} = position_kpi, attrs) do
+    position_kpi
+    |> PositionKpi.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_position_kpi(%PositionKpi{} = position_kpi) do
+    Repo.delete(position_kpi)
+  end
+
+  def change_position_kpi(%PositionKpi{} = position_kpi) do
+    PositionKpi.changeset(position_kpi, %{})
   end
 end

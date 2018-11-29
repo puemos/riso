@@ -19,9 +19,15 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn %{input: params}, %{context: context} ->
-        case context[:current_user] |> Positions.create(params) do
-          {:ok, position} -> {:ok, position}
-          {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
+        with {:ok, position} <- Positions.create_position(params),
+             Positions.add_member(position, context[:current_user], "editor") do
+          {:ok, position}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
+
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
         end
       end)
     end
@@ -35,11 +41,10 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       resolve(fn %{input: params} = args, %{context: context} ->
         position =
           Position
-          |> preload(:members)
           |> Repo.get!(args[:id])
 
-        with true <- Positions.can(:edit, context[:current_user], position),
-             {:ok, position_updated} <- Positions.update(position, params) do
+        with true <- Positions.can_edit?(context[:current_user], position),
+             {:ok, position_updated} <- Positions.update_position(position, params) do
           {:ok, position_updated}
         else
           {:error, %Ecto.Changeset{} = changeset} ->
@@ -62,23 +67,25 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       resolve(fn args, %{context: context} ->
         position =
           Position
-          |> preload(:members)
           |> Repo.get!(args[:id])
 
-        case Positions.can(:edit, context[:current_user], position) do
-          true ->
-            position |> Positions.delete()
-
-          false ->
-            {:error, "no you can not"}
+        with true <- Positions.can_edit?(context[:current_user], position),
+             Positions.delete_position(position) do
+          {:ok, position}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
 
           {:error, msg} ->
             {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "no you can not"}
         end
       end)
     end
 
-    @desc "Create a stage to position"
+    @desc "Add a stage to a position"
     field :create_position_stage, :position_stage_payload do
       arg(:title, :string)
       arg(:position_id, non_null(:id))
@@ -87,21 +94,51 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       resolve(fn args, %{context: context} ->
         position =
           Position
-          |> preload(:members)
           |> Repo.get!(args[:position_id])
 
-        case Positions.can(:edit, context[:current_user], position) do
-          true ->
-            case Positions.create_position_stage(position, %{title: args[:title]}) do
-              {:ok, position_stage} -> {:ok, position_stage}
-              {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-            end
+        position_stage_args = %{position_id: position.id, title: args[:title]}
 
-          false ->
-            {:error, "no you can not"}
+        with true <- Positions.can_edit?(context[:current_user], position),
+             {:ok, position_stage} <- Positions.create_position_stage(position_stage_args) do
+          {:ok, position_stage}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
 
           {:error, msg} ->
             {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "no you can not"}
+        end
+      end)
+    end
+
+    @desc "Add a kpi to a position"
+    field :create_position_kpi, :position_kpi_payload do
+      arg(:title, :string)
+      arg(:position_id, non_null(:id))
+      middleware(Middleware.Authorize)
+
+      resolve(fn args, %{context: context} ->
+        position =
+          Position
+          |> Repo.get!(args[:position_id])
+
+        position_kpi_args = %{position_id: position.id, title: args[:title]}
+
+        with true <- Positions.can_edit?(context[:current_user], position),
+             {:ok, position_kpi} <- Positions.create_position_kpi(position_kpi_args) do
+          {:ok, position_kpi}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
+
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "no you can not"}
         end
       end)
     end

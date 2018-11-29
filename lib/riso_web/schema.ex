@@ -20,6 +20,7 @@ defmodule RisoWeb.Schema do
   payload_object(:session_payload, :session)
   payload_object(:user_payload, :user)
   payload_object(:position_stage_payload, :position_stage)
+  payload_object(:position_kpi_payload, :position_kpi)
   payload_object(:position_payload, :position)
 
 

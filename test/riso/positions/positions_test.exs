@@ -1,191 +1,152 @@
 defmodule Riso.PositionsTest do
   use Riso.DataCase
 
+  alias Riso.Repo
   alias Riso.Positions
-  alias Riso.Positions.{Position, Stage, PositionMember}
-  alias Riso.Accounts.User
 
-  describe "positions" do
-    @user_attrs %{name: "name", email: "email@riso.com", password: "password", password_confirmation: "password"}
+  @user_valid_attrs %{name: "name", email: "email@riso.com", password: "password", password_confirmation: "password"}
 
-    @valid_attrs %{title: "some title"}
-    @update_attrs %{title: "some updated title"}
-    @invalid_attrs %{title: nil}
+  @position_valid_attrs %{title: "some title"}
+  @position_update_attrs %{title: "some updated title"}
 
-    def user_fixture(attrs \\ %{}) do
-      attrs = attrs |> Enum.into(@user_attrs)
-      {:ok, user} = Riso.Accounts.create_user(attrs)
-      user
-    end
+  defp user_fixture(attrs \\ %{}) do
+    {:ok, user} =
+      attrs
+      |> Enum.into(@user_valid_attrs)
+      |> Riso.Accounts.create_user()
 
-    def position_fixture(attrs \\ %{}, user \\ %User{}) do
-      attrs = attrs |> Enum.into(@valid_attrs)
-      {:ok, position} = Positions.create(user, attrs)
+    user
+  end
 
-      position
-    end
+  defp position_fixture(attrs \\ %{}) do
+    {:ok, position} =
+      attrs
+      |> Enum.into(@position_valid_attrs)
+      |> Positions.create_position()
 
-    test "search/0 returns all positions" do
+    position
+  end
+
+  describe "position" do
+    test "should create a position" do
       position = position_fixture()
-      res = Position |> Positions.search("") |> Repo.all()
-      assert res == [position]
-    end
-
-    test "create/1 with valid data creates a position" do
-      assert {:ok, position} = Positions.create(%User{}, @valid_attrs)
       assert position.title == "some title"
     end
 
-    test "create/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Positions.create(%User{}, @invalid_attrs)
-    end
-
-    test "update/2 with valid data updates the position" do
+    test "should get a position by id" do
       position = position_fixture()
-      assert {:ok, position} = Positions.update(position, @update_attrs)
-      assert %Position{} = position
-      assert position.title == "some updated title"
-    end
-
-    test "update/2 with invalid data returns error changeset" do
-      position = position_fixture()
-      assert {:error, %Ecto.Changeset{}} = Positions.update(position, @invalid_attrs)
-      assert position == Positions.get!(position.id)
-    end
-
-    test "delete/1 deletes the position" do
-      position = position_fixture()
-      assert {:ok, %Position{}} = Positions.delete(position)
-      assert_raise Ecto.NoResultsError, fn -> Positions.get!(position.id) end
-    end
-
-    test "change/1 returns a position changeset" do
-      position = position_fixture()
-      assert %Ecto.Changeset{} = Positions.change(position)
+      position_after = Positions.get_position!(position.id)
+      assert position.id == position_after.id
     end
   end
 
-  describe "position_stages" do
-    @valid_attrs %{title: "some title"}
-    @update_attrs %{title: "some updated title"}
-    @invalid_attrs %{title: nil}
+  describe "position members" do
+    test "should add a member to a position" do
+      position = position_fixture()
+      user = user_fixture()
 
-    def position_stage_fixture(attrs \\ %{}, campagin \\ %Position{}) do
-      attrs = attrs |> Enum.into(@valid_attrs)
-      {:ok, position_stage} = Positions.create_position_stage(campagin, attrs)
-      position_stage
+      Positions.add_member(position, user, "viewer")
+      position_after = Positions.get_position!(position.id)
+      position_after = Repo.preload(position_after, :members)
+
+      viewer =
+        Enum.find(
+          position_after.members,
+          fn member ->
+            member.user_id == user.id and member.role == "viewer"
+          end
+        )
+
+      assert viewer.user_id == user.id
+      assert viewer.role == "viewer"
     end
 
-    test "create_position_stage/1 with valid data creates a position_stage" do
-      assert {:ok, %Stage{} = position_stage} = Positions.create_position_stage(%Position{}, @valid_attrs)
-      assert position_stage.title == "some title"
+    test "should not add a member with custom role" do
+      position = position_fixture()
+      user = user_fixture()
+
+      assert {:error, _} = Positions.add_member(position, user, "custom")
     end
 
-    test "create_position_stage/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Positions.create_position_stage(%Position{}, @invalid_attrs)
+    test "should not add a member with the same role" do
+      position = position_fixture()
+      user = user_fixture()
+      Positions.add_member(position, user, "viewer")
+      assert {:error, _} = Positions.add_member(position, user, "viewer")
     end
 
-    test "update_position_stage/2 with valid data updates the position_stage" do
-      position_stage = position_stage_fixture()
-      assert {:ok, position_stage} = Positions.update_position_stage(position_stage, @update_attrs)
-      assert %Stage{} = position_stage
-      assert position_stage.title == "some updated title"
-    end
+    test "should add a member with 2 roles to a position" do
+      position = position_fixture()
+      user = user_fixture()
 
-    test "update_position_stage/2 with invalid data returns error changeset" do
-      position_stage = position_stage_fixture()
-      before_change_position_stage = Positions.get_position_stage!(position_stage.id)
-      assert {:error, %Ecto.Changeset{}} = Positions.update_position_stage(position_stage, @invalid_attrs)
-      assert before_change_position_stage == Positions.get_position_stage!(position_stage.id)
-    end
+      Positions.add_member(position, user, "viewer")
+      Positions.add_member(position, user, "editor")
 
-    test "delete_position_stage/1 deletes the position_stage" do
-      position_stage = position_stage_fixture()
-      assert {:ok, %Stage{}} = Positions.delete_position_stage(position_stage)
-      assert_raise Ecto.NoResultsError, fn -> Positions.get_position_stage!(position_stage.id) end
-    end
+      position_after =
+        Positions.get_position!(position.id)
+        |> Repo.preload(:members)
 
-    test "change_position_stage/1 returns a position_stage changeset" do
-      position_stage = position_stage_fixture()
-      assert %Ecto.Changeset{} = Positions.change_position_stage(position_stage)
+      editor =
+        Enum.find(
+          position_after.members,
+          fn member ->
+            member.user_id == user.id and member.role == "editor"
+          end
+        )
+
+      assert editor.user_id == user.id
+      assert editor.role == "editor"
+
+      viewer =
+        Enum.find(
+          position_after.members,
+          fn member ->
+            member.user_id == user.id and member.role == "viewer"
+          end
+        )
+
+      assert viewer.user_id == user.id
+      assert viewer.role == "viewer"
     end
   end
 
-  describe "positions_members" do
-    alias Riso.Positions.PositionMember
+  describe "position stages" do
+    test "should create and add a stage to a position" do
+      position = position_fixture()
 
-    @valid_attrs %{role: "editor"}
-    @update_attrs %{role: "viewer"}
-    @invalid_attrs %{role: nil}
+      {:ok, _} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
 
-    def position_member_fixture(attrs \\ %{}) do
-      {:ok, position_member} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Positions.create_position_member()
+      position_after = Positions.get_position!(position.id)
+      position_after = Repo.preload(position_after, :stages)
 
-      position_member
+      stage = Enum.at(position_after.stages, 0)
+
+      assert stage.position_id == position.id
+      assert stage.title == "super test"
     end
 
-    test "create_position_member/1 with valid data creates a position_member" do
-      u = user_fixture()
-      c = position_fixture()
+    test "should fail to create a position stage with no position id" do
+      assert {:error, changeset} = Positions.create_position_stage(%{title: "super test"})
+    end
+  end
 
-      assert {:ok, %PositionMember{} = position_member} =
-               %{user_id: u.id, position_id: c.id}
-               |> Enum.into(@valid_attrs)
-               |> Positions.create_position_member()
+  describe "position kpis" do
+    test "should create and add a kpi to a position" do
+      position = position_fixture()
 
-      assert position_member.role == "editor"
+      {:ok, _} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
+
+      position_after = Positions.get_position!(position.id)
+      position_after = Repo.preload(position_after, :kpis)
+
+      kpi = Enum.at(position_after.kpis, 0)
+
+      assert kpi.position_id == position.id
+      assert kpi.title == "super test"
     end
 
-    test "create_position_member/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Positions.create_position_member(@invalid_attrs)
-    end
-
-    test "create_position_member/1 with custom role returns error changeset" do
-      u = user_fixture()
-      c = position_fixture()
-
-      assert {:error, %Ecto.Changeset{}} = Positions.create_position_member(%{user_id: u.id, position_id: c.id, role: "custom"})
-    end
-
-    test "update_position_member/2 with valid data updates the position_member" do
-      u = user_fixture()
-      c = position_fixture()
-      position_member = position_member_fixture(%{user_id: u.id, position_id: c.id})
-
-      assert {:ok, position_member} = Positions.update_position_member(position_member, @update_attrs)
-      assert %PositionMember{} = position_member
-      assert position_member.role == "viewer"
-    end
-
-    test "update_position_member/2 with invalid data returns error changeset" do
-      u = user_fixture()
-      c = position_fixture()
-      position_member = position_member_fixture(%{user_id: u.id, position_id: c.id})
-      before_update_position_member = Positions.get_position_member!(position_member.id)
-
-      assert {:error, %Ecto.Changeset{}} = Positions.update_position_member(position_member, @invalid_attrs)
-      assert before_update_position_member == Positions.get_position_member!(position_member.id)
-    end
-
-    test "update_position_member/2 with custom role returns error changeset" do
-      u = user_fixture()
-      c = position_fixture()
-      position_member = position_member_fixture(%{user_id: u.id, position_id: c.id})
-      before_update_position_member = Positions.get_position_member!(position_member.id)
-
-      assert {:error, %Ecto.Changeset{}} = Positions.update_position_member(position_member, %{role: "custom"})
-      assert before_update_position_member == Positions.get_position_member!(position_member.id)
-    end
-
-    test "delete_position_member/1 deletes the position_member" do
-      u = user_fixture()
-      c = position_fixture()
-      position_member = position_member_fixture(%{user_id: u.id, position_id: c.id})
-      assert {:ok, %PositionMember{}} = Positions.delete_position_member(position_member)
-      assert_raise Ecto.NoResultsError, fn -> Positions.get_position_member!(position_member.id) end
+    test "should fail to create a position kpi with no position id" do
+      assert {:error, changeset} = Positions.create_position_kpi(%{title: "super test"})
     end
   end
 end

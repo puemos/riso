@@ -1,4 +1,4 @@
-import RisoWeb.FakeS3, only: [check_fakes3: 0]
+# import RisoWeb.FakeS3, only: [check_fakes3: 0]
 
 # check_fakes3()
 
