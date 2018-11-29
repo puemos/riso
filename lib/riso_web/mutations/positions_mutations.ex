@@ -80,7 +80,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:ok, generic_message("Ops, error")}
+            {:ok, generic_message("Unauthorize")}
         end
       end)
     end
@@ -107,7 +107,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:ok, generic_message("Ops, error")}
+            {:ok, generic_message("Unauthorize")}
         end
       end)
     end
@@ -133,10 +133,10 @@ defmodule RisoWeb.Mutations.PositionsMutations do
               {:ok, changeset}
 
             {:error, msg} ->
-              {:error, generic_message(msg)}
+              {:ok, generic_message(msg)}
 
             false ->
-              {:ok, generic_message("Ops, error")}
+              {:ok, generic_message("Unauthorize")}
           end
         rescue
           _ -> {:ok, generic_message("Ops, error")}
@@ -166,7 +166,39 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:ok, generic_message("Ops, error")}
+            {:ok, generic_message("Unauthorize")}
+        end
+      end)
+    end
+
+    @desc "Update a position kpi"
+    field :update_position_kpi, :position_kpi_payload do
+      arg(:id, non_null(:id))
+      arg(:title, :string)
+      middleware(Middleware.Authorize)
+
+      resolve(fn args, %{context: context} ->
+        try do
+          position_kpi = Positions.get_position_kpi!(args[:id])
+          position = Positions.get_position!(position_kpi.position_id)
+
+          position_kpi_args = %{title: args[:title]}
+
+          with true <- Positions.can_edit?(context[:current_user], position),
+               {:ok, position_kpi} <- Positions.update_position_kpi(position_kpi, position_kpi_args) do
+            {:ok, position_kpi}
+          else
+            {:error, %Ecto.Changeset{} = changeset} ->
+              {:ok, changeset}
+
+            {:error, msg} ->
+              {:ok, generic_message(msg)}
+
+            false ->
+              {:ok, generic_message("Unauthorize")}
+          end
+        rescue
+          _ -> {:ok, generic_message("Ops, error")}
         end
       end)
     end
