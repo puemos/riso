@@ -22,13 +22,13 @@ defmodule RisoWeb.Mutations.AuthMutations do
         else
           {:error, :no_yet_confirmed, user_with_new_code} ->
             user_with_new_code |> Email.new_confirmation_code() |> Mailer.deliver_now()
-            {:ok, message(:no_yet_confirmed, "Le compte doit être validé.")}
+            {:ok, message(:no_yet_confirmed, "The account must be validated.")}
 
           {:error, msg} ->
             {:ok, generic_message(msg)}
 
           :error ->
-            {:error, generic_message("Email ou mot de passe invalide.")}
+            {:error, generic_message("The email or password invalid.")}
         end
       end)
     end

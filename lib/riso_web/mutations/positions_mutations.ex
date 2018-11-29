@@ -54,7 +54,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:error, "no you can not"}
+            {:ok, generic_message("Unauthorize")}
         end
       end)
     end
@@ -80,7 +80,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:error, "no you can not"}
+            {:ok, generic_message("Ops, error")}
         end
       end)
     end
@@ -92,9 +92,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        position =
-          Position
-          |> Repo.get!(args[:position_id])
+        position = Positions.get_position!(args[:position_id])
 
         position_stage_args = %{position_id: position.id, title: args[:title]}
 
@@ -109,7 +107,39 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:error, "no you can not"}
+            {:ok, generic_message("Ops, error")}
+        end
+      end)
+    end
+
+    @desc "Update a position stage"
+    field :update_position_stage, :position_stage_payload do
+      arg(:id, non_null(:id))
+      arg(:title, :string)
+      middleware(Middleware.Authorize)
+
+      resolve(fn args, %{context: context} ->
+        try do
+          position_stage = Positions.get_position_stage!(args[:id])
+          position = Positions.get_position!(position_stage.position_id)
+
+          position_stage_args = %{title: args[:title]}
+
+          with true <- Positions.can_edit?(context[:current_user], position),
+               {:ok, position_stage} <- Positions.update_position_stage(position_stage, position_stage_args) do
+            {:ok, position_stage}
+          else
+            {:error, %Ecto.Changeset{} = changeset} ->
+              {:ok, changeset}
+
+            {:error, msg} ->
+              {:error, generic_message(msg)}
+
+            false ->
+              {:ok, generic_message("Ops, error")}
+          end
+        rescue
+          _ -> {:ok, generic_message("Ops, error")}
         end
       end)
     end
@@ -121,9 +151,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        position =
-          Position
-          |> Repo.get!(args[:position_id])
+        position = Positions.get_position!(args[:position_id])
 
         position_kpi_args = %{position_id: position.id, title: args[:title]}
 
@@ -138,7 +166,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:error, "no you can not"}
+            {:ok, generic_message("Ops, error")}
         end
       end)
     end

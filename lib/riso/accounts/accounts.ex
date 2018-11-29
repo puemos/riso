@@ -51,15 +51,15 @@ defmodule Riso.Accounts do
   Authenticate user with email and password
   """
   @spec authenticate(User.t(), String.t()) :: {:ok, User.t()} | {:error, String.t()}
-  def authenticate(nil, _password), do: {:error, "L'email n'est pas valide"}
-  def authenticate(_email, nil), do: {:error, "Le mot de passe n'est pas valide"}
+  def authenticate(nil, _password), do: {:error, "The email is invalid"}
+  def authenticate(_email, nil), do: {:error, "The password is invalid"}
 
   def authenticate(email, password) do
     user = User |> Repo.get_by(email: String.downcase(email))
 
     case check_password(user, password) do
       true -> {:ok, user}
-      _ -> {:error, "Email ou mot de passe invalide"}
+      _ -> {:error, "The Email or password invalid"}
     end
   end
 

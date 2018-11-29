@@ -1,5 +1,0 @@
-<p>Bonjour <%=@user.name%>,</p>
-
-<p>Bienvenue sur Riso ! Votre compte est désormais créé.</p>
-<p>Il ne vous reste plus qu'à le valider à l'aide du code suivant :</p>
-<p><%=@user.confirmation_code%></p>

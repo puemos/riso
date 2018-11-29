@@ -23,7 +23,7 @@ defmodule RisoWeb.Mutations.AccountsMutations do
           {:ok, user_with_code}
         else
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          _ -> {:error, "Ops, error"}
+          _ -> {:ok, generic_message("Ops, error")}
         end
       end)
     end
@@ -84,7 +84,7 @@ defmodule RisoWeb.Mutations.AccountsMutations do
         else
           {:error, %Ecto.Query{} = _query} -> {:ok, generic_message("The email #{args[:email]} was not found")}
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          _ -> {:error, "Ops, error"}
+          _ -> {:ok, generic_message("Ops, error")}
         end
       end)
     end
@@ -102,7 +102,7 @@ defmodule RisoWeb.Mutations.AccountsMutations do
         else
           {:error, %Ecto.Query{}} -> {:ok, generic_message("The email #{args[:email]} was not found")}
           {:error, %Ecto.Changeset{} = changeset} -> {:ok, changeset}
-          _ -> {:error, "Ops, error"}
+          _ -> {:ok, generic_message("Ops, error")}
         end
       end)
     end
