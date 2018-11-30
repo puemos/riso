@@ -54,7 +54,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:ok, generic_message("Unauthorize")}
+            {:error, "Unauthorize"}
         end
       end)
     end
@@ -80,7 +80,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:ok, generic_message("Unauthorize")}
+            {:error, "Unauthorize"}
         end
       end)
     end
@@ -107,7 +107,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:ok, generic_message("Unauthorize")}
+            {:error, "Unauthorize"}
         end
       end)
     end
@@ -134,7 +134,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
               {:ok, generic_message(msg)}
 
             false ->
-              {:ok, generic_message("Unauthorize")}
+              {:error, "Unauthorize"}
           end
         rescue
           _ -> {:ok, generic_message("Ops, error")}
@@ -162,7 +162,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
               {:ok, generic_message(msg)}
 
             false ->
-              {:ok, generic_message("Unauthorize")}
+              {:error, "Unauthorize"}
           end
         rescue
           _ -> {:ok, generic_message("Ops, error")}
@@ -191,7 +191,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
             {:ok, generic_message(msg)}
 
           false ->
-            {:ok, generic_message("Unauthorize")}
+            {:error, "Unauthorize"}
         end
       end)
     end
@@ -218,7 +218,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
               {:ok, generic_message(msg)}
 
             false ->
-              {:ok, generic_message("Unauthorize")}
+              {:error, "Unauthorize"}
           end
         rescue
           _ -> {:ok, generic_message("Ops, error")}
@@ -246,7 +246,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
               {:ok, generic_message(msg)}
 
             false ->
-              {:ok, generic_message("Unauthorize")}
+              {:error, "Unauthorize"}
           end
         rescue
           _ -> {:ok, generic_message("Ops, error")}

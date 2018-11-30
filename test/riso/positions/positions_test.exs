@@ -35,7 +35,7 @@ defmodule Riso.PositionsTest do
 
     test "should get a position by id" do
       position = position_fixture()
-      position_after = Positions.get_position!(position.id)
+      position_after = Positions.get_position(position.id)
       assert position.id == position_after.id
     end
   end
@@ -46,7 +46,7 @@ defmodule Riso.PositionsTest do
       user = user_fixture()
 
       Positions.add_member(position, user, "viewer")
-      position_after = Positions.get_position!(position.id)
+      position_after = Positions.get_position(position.id)
       position_after = Repo.preload(position_after, :members)
 
       viewer =
@@ -83,7 +83,7 @@ defmodule Riso.PositionsTest do
       Positions.add_member(position, user, "editor")
 
       position_after =
-        Positions.get_position!(position.id)
+        Positions.get_position(position.id)
         |> Repo.preload(:members)
 
       editor =
@@ -116,7 +116,7 @@ defmodule Riso.PositionsTest do
 
       {:ok, _} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
 
-      position_after = Positions.get_position!(position.id)
+      position_after = Positions.get_position(position.id)
       position_after = Repo.preload(position_after, :stages)
 
       stage = Enum.at(position_after.stages, 0)
@@ -134,7 +134,7 @@ defmodule Riso.PositionsTest do
 
       {:ok, position_stage} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
       Positions.update_position_stage(position_stage, %{title: "updated title"})
-      position_stage_after = Positions.get_position_stage!(position_stage.id)
+      position_stage_after = Positions.get_position_stage(position_stage.id)
 
       assert position_stage_after.title != position_stage.title
       assert position_stage_after.title == "updated title"
@@ -145,9 +145,9 @@ defmodule Riso.PositionsTest do
 
       {:ok, position_stage} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
 
-      assert Positions.get_position_stage!(position_stage.id)
+      assert Positions.get_position_stage(position_stage.id)
       Positions.delete_position_stage(position_stage)
-      assert_raise Ecto.NoResultsError, fn -> Positions.get_position_stage!(position_stage.id) end
+      assert nil == Positions.get_position_stage(position_stage.id)
     end
   end
 
@@ -157,7 +157,7 @@ defmodule Riso.PositionsTest do
 
       {:ok, _} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
 
-      position_after = Positions.get_position!(position.id)
+      position_after = Positions.get_position(position.id)
       position_after = Repo.preload(position_after, :kpis)
 
       kpi = Enum.at(position_after.kpis, 0)
@@ -175,7 +175,7 @@ defmodule Riso.PositionsTest do
 
       {:ok, position_kpi} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
       Positions.update_position_kpi(position_kpi, %{title: "updated title"})
-      position_kpi_after = Positions.get_position_kpi!(position_kpi.id)
+      position_kpi_after = Positions.get_position_kpi(position_kpi.id)
 
       assert position_kpi_after.title != position_kpi.title
       assert position_kpi_after.title == "updated title"
@@ -186,9 +186,9 @@ defmodule Riso.PositionsTest do
 
       {:ok, position_kpi} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
 
-      assert Positions.get_position_kpi!(position_kpi.id)
+      assert Positions.get_position_kpi(position_kpi.id)
       Positions.delete_position_kpi(position_kpi)
-      assert_raise Ecto.NoResultsError, fn -> Positions.get_position_kpi!(position_kpi.id) end
+      assert nil == Positions.get_position_kpi(position_kpi.id)
     end
   end
 end

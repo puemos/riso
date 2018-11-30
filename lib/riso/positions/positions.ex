@@ -29,7 +29,7 @@ defmodule Riso.Positions do
 
   def can_view_resource?(resource, %User{} = user) do
     try do
-      get_position!(resource.position_id)
+      get_position(resource.position_id)
       |> can_view?(user)
     rescue
       _ -> false
@@ -43,16 +43,16 @@ defmodule Riso.Positions do
 
   def can_edit_resource?(resource, %User{} = user) do
     try do
-      get_position!(resource.position_id)
+      get_position(resource.position_id)
       |> can_edit?(user)
     rescue
       _ -> false
     end
   end
 
-  def get_position!(id) do
+  def get_position(id) do
     Position
-    |> Repo.get!(id)
+    |> Repo.get(id)
   end
 
   def create_position(attrs \\ %{}) do
@@ -75,7 +75,7 @@ defmodule Riso.Positions do
     Position.changeset(position, %{})
   end
 
-  def get_position_stage!(id), do: Repo.get!(PositionStage, id)
+  def get_position_stage(id), do: Repo.get(PositionStage, id)
 
   def create_position_stage(attrs \\ %{}) do
     %PositionStage{}
@@ -110,7 +110,7 @@ defmodule Riso.Positions do
     |> Enum.map(fn m -> m.role end)
   end
 
-  def get_position_member!(id), do: Repo.get!(PositionMember, id)
+  def get_position_member(id), do: Repo.get(PositionMember, id)
 
   def create_position_member(attrs \\ %{}) do
     %PositionMember{}
@@ -136,7 +136,7 @@ defmodule Riso.Positions do
     |> Repo.all()
   end
 
-  def get_position_kpi!(id), do: Repo.get!(PositionKpi, id)
+  def get_position_kpi(id), do: Repo.get(PositionKpi, id)
 
   def create_position_kpi(attrs \\ %{}) do
     %PositionKpi{}

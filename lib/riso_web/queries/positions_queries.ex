@@ -2,6 +2,7 @@ defmodule RisoWeb.Queries.PositionsQueries do
   use Absinthe.Schema.Notation
 
   import Ecto.Query, warn: false
+  import RisoWeb.Helpers.ValidationMessageHelpers
 
   alias RisoWeb.Schema.Middleware
   alias Riso.Repo
@@ -49,9 +50,15 @@ defmodule RisoWeb.Queries.PositionsQueries do
       arg(:id, non_null(:id))
 
       resolve(fn args, %{context: context} ->
-        position = Position |> Repo.get!(args[:id])
-        Positions.can_view?(position, context[:current_user])
-        {:ok, position}
+        with(
+          {:ok, position} <- Positions.get_position!(args[:id]),
+          true <- Positions.can_view?(position, context[:current_user])
+        ) do
+          {:ok, position}
+        else
+          false ->
+            {:error, "Unauthorize"}
+        end
       end)
     end
 
