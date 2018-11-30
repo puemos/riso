@@ -50,7 +50,7 @@ defmodule RisoWeb.Queries.PositionsQueries do
 
       resolve(fn args, %{context: context} ->
         position = Position |> Repo.get!(args[:id])
-        Positions.can_view?(context[:current_user], position)
+        Positions.can_view?(position, context[:current_user])
         {:ok, position}
       end)
     end
