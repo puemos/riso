@@ -75,7 +75,7 @@ defmodule Riso.Mixfile do
       # Tests
       {:wallaby, github: "keathley/wallaby", runtime: false, only: :test},
       {:ex_machina, "~> 2.2", only: :test},
-      {:faker, "~> 0.10", only: :test}
+      {:faker, "~> 0.10"}
     ]
   end
 

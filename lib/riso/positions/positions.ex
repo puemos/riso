@@ -6,10 +6,11 @@ defmodule Riso.Positions do
 
   def search(query, nil), do: query
 
-  def search(query, keywords) do
+  def search(query, user_id, keywords) do
     from(
-      r in query,
-      where: ilike(r.title, ^"%#{keywords}%")
+      p in query,
+      join: m in assoc(p, :members),
+      where: ilike(p.title, ^"%#{keywords}%") and m.user_id == ^user_id
     )
   end
 

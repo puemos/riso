@@ -15,10 +15,10 @@ defmodule RisoWeb.Queries.PositionsQueries do
       arg(:offset, :integer, default_value: 0)
       arg(:keywords, :string, default_value: nil)
 
-      resolve(fn args, _ ->
+      resolve(fn args, %{context: context} ->
         positions =
           Position
-          |> Positions.search(args[:keywords])
+          |> Positions.search(context[:current_user].id, args[:keywords])
           |> order_by(desc: :inserted_at)
           |> Repo.paginate(args[:offset])
           |> Repo.all()
