@@ -21,15 +21,32 @@ defmodule Riso.Positions do
     queryable
   end
 
-  def can_view?(%User{} = user, %Position{} = position) do
+  def can_view?(%Position{} = position, %User{} = user) do
     roles = get_member_roles(user, position)
     Enum.member?(roles, "viewer") or Enum.member?(roles, "editor")
   end
 
-  def can_edit?(%User{} = user, %Position{} = position) do
+  def can_view_resource?(resource, %User{} = user) do
+    try do
+      get_position!(resource.position_id)
+      |> can_view?(user)
+    rescue
+      _ -> false
+    end
+  end
+
+  def can_edit?(%Position{} = position, %User{} = user) do
     roles = get_member_roles(user, position)
-    IO.inspect(roles)
     Enum.member?(roles, "editor")
+  end
+
+  def can_edit_resource?(resource, %User{} = user) do
+    try do
+      get_position!(resource.position_id)
+      |> can_edit?(user)
+    rescue
+      _ -> false
+    end
   end
 
   def get_position!(id) do
