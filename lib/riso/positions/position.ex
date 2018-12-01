@@ -2,6 +2,7 @@ defmodule Riso.Positions.Position do
   use Ecto.Schema
   import Ecto.Changeset
   alias Riso.Positions.{PositionMember, PositionStage, PositionKpi}
+  alias Riso.Applicants.{Applicant}
 
   @options %{}
   @default_values %{}
@@ -12,6 +13,7 @@ defmodule Riso.Positions.Position do
     has_many :stages, PositionStage
     has_many :kpis, PositionKpi
     has_many :members, PositionMember
+    has_many :applicants, Applicant
 
     timestamps()
   end

@@ -1,6 +1,8 @@
 defmodule Seeds do
   alias Faker
   alias Riso.Repo
+  alias Riso.Applicants
+  alias Riso.Applicants.Applicant
   alias Riso.Accounts
   alias Riso.Accounts.User
   alias Riso.Positions
@@ -13,6 +15,11 @@ defmodule Seeds do
     user
   end
 
+  def create_applicant(args) do
+    {:ok, applicant} = Applicants.create_applicant(args)
+    applicant
+  end
+
   def create_position(user, title) do
     {:ok, position} =
       Positions.create_position(%{
@@ -22,20 +29,35 @@ defmodule Seeds do
     Positions.add_member(position, user, "editor")
 
     Positions.create_position_kpi(%{position_id: position.id, title: Faker.Industry.En.industry()})
-    Positions.create_position_kpi(%{position_id: position.id, title: Faker.Industry.En.industry()})
+
     Positions.create_position_kpi(%{position_id: position.id, title: Faker.Industry.En.industry()})
 
-    Positions.create_position_stage(%{position_id: position.id, title: Faker.Name.name()})
-    Positions.create_position_stage(%{position_id: position.id, title: Faker.Name.name()})
-    Positions.create_position_stage(%{position_id: position.id, title: Faker.Name.name()})
+    Positions.create_position_kpi(%{position_id: position.id, title: Faker.Industry.En.industry()})
+
+    Positions.create_position_stage(%{position_id: position.id, title: Faker.Food.ingredient()})
+    Positions.create_position_stage(%{position_id: position.id, title: Faker.Food.ingredient()})
+    Positions.create_position_stage(%{position_id: position.id, title: Faker.Food.ingredient()})
     position
   end
 
   def run do
-
     User |> Repo.delete_all()
-    user_1 = create_user(%{name: Faker.StarWars.character(), email: "user_1@riso.com", password: "password", password_confirmation: "password"})
-    user_2 = create_user(%{name: Faker.StarWars.character(), email: "user_2@riso.com", password: "password", password_confirmation: "password"})
+
+    user_2 =
+      create_user(%{
+        name: "user_2",
+        email: "user_2@riso.com",
+        password: "password",
+        password_confirmation: "password"
+      })
+
+    user_1 =
+      create_user(%{
+        name: "user_1",
+        email: "user_1@riso.com",
+        password: "password",
+        password_confirmation: "password"
+      })
 
     Position |> Repo.delete_all()
     create_position(user_1, Faker.Industry.sub_sector())
@@ -45,8 +67,9 @@ defmodule Seeds do
     create_position(user_2, Faker.Industry.sub_sector())
     create_position(user_2, Faker.Industry.sub_sector())
     create_position(user_2, Faker.Industry.sub_sector())
-  end
 
+    create_applicant(%{name: Faker.Name.name()})
+  end
 end
 
 Seeds.run()

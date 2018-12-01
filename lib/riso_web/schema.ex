@@ -9,6 +9,7 @@ defmodule RisoWeb.Schema do
   import_types(RisoWeb.Schema.OptionTypes)
   import_types(RisoWeb.Schema.PositionsTypes)
   import_types(RisoWeb.Schema.AccountsTypes)
+  import_types(RisoWeb.Schema.ApplicantsTypes)
   import_types(RisoWeb.Queries.AccountsQueries)
   import_types(RisoWeb.Queries.PositionsQueries)
   import_types(RisoWeb.Mutations.AuthMutations)
@@ -50,6 +51,7 @@ defmodule RisoWeb.Schema do
   def dataloader() do
     Dataloader.new()
     |> Dataloader.add_source(Riso.Positions, Riso.Positions.data())
+    |> Dataloader.add_source(Riso.Applicants, Riso.Applicants.data())
   end
 
   def context(ctx) do
