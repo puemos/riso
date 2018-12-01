@@ -51,11 +51,14 @@ defmodule RisoWeb.Queries.PositionsQueries do
 
       resolve(fn args, %{context: context} ->
         with(
-          {:ok, position} <- Positions.get_position!(args[:id]),
+          position when not is_nil(position) <- Positions.get_position(args[:id]),
           true <- Positions.can_view?(position, context[:current_user])
         ) do
           {:ok, position}
         else
+          nil ->
+            {:error, "Not found"}
+
           false ->
             {:error, "Unauthorize"}
         end

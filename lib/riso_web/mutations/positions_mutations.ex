@@ -4,9 +4,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
   import RisoWeb.Helpers.ValidationMessageHelpers
 
   alias RisoWeb.Schema.Middleware
-  alias Riso.Repo
   alias Riso.Positions
-  alias Riso.Positions.Position
 
   input_object :position_input do
     field(:title, :string)
@@ -39,11 +37,8 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn %{input: params} = args, %{context: context} ->
-        position =
-          Position
-          |> Repo.get!(args[:id])
-
-        with true <- Positions.can_edit?(position, context[:current_user]),
+        with position when not is_nil(position) <- Positions.get_position(args[:id]),
+             true <- Positions.can_edit?(position, context[:current_user]),
              {:ok, position_updated} <- Positions.update_position(position, params) do
           {:ok, position_updated}
         else
@@ -55,6 +50,9 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
           false ->
             {:error, "Unauthorize"}
+
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -65,11 +63,8 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        position =
-          Position
-          |> Repo.get!(args[:id])
-
-        with true <- Positions.can_edit?(position, context[:current_user]),
+        with position when not is_nil(position) <- Positions.get_position(args[:id]),
+             true <- Positions.can_edit?(position, context[:current_user]),
              Positions.delete_position(position) do
           {:ok, position}
         else
@@ -81,6 +76,9 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
           false ->
             {:error, "Unauthorize"}
+
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -92,11 +90,9 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        position = Positions.get_position!(args[:position_id])
-
-        position_stage_args = %{position_id: position.id, title: args[:title]}
-
-        with true <- Positions.can_edit?(position, context[:current_user]),
+        with position when not is_nil(position) <- Positions.get_position(args[:id]),
+             position_stage_args = %{position_id: position.id, title: args[:title]},
+             true <- Positions.can_edit?(position, context[:current_user]),
              {:ok, position_stage} <- Positions.create_position_stage(position_stage_args) do
           {:ok, position_stage}
         else
@@ -108,6 +104,9 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
           false ->
             {:error, "Unauthorize"}
+
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -119,25 +118,25 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        try do
-          position_stage = Positions.get_position_stage!(args[:id])
-          position_stage_args = %{title: args[:title]}
+        with position_stage when not is_nil(position_stage) <-
+               Positions.get_position_stage(args[:id]),
+             position_stage_args = %{title: args[:title]},
+             true <- Positions.can_edit_resource?(position_stage, context[:current_user]),
+             {:ok, position_stage} <-
+               Positions.update_position_stage(position_stage, position_stage_args) do
+          {:ok, position_stage}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
 
-          with true <- Positions.can_edit_resource?(position_stage, context[:current_user]),
-               {:ok, position_stage} <- Positions.update_position_stage(position_stage, position_stage_args) do
-            {:ok, position_stage}
-          else
-            {:error, %Ecto.Changeset{} = changeset} ->
-              {:ok, changeset}
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
 
-            {:error, msg} ->
-              {:ok, generic_message(msg)}
+          false ->
+            {:error, "Unauthorize"}
 
-            false ->
-              {:error, "Unauthorize"}
-          end
-        rescue
-          _ -> {:ok, generic_message("Ops, error")}
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -148,24 +147,23 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        try do
-          position_stage = Positions.get_position_stage!(args[:id])
+        with position_stage when not is_nil(position_stage) <-
+               Positions.get_position_stage(args[:id]),
+             true <- Positions.can_edit_resource?(position_stage, context[:current_user]),
+             {:ok, position_stage} <- Positions.delete_position_stage(position_stage) do
+          {:ok, position_stage}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
 
-          with true <- Positions.can_edit_resource?(position_stage, context[:current_user]),
-               {:ok, position_stage} <- Positions.delete_position_stage(position_stage) do
-            {:ok, position_stage}
-          else
-            {:error, %Ecto.Changeset{} = changeset} ->
-              {:ok, changeset}
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
 
-            {:error, msg} ->
-              {:ok, generic_message(msg)}
+          false ->
+            {:error, "Unauthorize"}
 
-            false ->
-              {:error, "Unauthorize"}
-          end
-        rescue
-          _ -> {:ok, generic_message("Ops, error")}
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -177,10 +175,9 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        position = Positions.get_position!(args[:position_id])
-        position_kpi_args = %{position_id: position.id, title: args[:title]}
-
-        with true <- Positions.can_edit?(position, context[:current_user]),
+        with position when not is_nil(position) <- Positions.get_position(args[:position_id]),
+             position_kpi_args = %{position_id: position.id, title: args[:title]},
+             true <- Positions.can_edit?(position, context[:current_user]),
              {:ok, position_kpi} <- Positions.create_position_kpi(position_kpi_args) do
           {:ok, position_kpi}
         else
@@ -192,6 +189,9 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
           false ->
             {:error, "Unauthorize"}
+
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -203,25 +203,23 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        try do
-          position_kpi = Positions.get_position_kpi!(args[:id])
-          position_kpi_args = %{title: args[:title]}
+        with position_kpi when not is_nil(position_kpi) <- Positions.get_position_kpi(args[:id]),
+             position_kpi_args = %{title: args[:title]},
+             true <- Positions.can_edit_resource?(position_kpi, context[:current_user]),
+             {:ok, position_kpi} <- Positions.update_position_kpi(position_kpi, position_kpi_args) do
+          {:ok, position_kpi}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
 
-          with true <- Positions.can_edit_resource?(position_kpi, context[:current_user]),
-               {:ok, position_kpi} <- Positions.update_position_kpi(position_kpi, position_kpi_args) do
-            {:ok, position_kpi}
-          else
-            {:error, %Ecto.Changeset{} = changeset} ->
-              {:ok, changeset}
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
 
-            {:error, msg} ->
-              {:ok, generic_message(msg)}
+          false ->
+            {:error, "Unauthorize"}
 
-            false ->
-              {:error, "Unauthorize"}
-          end
-        rescue
-          _ -> {:ok, generic_message("Ops, error")}
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -232,24 +230,22 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        try do
-          position_kpi = Positions.get_position_kpi!(args[:id])
+        with position_kpi when not is_nil(position_kpi) <- Positions.get_position_kpi(args[:id]),
+             true <- Positions.can_edit_resource?(position_kpi, context[:current_user]),
+             {:ok, position_kpi} <- Positions.delete_position_kpi(position_kpi) do
+          {:ok, position_kpi}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
 
-          with true <- Positions.can_edit_resource?(position_kpi, context[:current_user]),
-               {:ok, position_kpi} <- Positions.delete_position_kpi(position_kpi) do
-            {:ok, position_kpi}
-          else
-            {:error, %Ecto.Changeset{} = changeset} ->
-              {:ok, changeset}
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
 
-            {:error, msg} ->
-              {:ok, generic_message(msg)}
+          false ->
+            {:error, "Unauthorize"}
 
-            false ->
-              {:error, "Unauthorize"}
-          end
-        rescue
-          _ -> {:ok, generic_message("Ops, error")}
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end

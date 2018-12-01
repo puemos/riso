@@ -4,7 +4,6 @@ defmodule Seeds do
   alias Riso.Accounts
   alias Riso.Accounts.User
   alias Riso.Positions
-  alias Riso.Positions.PositionMember
   alias Riso.Positions.Position
 
   def create_user(args) do
