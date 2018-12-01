@@ -6,11 +6,10 @@ defmodule Riso.Positions do
 
   def search(query, nil), do: query
 
-  def search(query, user_id, keywords) do
+  def search(query, keywords) do
     from(
       p in query,
-      join: m in assoc(p, :members),
-      where: ilike(p.title, ^"%#{keywords}%") and m.user_id == ^user_id
+      where: ilike(p.title, ^"%#{keywords}%")
     )
   end
 
@@ -48,6 +47,12 @@ defmodule Riso.Positions do
     rescue
       _ -> false
     end
+  end
+
+  def list_position_by_user(%User{} = user) do
+    Position
+    |> join(:left, [p], m in assoc(p, :members))
+    |> where([p, m], m.user_id == ^user.id)
   end
 
   def get_position(id) do
@@ -126,14 +131,6 @@ defmodule Riso.Positions do
 
   def delete_position_member(%PositionMember{} = position_member) do
     Repo.delete(position_member)
-  end
-
-  def list_positions_kpis(position) do
-    from(
-      cm in PositionKpi,
-      where: cm.position_id == ^position.id
-    )
-    |> Repo.all()
   end
 
   def get_position_kpi(id), do: Repo.get(PositionKpi, id)

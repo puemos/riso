@@ -2,41 +2,43 @@ defmodule RisoWeb.Queries.PositionsQueries do
   use Absinthe.Schema.Notation
 
   import Ecto.Query, warn: false
-  import RisoWeb.Helpers.ValidationMessageHelpers
 
   alias RisoWeb.Schema.Middleware
   alias Riso.Repo
   alias Riso.Positions
-  alias Riso.Positions.Position
+  alias Riso.Positions.{Position}
 
   object :positions_queries do
-    @desc "get positions list"
+    @desc "get current user positions list"
     field :positions, list_of(:position) do
       middleware(Middleware.Authorize)
       arg(:offset, :integer, default_value: 0)
       arg(:keywords, :string, default_value: nil)
 
       resolve(fn args, %{context: context} ->
+        user = context[:current_user]
+
         positions =
-          Position
-          |> Positions.search(context[:current_user].id, args[:keywords])
+          Positions.list_position_by_user(user)
+          |> Positions.search(args[:keywords])
           |> order_by(desc: :inserted_at)
           |> Repo.paginate(args[:offset])
           |> Repo.all()
 
-        IO.inspect(positions)
         {:ok, positions}
       end)
     end
 
-    @desc "Number of positions"
+    @desc "Number of positions for current user"
     field :positions_count, :integer do
       middleware(Middleware.Authorize)
       arg(:keywords, :string, default_value: nil)
 
-      resolve(fn args, _ ->
+      resolve(fn args, %{context: context} ->
+        user = context[:current_user]
+
         positions_count =
-          Position
+          Positions.list_position_by_user(user)
           |> Positions.search(args[:keywords])
           |> Repo.count()
 
@@ -50,9 +52,11 @@ defmodule RisoWeb.Queries.PositionsQueries do
       arg(:id, non_null(:id))
 
       resolve(fn args, %{context: context} ->
+        user = context[:current_user]
+
         with(
           position when not is_nil(position) <- Positions.get_position(args[:id]),
-          true <- Positions.can_view?(position, context[:current_user])
+          true <- Positions.can_view?(position, user)
         ) do
           {:ok, position}
         else
