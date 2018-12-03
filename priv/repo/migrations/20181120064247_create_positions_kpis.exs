@@ -6,7 +6,7 @@ defmodule Riso.Repo.Migrations.CreatePositionsKpis do
       add(:title, :string)
       add(:position_id, references(:positions, on_delete: :delete_all))
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create(index(:positions_kpis, [:position_id]))

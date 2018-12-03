@@ -17,7 +17,7 @@ defmodule Riso.Positions.PositionMember do
     belongs_to :user, User
     belongs_to :position, Position
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def options(), do: @options

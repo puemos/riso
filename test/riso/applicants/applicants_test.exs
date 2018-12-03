@@ -1,11 +1,13 @@
 defmodule Riso.ApplicantsTest do
   use Riso.DataCase
 
+  alias Riso.Repo
+  alias Riso.PositionsTest
+  alias Riso.Positions
   alias Riso.Applicants
+  alias Riso.Applicants.Applicant
 
   describe "applicants" do
-    alias Riso.Applicants.Applicant
-
     @valid_attrs %{name: "some name"}
     @update_attrs %{name: "some updated name"}
     @invalid_attrs %{name: nil}
@@ -17,6 +19,30 @@ defmodule Riso.ApplicantsTest do
         |> Applicants.create_applicant()
 
       applicant
+    end
+
+    @tag mustexec: true
+    test "set applicant's position" do
+      position = PositionsTest.position_fixture()
+      applicant = applicant_fixture() |> Repo.preload(:position)
+
+      assert applicant.position == nil
+      {:ok, applicant} = Applicants.set_position(applicant, position)
+      assert applicant.position.id == position.id
+    end
+
+    @tag mustexec: true
+    test "set applicant's position stage" do
+      position = PositionsTest.position_fixture()
+
+      {:ok, position_stage} =
+        Positions.create_position_stage(%{position_id: position.id, title: "super test"})
+
+      applicant = applicant_fixture() |> Repo.preload(:position_stage)
+
+      assert applicant.position_stage == nil
+      {:ok, applicant} = Applicants.set_position_stage(applicant, position_stage)
+      assert applicant.position_stage.id == position_stage.id
     end
 
     test "list_applicants/0 returns all applicants" do

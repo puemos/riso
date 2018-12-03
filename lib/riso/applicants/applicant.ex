@@ -8,7 +8,7 @@ defmodule Riso.Applicants.Applicant do
     belongs_to :position, Position
     belongs_to :position_stage, PositionStage
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc false

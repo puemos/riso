@@ -7,7 +7,7 @@ defmodule Riso.Repo.Migrations.CreateApplicants do
       add :position_id, references(:positions, on_delete: :nothing)
       add :position_stage_id, references(:positions_stages, on_delete: :nothing)
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create unique_index(:applicants, [:name])

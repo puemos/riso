@@ -3,10 +3,9 @@ defmodule Riso.Repo.Migrations.CreateCampaigns do
 
   def change do
     create table(:campaigns) do
-      add :name, :string
+      add(:name, :string)
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
-
   end
 end

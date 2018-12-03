@@ -15,7 +15,7 @@ defmodule Riso.Positions.Position do
     has_many :members, PositionMember
     has_many :applicants, Applicant
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def options(), do: @options

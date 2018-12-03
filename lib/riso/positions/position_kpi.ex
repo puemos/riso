@@ -7,7 +7,7 @@ defmodule Riso.Positions.PositionKpi do
     field :title, :string
     belongs_to :position, Position
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc false

@@ -6,7 +6,7 @@ defmodule Riso.Repo.Migrations.CreateStages do
       add :title, :string
       add :campaign_id, references(:campaigns, on_delete: :delete_all)
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create index(:stages, [:campaign_id])

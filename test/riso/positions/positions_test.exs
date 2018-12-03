@@ -4,12 +4,17 @@ defmodule Riso.PositionsTest do
   alias Riso.Repo
   alias Riso.Positions
 
-  @user_valid_attrs %{name: "name", email: "email@riso.com", password: "password", password_confirmation: "password"}
+  @user_valid_attrs %{
+    name: "name",
+    email: "email@riso.com",
+    password: "password",
+    password_confirmation: "password"
+  }
 
   @position_valid_attrs %{title: "some title"}
   @position_update_attrs %{title: "some updated title"}
 
-  defp user_fixture(attrs \\ %{}) do
+  def user_fixture(attrs \\ %{}) do
     {:ok, user} =
       attrs
       |> Enum.into(@user_valid_attrs)
@@ -18,7 +23,7 @@ defmodule Riso.PositionsTest do
     user
   end
 
-  defp position_fixture(attrs \\ %{}) do
+  def position_fixture(attrs \\ %{}) do
     {:ok, position} =
       attrs
       |> Enum.into(@position_valid_attrs)
@@ -132,7 +137,9 @@ defmodule Riso.PositionsTest do
     test "should update a position stage" do
       position = position_fixture()
 
-      {:ok, position_stage} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
+      {:ok, position_stage} =
+        Positions.create_position_stage(%{position_id: position.id, title: "super test"})
+
       Positions.update_position_stage(position_stage, %{title: "updated title"})
       position_stage_after = Positions.get_position_stage(position_stage.id)
 
@@ -143,7 +150,8 @@ defmodule Riso.PositionsTest do
     test "should delete a position stage" do
       position = position_fixture()
 
-      {:ok, position_stage} = Positions.create_position_stage(%{position_id: position.id, title: "super test"})
+      {:ok, position_stage} =
+        Positions.create_position_stage(%{position_id: position.id, title: "super test"})
 
       assert Positions.get_position_stage(position_stage.id)
       Positions.delete_position_stage(position_stage)
@@ -173,7 +181,9 @@ defmodule Riso.PositionsTest do
     test "should update a position kpi" do
       position = position_fixture()
 
-      {:ok, position_kpi} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
+      {:ok, position_kpi} =
+        Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
+
       Positions.update_position_kpi(position_kpi, %{title: "updated title"})
       position_kpi_after = Positions.get_position_kpi(position_kpi.id)
 
@@ -184,7 +194,8 @@ defmodule Riso.PositionsTest do
     test "should delete a position kpi" do
       position = position_fixture()
 
-      {:ok, position_kpi} = Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
+      {:ok, position_kpi} =
+        Positions.create_position_kpi(%{position_id: position.id, title: "super test"})
 
       assert Positions.get_position_kpi(position_kpi.id)
       Positions.delete_position_kpi(position_kpi)

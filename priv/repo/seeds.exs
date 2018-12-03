@@ -28,16 +28,29 @@ defmodule Seeds do
 
     Positions.add_member(position, user, "editor")
 
-    Positions.create_position_kpi(%{position_id: position.id, title: Faker.Industry.En.industry()})
+    Positions.create_position_kpi(%{position_id: position.id, title: "Coding skills"})
 
-    Positions.create_position_kpi(%{position_id: position.id, title: Faker.Industry.En.industry()})
+    Positions.create_position_kpi(%{position_id: position.id, title: "Algo"})
 
-    Positions.create_position_kpi(%{position_id: position.id, title: Faker.Industry.En.industry()})
+    Positions.create_position_kpi(%{position_id: position.id, title: "Problem solving"})
 
-    Positions.create_position_stage(%{position_id: position.id, title: Faker.Food.ingredient()})
-    Positions.create_position_stage(%{position_id: position.id, title: Faker.Food.ingredient()})
-    Positions.create_position_stage(%{position_id: position.id, title: Faker.Food.ingredient()})
-    position
+    {:ok, stage_1} =
+      Positions.create_position_stage(%{position_id: position.id, title: "Homework"})
+
+    {:ok, stage_2} =
+      Positions.create_position_stage(%{position_id: position.id, title: "HR interview"})
+
+    {:ok, stage_3} =
+      Positions.create_position_stage(%{position_id: position.id, title: "Insite tech interview"})
+
+    {
+      position,
+      {
+        stage_1,
+        stage_2,
+        stage_3
+      }
+    }
   end
 
   def run do
@@ -60,15 +73,54 @@ defmodule Seeds do
       })
 
     Position |> Repo.delete_all()
-    create_position(user_1, Faker.Industry.sub_sector())
-    create_position(user_1, Faker.Industry.sub_sector())
-    create_position(user_1, Faker.Industry.sub_sector())
-    create_position(user_1, Faker.Industry.sub_sector())
-    create_position(user_2, Faker.Industry.sub_sector())
-    create_position(user_2, Faker.Industry.sub_sector())
-    create_position(user_2, Faker.Industry.sub_sector())
+    {position_1, stages_1} = create_position(user_1, "Back-end developer")
+    {position_2, stages_2} = create_position(user_1, "Devops developer")
+    {position_3, stages_3} = create_position(user_1, "Front-end developer")
+
+    {_position_4, _stages_4} = create_position(user_2, "Data sciencetist")
+    {position_5, stages_5} = create_position(user_2, "Team lead")
+    {position_6, stages_6} = create_position(user_2, "VP R&D")
+
+    Applicant |> Repo.delete_all()
 
     create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_1)
+    |> elem(1)
+    |> Applicants.set_position_stage(elem(stages_1, 0))
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_1)
+    |> elem(1)
+    |> Applicants.set_position_stage(elem(stages_1, 0))
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_2)
+    |> elem(1)
+    |> Applicants.set_position_stage(elem(stages_2, 1))
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_3)
+    |> elem(1)
+    |> Applicants.set_position_stage(elem(stages_3, 0))
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_5)
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_5)
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_5)
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_6)
+    |> elem(1)
+    |> Applicants.set_position_stage(elem(stages_6, 2))
+
+    create_applicant(%{name: Faker.Name.name()})
+    |> Applicants.set_position(position_6)
+    |> elem(1)
+    |> Applicants.set_position_stage(elem(stages_6, 2))
   end
 end
 

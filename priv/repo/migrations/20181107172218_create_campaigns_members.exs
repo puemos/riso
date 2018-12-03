@@ -7,7 +7,7 @@ defmodule Riso.Repo.Migrations.CreateCampaignsMembers do
       add(:campaign_id, references(:campaigns, on_delete: :delete_all))
       add(:user_id, references(:users, on_delete: :delete_all))
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
     create(index(:campaigns_members, [:campaign_id, :user_id]))

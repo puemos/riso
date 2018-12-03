@@ -26,7 +26,7 @@ defmodule Riso.Accounts.User do
 
     many_to_many :positions, Position, join_through: PositionMember
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   def changeset(%User{} = user, attrs \\ %{}) do
