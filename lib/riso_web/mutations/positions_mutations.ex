@@ -10,6 +10,14 @@ defmodule RisoWeb.Mutations.PositionsMutations do
     field(:title, :string)
   end
 
+  input_object :position_stage_input do
+    field(:title, :string)
+  end
+
+  input_object :position_kpi_input do
+    field(:title, :string)
+  end
+
   object :positions_mutations do
     @desc "Create a position"
     field :create_position, :position_payload do
@@ -85,13 +93,16 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
     @desc "Add a stage to a position"
     field :create_position_stage, :position_stage_payload do
-      arg(:title, :string)
+      arg(:input, :position_stage_input)
       arg(:position_id, non_null(:id))
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
+        position_stage_args =
+          %{position_id: args[:position_id]}
+          |> Enum.into(args[:input])
+
         with position when not is_nil(position) <- Positions.get_position(args[:id]),
-             position_stage_args = %{position_id: position.id, title: args[:title]},
              true <- Positions.can_edit?(position, context[:current_user]),
              {:ok, position_stage} <- Positions.create_position_stage(position_stage_args) do
           {:ok, position_stage}
@@ -114,13 +125,14 @@ defmodule RisoWeb.Mutations.PositionsMutations do
     @desc "Update a position stage"
     field :update_position_stage, :position_stage_payload do
       arg(:id, non_null(:id))
-      arg(:title, :string)
+      arg(:input, :position_stage_input)
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
+        position_stage_args = args[:input]
+
         with position_stage when not is_nil(position_stage) <-
                Positions.get_position_stage(args[:id]),
-             position_stage_args = %{title: args[:title]},
              true <- Positions.can_edit_resource?(position_stage, context[:current_user]),
              {:ok, position_stage} <-
                Positions.update_position_stage(position_stage, position_stage_args) do
@@ -170,13 +182,16 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
     @desc "Add a kpi to a position"
     field :create_position_kpi, :position_kpi_payload do
-      arg(:title, :string)
+      arg(:input, :position_kpi_input)
       arg(:position_id, non_null(:id))
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
+        position_kpi_args =
+          %{position_id: args[:position_id]}
+          |> Enum.into(args[:input])
+
         with position when not is_nil(position) <- Positions.get_position(args[:position_id]),
-             position_kpi_args = %{position_id: position.id, title: args[:title]},
              true <- Positions.can_edit?(position, context[:current_user]),
              {:ok, position_kpi} <- Positions.create_position_kpi(position_kpi_args) do
           {:ok, position_kpi}
@@ -199,12 +214,13 @@ defmodule RisoWeb.Mutations.PositionsMutations do
     @desc "Update a position kpi"
     field :update_position_kpi, :position_kpi_payload do
       arg(:id, non_null(:id))
-      arg(:title, :string)
+      arg(:input, :position_kpi_input)
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
+        position_kpi_args = args[:input]
+
         with position_kpi when not is_nil(position_kpi) <- Positions.get_position_kpi(args[:id]),
-             position_kpi_args = %{title: args[:title]},
              true <- Positions.can_edit_resource?(position_kpi, context[:current_user]),
              {:ok, position_kpi} <- Positions.update_position_kpi(position_kpi, position_kpi_args) do
           {:ok, position_kpi}

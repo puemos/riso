@@ -3,12 +3,12 @@ defmodule Riso.Repo.Migrations.CreateStages do
 
   def change do
     create table(:stages) do
-      add :title, :string
-      add :campaign_id, references(:campaigns, on_delete: :delete_all)
+      add(:title, :string)
+      add(:campaign_id, references(:campaigns, on_delete: :delete_all))
 
       timestamps(type: :utc_datetime)
     end
 
-    create index(:stages, [:campaign_id])
+    create(index(:stages, [:campaign_id]))
   end
 end

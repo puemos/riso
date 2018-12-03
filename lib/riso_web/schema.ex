@@ -15,6 +15,7 @@ defmodule RisoWeb.Schema do
   import_types(RisoWeb.Mutations.AuthMutations)
   import_types(RisoWeb.Mutations.AccountsMutations)
   import_types(RisoWeb.Mutations.PositionsMutations)
+  import_types(RisoWeb.Mutations.ApplicantsMutations)
   import_types(Absinthe.Plug.Types)
 
   payload_object(:boolean_payload, :boolean)
@@ -23,7 +24,7 @@ defmodule RisoWeb.Schema do
   payload_object(:position_stage_payload, :position_stage)
   payload_object(:position_kpi_payload, :position_kpi)
   payload_object(:position_payload, :position)
-
+  payload_object(:applicant_payload, :applicant)
 
   query do
     import_fields(:accounts_queries)
@@ -34,6 +35,7 @@ defmodule RisoWeb.Schema do
     import_fields(:auth_mutations)
     import_fields(:accounts_mutations)
     import_fields(:positions_mutations)
+    import_fields(:applicants_mutations)
   end
 
   def middleware(middleware, _field, %Absinthe.Type.Object{identifier: :mutation}) do
