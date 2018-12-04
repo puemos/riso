@@ -12,7 +12,7 @@ defmodule Riso.PositionsTest do
   }
 
   @position_valid_attrs %{title: "some title"}
-  @position_update_attrs %{title: "some updated title"}
+  # @position_update_attrs %{title: "some updated title"}
 
   def user_fixture(attrs \\ %{}) do
     {:ok, user} =

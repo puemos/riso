@@ -7,7 +7,6 @@ defmodule RisoWeb.Schema.ApplicantsTypes do
     field(:id, :id)
     field(:name, :string)
     field(:inserted_at, :datetime)
-    field(:position, :position, resolve: dataloader(Riso.Positions))
-    field(:position_stage, :position_stage, resolve: dataloader(Riso.Positions))
+    field(:stage, :position_stage, resolve: dataloader(Riso.Positions))
   end
 end

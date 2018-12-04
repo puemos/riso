@@ -84,42 +84,27 @@ defmodule Seeds do
     Applicant |> Repo.delete_all()
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_1)
-    |> elem(1)
     |> Applicants.set_position_stage(elem(stages_1, 0))
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_1)
-    |> elem(1)
     |> Applicants.set_position_stage(elem(stages_1, 0))
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_2)
-    |> elem(1)
     |> Applicants.set_position_stage(elem(stages_2, 1))
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_3)
-    |> elem(1)
     |> Applicants.set_position_stage(elem(stages_3, 0))
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_5)
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_5)
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_5)
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_6)
-    |> elem(1)
     |> Applicants.set_position_stage(elem(stages_6, 2))
 
     create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position(position_6)
-    |> elem(1)
     |> Applicants.set_position_stage(elem(stages_6, 2))
   end
 end

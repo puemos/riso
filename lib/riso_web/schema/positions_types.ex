@@ -10,7 +10,6 @@ defmodule RisoWeb.Schema.PositionsTypes do
     field(:members, list_of(:position_member), resolve: dataloader(Riso.Positions))
     field(:stages, list_of(:position_stage), resolve: dataloader(Riso.Positions))
     field(:kpis, list_of(:position_kpi), resolve: dataloader(Riso.Positions))
-    field(:applicants, list_of(:applicant), resolve: dataloader(Riso.Applicants))
   end
 
   @desc "A memebr of a position"

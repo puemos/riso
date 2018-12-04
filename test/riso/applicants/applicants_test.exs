@@ -21,28 +21,17 @@ defmodule Riso.ApplicantsTest do
       applicant
     end
 
-    @tag mustexec: true
-    test "set applicant's position" do
-      position = PositionsTest.position_fixture()
-      applicant = applicant_fixture() |> Repo.preload(:position)
-
-      assert applicant.position == nil
-      {:ok, applicant} = Applicants.set_position(applicant, position)
-      assert applicant.position.id == position.id
-    end
-
-    @tag mustexec: true
     test "set applicant's position stage" do
       position = PositionsTest.position_fixture()
 
       {:ok, position_stage} =
         Positions.create_position_stage(%{position_id: position.id, title: "super test"})
 
-      applicant = applicant_fixture() |> Repo.preload(:position_stage)
+      applicant = applicant_fixture() |> Repo.preload(:stage)
 
-      assert applicant.position_stage == nil
+      assert applicant.stage == nil
       {:ok, applicant} = Applicants.set_position_stage(applicant, position_stage)
-      assert applicant.position_stage.id == position_stage.id
+      assert applicant.stage.id == position_stage.id
     end
 
     test "list_applicants/0 returns all applicants" do

@@ -16,19 +16,12 @@ defmodule Riso.Applicants do
     queryable
   end
 
-  def set_position(%Applicant{} = applicant, %Position{} = position) do
-    applicant
-    |> Repo.preload(:position)
-    |> Riso.Applicants.change_applicant()
-    |> Ecto.Changeset.put_assoc(:position, position)
-    |> Repo.update()
-  end
 
   def set_position_stage(%Applicant{} = applicant, %PositionStage{} = position_stage) do
     applicant
-    |> Repo.preload(:position_stage)
+    |> Repo.preload(:stage)
     |> Riso.Applicants.change_applicant()
-    |> Ecto.Changeset.put_assoc(:position_stage, position_stage)
+    |> Ecto.Changeset.put_assoc(:stage, position_stage)
     |> Repo.update()
   end
 
