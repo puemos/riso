@@ -1,7 +1,7 @@
 defmodule Riso.Positions do
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Applicants.{Applicant}
+  alias Riso.Kpis.{Kpi}
   alias Riso.Positions.{Position, PositionMember, PositionStage, PositionKpi}
   alias Riso.Accounts.{User}
 
@@ -79,6 +79,16 @@ defmodule Riso.Positions do
 
   def change_position(%Position{} = position) do
     Position.changeset(position, %{})
+  end
+
+  def add_kpi(%Position{} = position, %Kpi{} = kpi) do
+    create_position_kpi(%{position_id: position.id, kpi_id: kpi.id})
+  end
+
+  def remove_kpi(%Position{} = position, %Kpi{} = kpi) do
+    PositionKpi
+    |> where([pk], pk.position_id == ^position.id and pk.kpi_id == ^kpi.id)
+    |> Repo.delete_all()
   end
 
   def get_position_stage(id), do: Repo.get(PositionStage, id)

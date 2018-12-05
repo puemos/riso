@@ -6,7 +6,13 @@ defmodule Seeds do
   alias Riso.Accounts
   alias Riso.Accounts.User
   alias Riso.Positions
+  alias Riso.Kpis
   alias Riso.Positions.Position
+
+  def create_kpi(args) do
+    {:ok, kpi} = Kpis.create_kpi(args)
+    kpi
+  end
 
   def create_user(args) do
     {:ok, unconfirmed_user} = Accounts.create_user(args)
@@ -20,40 +26,66 @@ defmodule Seeds do
     applicant
   end
 
-  def create_position(user, title) do
+  def create_position(title) do
     {:ok, position} =
       Positions.create_position(%{
         title: title
       })
 
-    Positions.add_member(position, user, "editor")
+    Positions.create_position_stage(%{position_id: position.id, title: "Homework"})
+    Positions.create_position_stage(%{position_id: position.id, title: "HR interview"})
+    Positions.create_position_stage(%{position_id: position.id, title: "Insite tech interview"})
 
-    Positions.create_position_kpi(%{position_id: position.id, title: "Coding skills"})
+    Positions.get_position(position.id) |> Repo.preload(:stages)
+  end
 
-    Positions.create_position_kpi(%{position_id: position.id, title: "Algo"})
+  def seed_positions() do
+    Position |> Repo.delete_all()
 
-    Positions.create_position_kpi(%{position_id: position.id, title: "Problem solving"})
+    be = create_position("Back-end developer")
+    devops = create_position("Devops developer")
+    fe = create_position("Front-end developer")
+    ml = create_position("ML developer")
+    cto = create_position("CTO")
+    sys_admin = create_position("System admin")
 
-    {:ok, stage_1} =
-      Positions.create_position_stage(%{position_id: position.id, title: "Homework"})
-
-    {:ok, stage_2} =
-      Positions.create_position_stage(%{position_id: position.id, title: "HR interview"})
-
-    {:ok, stage_3} =
-      Positions.create_position_stage(%{position_id: position.id, title: "Insite tech interview"})
-
-    {
-      position,
-      {
-        stage_1,
-        stage_2,
-        stage_3
-      }
+    %{
+      be: be,
+      devops: devops,
+      fe: fe,
+      ml: ml,
+      cto: cto,
+      sys_admin: sys_admin
     }
   end
 
-  def run do
+  def seed_applicants() do
+    Applicant |> Repo.delete_all()
+
+    applicant_1 = create_applicant(%{name: Faker.Name.name()})
+    applicant_2 = create_applicant(%{name: Faker.Name.name()})
+    applicant_3 = create_applicant(%{name: Faker.Name.name()})
+    applicant_4 = create_applicant(%{name: Faker.Name.name()})
+    applicant_5 = create_applicant(%{name: Faker.Name.name()})
+    applicant_6 = create_applicant(%{name: Faker.Name.name()})
+    applicant_7 = create_applicant(%{name: Faker.Name.name()})
+    applicant_8 = create_applicant(%{name: Faker.Name.name()})
+    applicant_9 = create_applicant(%{name: Faker.Name.name()})
+
+    {
+      applicant_1,
+      applicant_2,
+      applicant_3,
+      applicant_4,
+      applicant_5,
+      applicant_6,
+      applicant_7,
+      applicant_8,
+      applicant_9
+    }
+  end
+
+  def seed_users do
     User |> Repo.delete_all()
 
     user_2 =
@@ -72,40 +104,62 @@ defmodule Seeds do
         password_confirmation: "password"
       })
 
-    Position |> Repo.delete_all()
-    {position_1, stages_1} = create_position(user_1, "Back-end developer")
-    {position_2, stages_2} = create_position(user_1, "Devops developer")
-    {position_3, stages_3} = create_position(user_1, "Front-end developer")
+    %{
+      user_1: user_1,
+      user_2: user_2
+    }
+  end
 
-    {_position_4, _stages_4} = create_position(user_2, "Data sciencetist")
-    {position_5, stages_5} = create_position(user_2, "Team lead")
-    {position_6, stages_6} = create_position(user_2, "VP R&D")
+  def seed_kpis do
+    coding = create_kpi(%{title: "Coding skills"})
+    problem = create_kpi(%{title: "Problem solving"})
+    algo = create_kpi(%{title: "Algo"})
+    elixir = create_kpi(%{title: "Elixir"})
+    javascript = create_kpi(%{title: "Javascript"})
+    networking = create_kpi(%{title: "Networking"})
 
-    Applicant |> Repo.delete_all()
+    %{
+      coding: coding,
+      problem: problem,
+      algo: algo,
+      elixir: elixir,
+      networking: networking,
+      javascript: javascript
+    }
+  end
 
-    create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position_stage(elem(stages_1, 0))
+  def run do
+    users = seed_users()
+    applicants = seed_applicants()
+    kpis = seed_kpis()
+    positions = seed_positions()
 
-    create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position_stage(elem(stages_1, 0))
+    # Postion Backend
+    Positions.add_member(positions.be, users.user_1, "editor")
+    Positions.add_kpi(positions.be, kpis.coding)
+    Positions.add_kpi(positions.be, kpis.algo)
+    Positions.add_kpi(positions.be, kpis.problem)
+    Positions.add_kpi(positions.be, kpis.elixir)
+    Applicants.set_position_stage(elem(applicants, 0), Enum.at(positions.be.stages, 0))
+    Applicants.set_position_stage(elem(applicants, 1), Enum.at(positions.be.stages, 0))
+    Applicants.set_position_stage(elem(applicants, 2), Enum.at(positions.be.stages, 1))
 
-    create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position_stage(elem(stages_2, 1))
+    # Postion System admin
+    Positions.add_member(positions.sys_admin, users.user_1, "editor")
+    Positions.add_kpi(positions.sys_admin, kpis.coding)
+    Positions.add_kpi(positions.sys_admin, kpis.problem)
+    Positions.add_kpi(positions.sys_admin, kpis.networking)
+    Applicants.set_position_stage(elem(applicants, 3), Enum.at(positions.sys_admin.stages, 0))
+    Applicants.set_position_stage(elem(applicants, 4), Enum.at(positions.sys_admin.stages, 1))
 
-    create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position_stage(elem(stages_3, 0))
-
-    create_applicant(%{name: Faker.Name.name()})
-
-    create_applicant(%{name: Faker.Name.name()})
-
-    create_applicant(%{name: Faker.Name.name()})
-
-    create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position_stage(elem(stages_6, 2))
-
-    create_applicant(%{name: Faker.Name.name()})
-    |> Applicants.set_position_stage(elem(stages_6, 2))
+    # Postion Frontend
+    Positions.add_member(positions.fe, users.user_2, "editor")
+    Positions.add_kpi(positions.fe, kpis.coding)
+    Positions.add_kpi(positions.fe, kpis.algo)
+    Positions.add_kpi(positions.fe, kpis.problem)
+    Positions.add_kpi(positions.fe, kpis.javascript)
+    Applicants.set_position_stage(elem(applicants, 5), Enum.at(positions.fe.stages, 0))
+    Applicants.set_position_stage(elem(applicants, 6), Enum.at(positions.fe.stages, 1))
   end
 end
 

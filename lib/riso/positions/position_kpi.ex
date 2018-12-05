@@ -2,10 +2,11 @@ defmodule Riso.Positions.PositionKpi do
   use Ecto.Schema
   import Ecto.Changeset
   alias Riso.Positions.Position
+  alias Riso.Kpis.Kpi
 
   schema "positions_kpis" do
-    field :title, :string
     belongs_to :position, Position
+    belongs_to :kpi, Kpi
 
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +14,7 @@ defmodule Riso.Positions.PositionKpi do
   @doc false
   def changeset(position_kpi, attrs) do
     position_kpi
-    |> cast(attrs, [:title, :position_id])
-    |> validate_required([:title, :position_id])
+    |> cast(attrs, [:kpi_id, :position_id])
+    |> validate_required([:kpi_id, :position_id])
   end
 end
