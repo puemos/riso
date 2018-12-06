@@ -79,4 +79,61 @@ defmodule Riso.ApplicantsTest do
       assert %Ecto.Changeset{} = Applicants.change_applicant(applicant)
     end
   end
+
+  describe "applicants_reviews" do
+    alias Riso.Applicants.ApplicantReview
+
+    @valid_attrs %{}
+    @update_attrs %{}
+    @invalid_attrs %{}
+
+    def applicant_review_fixture(attrs \\ %{}) do
+      {:ok, applicant_review} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Applicants.create_applicant_review()
+
+      applicant_review
+    end
+
+    test "list_applicants_reviews/0 returns all applicants_reviews" do
+      applicant_review = applicant_review_fixture()
+      assert Applicants.list_applicants_reviews() == [applicant_review]
+    end
+
+    test "get_applicant_review!/1 returns the applicant_review with given id" do
+      applicant_review = applicant_review_fixture()
+      assert Applicants.get_applicant_review!(applicant_review.id) == applicant_review
+    end
+
+    test "create_applicant_review/1 with valid data creates a applicant_review" do
+      assert {:ok, %ApplicantReview{} = applicant_review} = Applicants.create_applicant_review(@valid_attrs)
+    end
+
+    test "create_applicant_review/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Applicants.create_applicant_review(@invalid_attrs)
+    end
+
+    test "update_applicant_review/2 with valid data updates the applicant_review" do
+      applicant_review = applicant_review_fixture()
+      assert {:ok, %ApplicantReview{} = applicant_review} = Applicants.update_applicant_review(applicant_review, @update_attrs)
+    end
+
+    test "update_applicant_review/2 with invalid data returns error changeset" do
+      applicant_review = applicant_review_fixture()
+      assert {:error, %Ecto.Changeset{}} = Applicants.update_applicant_review(applicant_review, @invalid_attrs)
+      assert applicant_review == Applicants.get_applicant_review!(applicant_review.id)
+    end
+
+    test "delete_applicant_review/1 deletes the applicant_review" do
+      applicant_review = applicant_review_fixture()
+      assert {:ok, %ApplicantReview{}} = Applicants.delete_applicant_review(applicant_review)
+      assert_raise Ecto.NoResultsError, fn -> Applicants.get_applicant_review!(applicant_review.id) end
+    end
+
+    test "change_applicant_review/1 returns a applicant_review changeset" do
+      applicant_review = applicant_review_fixture()
+      assert %Ecto.Changeset{} = Applicants.change_applicant_review(applicant_review)
+    end
+  end
 end

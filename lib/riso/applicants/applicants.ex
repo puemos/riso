@@ -5,7 +5,7 @@ defmodule Riso.Applicants do
 
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Applicants.Applicant
+  alias Riso.Applicants.{Applicant, ApplicantReview}
   alias Riso.Positions.{Position, PositionStage}
 
   def data() do
@@ -15,7 +15,6 @@ defmodule Riso.Applicants do
   def query(queryable, _) do
     queryable
   end
-
 
   def set_position_stage(%Applicant{} = applicant, %PositionStage{} = position_stage) do
     applicant
@@ -49,5 +48,31 @@ defmodule Riso.Applicants do
 
   def change_applicant(%Applicant{} = applicant) do
     Applicant.changeset(applicant, %{})
+  end
+
+  def list_applicants_reviews do
+    Repo.all(ApplicantReview)
+  end
+
+  def get_applicant_review(id), do: Repo.get(ApplicantReview, id)
+
+  def create_applicant_review(attrs \\ %{}) do
+    %ApplicantReview{}
+    |> ApplicantReview.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def update_applicant_review(%ApplicantReview{} = applicant_review, attrs) do
+    applicant_review
+    |> ApplicantReview.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def delete_applicant_review(%ApplicantReview{} = applicant_review) do
+    Repo.delete(applicant_review)
+  end
+
+  def change_applicant_review(%ApplicantReview{} = applicant_review) do
+    ApplicantReview.changeset(applicant_review, %{})
   end
 end

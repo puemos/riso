@@ -26,6 +26,11 @@ defmodule Seeds do
     applicant
   end
 
+  def create_applicant_review(args) do
+    {:ok, applicant_review} = Applicants.create_applicant_review(args)
+    applicant_review
+  end
+
   def create_position(title) do
     {:ok, position} =
       Positions.create_position(%{
@@ -144,6 +149,20 @@ defmodule Seeds do
     Applicants.set_position_stage(elem(applicants, 1), Enum.at(positions.be.stages, 0))
     Applicants.set_position_stage(elem(applicants, 2), Enum.at(positions.be.stages, 1))
 
+    create_applicant_review(%{
+      applicant_id: elem(applicants, 2).id,
+      position_id: positions.be.id,
+      kpi_id: kpis.coding.id,
+      score: 2
+    })
+
+    create_applicant_review(%{
+      applicant_id: elem(applicants, 2).id,
+      position_id: positions.be.id,
+      kpi_id: kpis.algo.id,
+      score: 7
+    })
+
     # Postion System admin
     Positions.add_member(positions.sys_admin, users.user_1, "editor")
     Positions.add_kpi(positions.sys_admin, kpis.coding)
@@ -151,6 +170,20 @@ defmodule Seeds do
     Positions.add_kpi(positions.sys_admin, kpis.networking)
     Applicants.set_position_stage(elem(applicants, 3), Enum.at(positions.sys_admin.stages, 0))
     Applicants.set_position_stage(elem(applicants, 4), Enum.at(positions.sys_admin.stages, 1))
+
+    create_applicant_review(%{
+      applicant_id: elem(applicants, 4).id,
+      position_id: positions.sys_admin.id,
+      kpi_id: kpis.coding.id,
+      score: 2
+    })
+
+    create_applicant_review(%{
+      applicant_id: elem(applicants, 4).id,
+      position_id: positions.sys_admin.id,
+      kpi_id: kpis.networking.id,
+      score: 7
+    })
 
     # Postion Frontend
     Positions.add_member(positions.fe, users.user_2, "editor")

@@ -5,7 +5,7 @@ defmodule Riso.Repo.Migrations.CreateKpis do
     create table(:kpis) do
       add :title, :string
 
-      timestamps()
+      timestamps(type: :utc_datetime)
     end
 
   end
