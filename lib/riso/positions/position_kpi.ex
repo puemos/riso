@@ -15,6 +15,7 @@ defmodule Riso.Positions.PositionKpi do
   def changeset(position_kpi, attrs) do
     position_kpi
     |> cast(attrs, [:kpi_id, :position_id])
+    |> unique_constraint(:kpis, name: :positions_kpis_position_id_kpi_id_index)
     |> validate_required([:kpi_id, :position_id])
   end
 end

@@ -5,16 +5,13 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
   alias RisoWeb.Schema.Middleware
   alias Riso.Positions
+  alias Riso.Kpis
 
   input_object :position_input do
     field(:title, :string)
   end
 
   input_object :position_stage_input do
-    field(:title, :string)
-  end
-
-  input_object :position_kpi_input do
     field(:title, :string)
   end
 
@@ -181,20 +178,17 @@ defmodule RisoWeb.Mutations.PositionsMutations do
     end
 
     @desc "Add a kpi to a position"
-    field :create_position_kpi, :position_kpi_payload do
-      arg(:input, :position_kpi_input)
+    field :add_position_kpi, :position_payload do
       arg(:position_id, non_null(:id))
+      arg(:kpi_id, non_null(:id))
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        position_kpi_args =
-          %{position_id: args[:position_id]}
-          |> Enum.into(args[:input])
-
-        with position when not is_nil(position) <- Positions.get_position(args[:position_id]),
+        with kpi when not is_nil(kpi) <- Kpis.get_kpi(args[:kpi_id]),
+             position when not is_nil(position) <- Positions.get_position(args[:position_id]),
              true <- Positions.can_edit?(position, context[:current_user]),
-             {:ok, position_kpi} <- Positions.create_position_kpi(position_kpi_args) do
-          {:ok, position_kpi}
+             {:ok, _position_kpi} <- Positions.add_kpi(position, kpi) do
+          {:ok, position}
         else
           {:error, %Ecto.Changeset{} = changeset} ->
             {:ok, changeset}
@@ -211,19 +205,18 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       end)
     end
 
-    @desc "Update a position kpi"
-    field :update_position_kpi, :position_kpi_payload do
-      arg(:id, non_null(:id))
-      arg(:input, :position_kpi_input)
+    @desc "Remove a kpi from a position"
+    field :remove_position_kpi, :position_payload do
+      arg(:position_id, non_null(:id))
+      arg(:kpi_id, non_null(:id))
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        position_kpi_args = args[:input]
-
-        with position_kpi when not is_nil(position_kpi) <- Positions.get_position_kpi(args[:id]),
-             true <- Positions.can_edit_resource?(position_kpi, context[:current_user]),
-             {:ok, position_kpi} <- Positions.update_position_kpi(position_kpi, position_kpi_args) do
-          {:ok, position_kpi}
+        with kpi when not is_nil(kpi) <- Kpis.get_kpi(args[:kpi_id]),
+             position when not is_nil(position) <- Positions.get_position(args[:position_id]),
+             true <- Positions.can_edit?(position, context[:current_user]),
+             {1, nil} <- Positions.remove_kpi(position, kpi) do
+          {:ok, position}
         else
           {:error, %Ecto.Changeset{} = changeset} ->
             {:ok, changeset}
@@ -234,31 +227,8 @@ defmodule RisoWeb.Mutations.PositionsMutations do
           false ->
             {:error, "Unauthorize"}
 
-          nil ->
+          {0, _} ->
             {:error, "Not found"}
-        end
-      end)
-    end
-
-    @desc "Destroy a position kpi"
-    field :delete_position_kpi, :position_kpi_payload do
-      arg(:id, non_null(:id))
-      middleware(Middleware.Authorize)
-
-      resolve(fn args, %{context: context} ->
-        with position_kpi when not is_nil(position_kpi) <- Positions.get_position_kpi(args[:id]),
-             true <- Positions.can_edit_resource?(position_kpi, context[:current_user]),
-             {:ok, position_kpi} <- Positions.delete_position_kpi(position_kpi) do
-          {:ok, position_kpi}
-        else
-          {:error, %Ecto.Changeset{} = changeset} ->
-            {:ok, changeset}
-
-          {:error, msg} ->
-            {:ok, generic_message(msg)}
-
-          false ->
-            {:error, "Unauthorize"}
 
           nil ->
             {:error, "Not found"}
