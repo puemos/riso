@@ -7,6 +7,15 @@ defmodule Riso.Kpis do
   alias Riso.Repo
   alias Riso.Kpis.Kpi
 
+  def search(query, nil), do: query
+
+  def search(query, keywords) do
+    from(
+      p in query,
+      where: ilike(p.title, ^"%#{keywords}%")
+    )
+  end
+
   def data() do
     Dataloader.Ecto.new(Repo, query: &query/2)
   end

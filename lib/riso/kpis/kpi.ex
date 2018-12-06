@@ -2,11 +2,10 @@ defmodule Riso.Kpis.Kpi do
   use Ecto.Schema
   import Ecto.Changeset
 
-
   schema "kpis" do
     field :title, :string
 
-    timestamps()
+    timestamps(type: :utc_datetime)
   end
 
   @doc false

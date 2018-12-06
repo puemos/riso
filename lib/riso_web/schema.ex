@@ -10,9 +10,12 @@ defmodule RisoWeb.Schema do
   import_types(RisoWeb.Schema.PositionsTypes)
   import_types(RisoWeb.Schema.AccountsTypes)
   import_types(RisoWeb.Schema.ApplicantsTypes)
+  import_types(RisoWeb.Schema.KpisTypes)
   import_types(RisoWeb.Queries.AccountsQueries)
   import_types(RisoWeb.Queries.PositionsQueries)
+  import_types(RisoWeb.Queries.KpisQueries)
   import_types(RisoWeb.Mutations.AuthMutations)
+  import_types(RisoWeb.Mutations.KpisMutations)
   import_types(RisoWeb.Mutations.AccountsMutations)
   import_types(RisoWeb.Mutations.PositionsMutations)
   import_types(RisoWeb.Mutations.ApplicantsMutations)
@@ -21,14 +24,15 @@ defmodule RisoWeb.Schema do
   payload_object(:boolean_payload, :boolean)
   payload_object(:session_payload, :session)
   payload_object(:user_payload, :user)
-  payload_object(:position_stage_payload, :position_stage)
-  payload_object(:position_kpi_payload, :position_kpi)
-  payload_object(:position_payload, :position)
+  payload_object(:kpi_payload, :kpi)
   payload_object(:applicant_payload, :applicant)
+  payload_object(:position_payload, :position)
+  payload_object(:position_stage_payload, :position_stage)
 
   query do
     import_fields(:accounts_queries)
     import_fields(:positions_queries)
+    import_fields(:kpis_queries)
   end
 
   mutation do
@@ -36,6 +40,7 @@ defmodule RisoWeb.Schema do
     import_fields(:accounts_mutations)
     import_fields(:positions_mutations)
     import_fields(:applicants_mutations)
+    import_fields(:kpis_mutations)
   end
 
   def middleware(middleware, _field, %Absinthe.Type.Object{identifier: :mutation}) do
@@ -54,6 +59,7 @@ defmodule RisoWeb.Schema do
     Dataloader.new()
     |> Dataloader.add_source(Riso.Positions, Riso.Positions.data())
     |> Dataloader.add_source(Riso.Applicants, Riso.Applicants.data())
+    |> Dataloader.add_source(Riso.Kpis, Riso.Kpis.data())
   end
 
   def context(ctx) do
