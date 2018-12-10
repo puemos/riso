@@ -1,4 +1,3 @@
-Bonjour  <%=@user.name%>,
-
-Voici un nouveau code qui vous permettra de valider votre compte : <%=@user.confirmation_code%>.
-Attention, ce code expirera dans <%=Application.fetch_env!(:riso, :confirmation_code_expire_hours)%> heures.
+<%=@user.name%>
+<%=@user.confirmation_code%>
+<%=Application.fetch_env!(:riso, :confirmation_code_expire_hours)%>
