@@ -14,7 +14,12 @@ defmodule RisoWeb.Router do
     forward("/graphql", Absinthe.Plug, schema: RisoWeb.Schema)
 
     if Mix.env() == :dev do
-      forward("/graphiql", Absinthe.Plug.GraphiQL, schema: RisoWeb.Schema, socket: RisoWeb.UserSocket)
+      forward("/graphiql", Absinthe.Plug.GraphiQL,
+        schema: RisoWeb.Schema,
+        socket: RisoWeb.UserSocket,
+        interface: :playground
+      )
+
       forward("/emails", Bamboo.SentEmailViewerPlug)
     end
   end

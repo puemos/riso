@@ -9,6 +9,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
 
   input_object :applicant_input do
     field(:name, :string)
+    field(:position_stage_id, :id)
   end
 
   object :applicants_mutations do
@@ -32,7 +33,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
 
     @desc "Change applicant position stage"
     field :change_applicant_stage, :applicant_payload do
-      arg(:stage_id, :id)
+      arg(:position_stage_id, :id)
       arg(:applicant_id, :id)
       middleware(Middleware.Authorize)
 
@@ -40,7 +41,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
         with applicant when not is_nil(applicant) <-
                Applicants.get_applicant(args[:applicant_id]),
              position_stage when not is_nil(position_stage) <-
-               Positions.get_position_stage(args[:stage_id]),
+               Positions.get_position_stage(args[:position_stage_id]),
              true <- Positions.can_edit_resource?(position_stage, context[:current_user]),
              {:ok, applicant} <- Applicants.set_position_stage(applicant, position_stage) do
           {:ok, applicant}

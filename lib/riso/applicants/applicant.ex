@@ -16,6 +16,7 @@ defmodule Riso.Applicants.Applicant do
   def changeset(applicant, attrs) do
     applicant
     |> cast(attrs, [:name, :position_stage_id])
+    |> foreign_key_constraint(:stage, name: :applicants_position_stage_id_fkey)
     |> unique_constraint(:name)
     |> validate_required([:name])
   end
