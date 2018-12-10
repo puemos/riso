@@ -1,3 +1,5 @@
-<%=@user.name%>
-<%=@user.confirmation_code%>
-<%=Application.fetch_env!(:riso, :confirmation_code_expire_hours)%>
+name: <%=@user.name%>
+
+confirmation_code: <%=@user.confirmation_code%>
+
+confirmation_code_expire_hours: <%=Application.fetch_env!(:riso, :confirmation_code_expire_hours)%>

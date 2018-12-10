@@ -7,14 +7,20 @@ defmodule RisoWeb.Mutations.AuthMutations do
   alias RisoWeb.Email
   alias Riso.{Accounts, Confirmations, Mailer}
 
+  input_object :sign_in_input do
+    field(:email, :string)
+    field(:password, :string)
+  end
+
   object :auth_mutations do
     @desc "Sign in"
     field :sign_in, :session_payload do
-      arg(:email, :string)
-      arg(:password, :string)
+      arg(:input, :sign_in_input)
 
       resolve(fn args, %{context: context} ->
-        with {:ok, user} <- Accounts.authenticate(args[:email], args[:password]),
+        input = args[:input]
+
+        with {:ok, user} <- Accounts.authenticate(input[:email], input[:password]),
              true <- Confirmations.confirmed?(user),
              {:ok, token, _} <- Accounts.generate_access_token(user) do
           user |> Accounts.update_tracked_fields(context[:remote_ip])
