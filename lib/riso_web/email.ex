@@ -8,7 +8,7 @@ defmodule RisoWeb.Email do
     new_email()
     |> to(user.email)
     |> from(@noreply)
-    |> subject("Bienvenue sur Riso !")
+    |> subject("Welcome to Riso !")
     |> assign(:user, user)
     |> render(:welcome)
   end
@@ -17,7 +17,7 @@ defmodule RisoWeb.Email do
     new_email()
     |> to(user.email)
     |> from(@noreply)
-    |> subject("Nouveau code pour valider votre compte")
+    |> subject("Your new code to validate your account")
     |> assign(:user, user)
     |> render(:new_confirmation_code)
   end

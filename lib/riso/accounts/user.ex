@@ -3,6 +3,7 @@ defmodule Riso.Accounts.User do
   import Ecto.Changeset
   alias Riso.Accounts.User
   alias Riso.Positions.{Position, PositionMember}
+  alias Riso.Organizations.{Organization, OrganizationUser}
 
   schema "users" do
     field :email, :string
@@ -25,6 +26,7 @@ defmodule Riso.Accounts.User do
     field :confirmation_sent_at, :naive_datetime
 
     many_to_many :positions, Position, join_through: PositionMember
+    many_to_many :organizations, Organization, join_through: OrganizationUser
 
     timestamps(type: :utc_datetime)
   end
@@ -41,7 +43,13 @@ defmodule Riso.Accounts.User do
 
   def changeset(%User{} = user, attrs, :tracked_fields) do
     user
-    |> cast(attrs, [:current_sign_in_at, :last_sign_in_at, :current_sign_in_ip, :last_sign_in_ip, :sign_in_count])
+    |> cast(attrs, [
+      :current_sign_in_at,
+      :last_sign_in_at,
+      :current_sign_in_ip,
+      :last_sign_in_ip,
+      :sign_in_count
+    ])
   end
 
   def changeset(%User{} = user, attrs, :password) do

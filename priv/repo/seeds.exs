@@ -6,8 +6,15 @@ defmodule Seeds do
   alias Riso.Accounts
   alias Riso.Accounts.User
   alias Riso.Positions
-  alias Riso.Kpis
   alias Riso.Positions.Position
+  alias Riso.Kpis
+  alias Riso.Organizations
+  alias Riso.Organizations.Organization
+
+  def create_organization(args) do
+    {:ok, organization} = Organizations.create_organization(args)
+    organization
+  end
 
   def create_kpi(args) do
     {:ok, kpi} = Kpis.create_kpi(args)
@@ -44,6 +51,18 @@ defmodule Seeds do
     Positions.get_position(position.id) |> Repo.preload(:stages)
   end
 
+  def seed_organizations() do
+    Organization |> Repo.delete_all()
+
+    pied_piper = create_organization(%{name: "Pied Piper"})
+    hooli = create_organization(%{name: "Hooli Corp."})
+
+    %{
+      pied_piper: pied_piper,
+      hooli: hooli
+    }
+  end
+
   def seed_positions() do
     Position |> Repo.delete_all()
 
@@ -77,16 +96,16 @@ defmodule Seeds do
     applicant_8 = create_applicant(%{name: Faker.Name.name()})
     applicant_9 = create_applicant(%{name: Faker.Name.name()})
 
-    {
-      applicant_1,
-      applicant_2,
-      applicant_3,
-      applicant_4,
-      applicant_5,
-      applicant_6,
-      applicant_7,
-      applicant_8,
-      applicant_9
+    %{
+      applicant_1: applicant_1,
+      applicant_2: applicant_2,
+      applicant_3: applicant_3,
+      applicant_4: applicant_4,
+      applicant_5: applicant_5,
+      applicant_6: applicant_6,
+      applicant_7: applicant_7,
+      applicant_8: applicant_8,
+      applicant_9: applicant_9
     }
   end
 
@@ -135,64 +154,72 @@ defmodule Seeds do
 
   def run do
     users = seed_users()
-    applicants = seed_applicants()
+    aplcs = seed_applicants()
     kpis = seed_kpis()
-    positions = seed_positions()
+    pos = seed_positions()
+    orgs = seed_organizations()
+
+    Organizations.create_organization_user(%{
+      user_id: users.user_1,
+      organization_id: orgs.pied_piper
+    })
+
+    Organizations.create_organization_user(%{user_id: users.user_2.id, organization_id: orgs.hooli.id})
 
     # Postion Backend
-    Positions.add_member(positions.be, users.user_1, "editor")
-    Positions.add_kpi(positions.be, kpis.coding)
-    Positions.add_kpi(positions.be, kpis.algo)
-    Positions.add_kpi(positions.be, kpis.problem)
-    Positions.add_kpi(positions.be, kpis.elixir)
-    Applicants.set_position_stage(elem(applicants, 0), Enum.at(positions.be.stages, 0))
-    Applicants.set_position_stage(elem(applicants, 1), Enum.at(positions.be.stages, 0))
-    Applicants.set_position_stage(elem(applicants, 2), Enum.at(positions.be.stages, 1))
+    Positions.add_member(pos.be, users.user_1, "editor")
+    Positions.add_kpi(pos.be, kpis.coding)
+    Positions.add_kpi(pos.be, kpis.algo)
+    Positions.add_kpi(pos.be, kpis.problem)
+    Positions.add_kpi(pos.be, kpis.elixir)
+    Applicants.set_position_stage(aplcs.applicant_1, Enum.at(pos.be.stages, 0))
+    Applicants.set_position_stage(aplcs.applicant_2, Enum.at(pos.be.stages, 0))
+    Applicants.set_position_stage(aplcs.applicant_3, Enum.at(pos.be.stages, 1))
 
     create_applicant_review(%{
-      applicant_id: elem(applicants, 2).id,
-      position_id: positions.be.id,
+      applicant_id: aplcs.applicant_2.id,
+      position_id: pos.be.id,
       kpi_id: kpis.coding.id,
       score: 2
     })
 
     create_applicant_review(%{
-      applicant_id: elem(applicants, 2).id,
-      position_id: positions.be.id,
+      applicant_id: aplcs.applicant_2.id,
+      position_id: pos.be.id,
       kpi_id: kpis.algo.id,
       score: 7
     })
 
     # Postion System admin
-    Positions.add_member(positions.sys_admin, users.user_1, "editor")
-    Positions.add_kpi(positions.sys_admin, kpis.coding)
-    Positions.add_kpi(positions.sys_admin, kpis.problem)
-    Positions.add_kpi(positions.sys_admin, kpis.networking)
-    Applicants.set_position_stage(elem(applicants, 3), Enum.at(positions.sys_admin.stages, 0))
-    Applicants.set_position_stage(elem(applicants, 4), Enum.at(positions.sys_admin.stages, 1))
+    Positions.add_member(pos.sys_admin, users.user_1, "editor")
+    Positions.add_kpi(pos.sys_admin, kpis.coding)
+    Positions.add_kpi(pos.sys_admin, kpis.problem)
+    Positions.add_kpi(pos.sys_admin, kpis.networking)
+    Applicants.set_position_stage(aplcs.applicant_4, Enum.at(pos.sys_admin.stages, 0))
+    Applicants.set_position_stage(aplcs.applicant_5, Enum.at(pos.sys_admin.stages, 1))
 
     create_applicant_review(%{
-      applicant_id: elem(applicants, 4).id,
-      position_id: positions.sys_admin.id,
+      applicant_id: aplcs.applicant_4.id,
+      position_id: pos.sys_admin.id,
       kpi_id: kpis.coding.id,
       score: 2
     })
 
     create_applicant_review(%{
-      applicant_id: elem(applicants, 4).id,
-      position_id: positions.sys_admin.id,
+      applicant_id: aplcs.applicant_4.id,
+      position_id: pos.sys_admin.id,
       kpi_id: kpis.networking.id,
       score: 7
     })
 
     # Postion Frontend
-    Positions.add_member(positions.fe, users.user_2, "editor")
-    Positions.add_kpi(positions.fe, kpis.coding)
-    Positions.add_kpi(positions.fe, kpis.algo)
-    Positions.add_kpi(positions.fe, kpis.problem)
-    Positions.add_kpi(positions.fe, kpis.javascript)
-    Applicants.set_position_stage(elem(applicants, 5), Enum.at(positions.fe.stages, 0))
-    Applicants.set_position_stage(elem(applicants, 6), Enum.at(positions.fe.stages, 1))
+    Positions.add_member(pos.fe, users.user_2, "editor")
+    Positions.add_kpi(pos.fe, kpis.coding)
+    Positions.add_kpi(pos.fe, kpis.algo)
+    Positions.add_kpi(pos.fe, kpis.problem)
+    Positions.add_kpi(pos.fe, kpis.javascript)
+    Applicants.set_position_stage(aplcs.applicant_6, Enum.at(pos.fe.stages, 0))
+    Applicants.set_position_stage(aplcs.applicant_7, Enum.at(pos.fe.stages, 1))
   end
 end
 
