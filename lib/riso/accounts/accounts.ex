@@ -3,6 +3,14 @@ defmodule Riso.Accounts do
   alias Riso.Repo
   alias Riso.Accounts.User
 
+  def data() do
+    Dataloader.Ecto.new(Repo, query: &query/2)
+  end
+
+  def query(queryable, _) do
+    queryable
+  end
+
   def create_user(attrs) do
     %User{}
     |> User.changeset(attrs, :password)
@@ -15,9 +23,15 @@ defmodule Riso.Accounts do
     |> Repo.update()
   end
 
-  def change_password(%User{} = user, %{password: password, password_confirmation: password_confirmation}) do
+  def change_password(%User{} = user, %{
+        password: password,
+        password_confirmation: password_confirmation
+      }) do
     user
-    |> User.changeset(%{password: password, password_confirmation: password_confirmation}, :password)
+    |> User.changeset(
+      %{password: password, password_confirmation: password_confirmation},
+      :password
+    )
     |> Repo.update()
   end
 
@@ -38,7 +52,9 @@ defmodule Riso.Accounts do
 
   @spec generate_token(User.t()) :: String.t()
   defp generate_token(user) do
-    Base.encode64(:erlang.md5("#{:os.system_time(:milli_seconds)}-#{user.id}-#{SecureRandom.hex()}"))
+    Base.encode64(
+      :erlang.md5("#{:os.system_time(:milli_seconds)}-#{user.id}-#{SecureRandom.hex()}")
+    )
   end
 
   @spec revoke_access_token(User.t()) :: {:ok, User.t()} | {:error, any()}

@@ -5,6 +5,14 @@ defmodule Riso.Positions do
   alias Riso.Positions.{Position, PositionMember, PositionStage, PositionKpi}
   alias Riso.Accounts.{User}
 
+  def data() do
+    Dataloader.Ecto.new(Repo, query: &query/2)
+  end
+
+  def query(queryable, _) do
+    queryable
+  end
+
   def search(query, nil), do: query
 
   def search(query, keywords) do
@@ -12,14 +20,6 @@ defmodule Riso.Positions do
       p in query,
       where: ilike(p.title, ^"%#{keywords}%")
     )
-  end
-
-  def data() do
-    Dataloader.Ecto.new(Repo, query: &query/2)
-  end
-
-  def query(queryable, _) do
-    queryable
   end
 
   def can_view?(%Position{} = position, %User{} = user) do

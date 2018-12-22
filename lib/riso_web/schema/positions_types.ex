@@ -16,8 +16,15 @@ defmodule RisoWeb.Schema.PositionsTypes do
   object :position_member do
     field(:id, :id)
     field(:user, :user, resolve: dataloader(Riso.Positions))
-    field(:role, :string)
+    field(:role, :position_memebr_role)
     field(:inserted_at, :datetime)
+  end
+
+  enum :position_memebr_role do
+    description("The position member role")
+
+    value(:editor, as: "editor", description: "Can edit and view the position")
+    value(:viewer, as: "viewer", description: "Can view the position")
   end
 
   @desc "A stage of a position"

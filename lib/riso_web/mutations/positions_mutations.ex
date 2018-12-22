@@ -15,6 +15,10 @@ defmodule RisoWeb.Mutations.PositionsMutations do
     field(:title, :string)
   end
 
+  input_object :position_member_input do
+    field(:role, :position_memebr_role)
+  end
+
   object :positions_mutations do
     @desc "Create a position"
     field :create_position, :position_payload do
@@ -89,7 +93,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
     end
 
     @desc "Add a stage to a position"
-    field :create_position_stage, :position_stage_payload do
+    field :add_position_stage, :position_stage_payload do
       arg(:input, :position_stage_input)
       arg(:position_id, non_null(:id))
       middleware(Middleware.Authorize)
@@ -229,6 +233,42 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
           {0, _} ->
             {:error, "Not found"}
+
+          nil ->
+            {:error, "Not found"}
+        end
+      end)
+    end
+
+    @desc "Add a member to a position"
+    field :add_position_member, :position_member_payload do
+      arg(:input, :position_member_input)
+      arg(:position_id, non_null(:id))
+      arg(:member_email, non_null(:string))
+      middleware(Middleware.Authorize)
+
+      resolve(fn args, %{context: context} ->
+        position_member_args = args[:input]
+
+        with position when not is_nil(position) <- Positions.get_position(args[:position_id]),
+             {:ok, user} when not is_nil(user) <-
+               Riso.Accounts.user_by_email(args[:member_email]),
+             true <- Positions.can_edit?(position, context[:current_user]),
+             {:ok, position_member} <-
+               Positions.add_member(position, user, position_member_args[:role]) do
+          {:ok, position_member}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
+
+          {:error, %Ecto.Query{}} ->
+            {:ok, generic_message("The email #{args[:member_email]} was not found")}
+
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "Unauthorize"}
 
           nil ->
             {:error, "Not found"}

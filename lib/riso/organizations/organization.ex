@@ -2,11 +2,11 @@ defmodule Riso.Organizations.Organization do
   use Ecto.Schema
   import Ecto.Changeset
   alias Riso.Accounts.User
-  alias Riso.Organizations.OrganizationUser
+  alias Riso.Organizations.OrganizationMember
 
   schema "organizations" do
     field :name, :string
-    many_to_many :members, User, join_through: OrganizationUser
+    has_many :members, OrganizationMember
 
     timestamps(type: :utc_datetime)
   end

@@ -7,194 +7,104 @@ defmodule Riso.Organizations do
   alias Riso.Repo
 
   alias Riso.Organizations.Organization
+  alias Riso.Organizations.OrganizationMember
+  alias Riso.Accounts.User
 
-  @doc """
-  Returns the list of organizations.
+  def data() do
+    Dataloader.Ecto.new(Repo, query: &query/2)
+  end
 
-  ## Examples
+  def query(queryable, _) do
+    queryable
+  end
 
-      iex> list_organizations()
-      [%Organization{}, ...]
+  def search(query, nil), do: query
 
-  """
+  def search(query, keywords) do
+    from(
+      p in query,
+      where: ilike(p.title, ^"%#{keywords}%")
+    )
+  end
+
   def list_organizations do
     Repo.all(Organization)
   end
 
-  @doc """
-  Gets a single organization.
+  def list_organizations_by_user(%User{} = user) do
+    Organization
+    |> join(:left, [p], m in assoc(p, :members))
+    |> where([p, m], m.user_id == ^user.id)
+  end
 
-  Raises `Ecto.NoResultsError` if the Organization does not exist.
+  def get_organization(id), do: Repo.get(Organization, id)
 
-  ## Examples
-
-      iex> get_organization!(123)
-      %Organization{}
-
-      iex> get_organization!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_organization!(id), do: Repo.get!(Organization, id)
-
-  @doc """
-  Creates a organization.
-
-  ## Examples
-
-      iex> create_organization(%{field: value})
-      {:ok, %Organization{}}
-
-      iex> create_organization(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_organization(attrs \\ %{}) do
     %Organization{}
     |> Organization.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a organization.
-
-  ## Examples
-
-      iex> update_organization(organization, %{field: new_value})
-      {:ok, %Organization{}}
-
-      iex> update_organization(organization, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_organization(%Organization{} = organization, attrs) do
     organization
     |> Organization.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a Organization.
-
-  ## Examples
-
-      iex> delete_organization(organization)
-      {:ok, %Organization{}}
-
-      iex> delete_organization(organization)
-      {:error, %Ecto.Changeset{}}
-
-  """
   def delete_organization(%Organization{} = organization) do
     Repo.delete(organization)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking organization changes.
-
-  ## Examples
-
-      iex> change_organization(organization)
-      %Ecto.Changeset{source: %Organization{}}
-
-  """
   def change_organization(%Organization{} = organization) do
     Organization.changeset(organization, %{})
   end
 
-  alias Riso.Organizations.OrganizationUser
-
-  @doc """
-  Returns the list of organizations_users.
-
-  ## Examples
-
-      iex> list_organizations_users()
-      [%OrganizationUser{}, ...]
-
-  """
   def list_organizations_users do
-    Repo.all(OrganizationUser)
+    Repo.all(OrganizationMember)
   end
 
-  @doc """
-  Gets a single organization_user.
+  def get_organization_member(id), do: Repo.get(OrganizationMember, id)
 
-  Raises `Ecto.NoResultsError` if the Organization user does not exist.
-
-  ## Examples
-
-      iex> get_organization_user!(123)
-      %OrganizationUser{}
-
-      iex> get_organization_user!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_organization_user!(id), do: Repo.get!(OrganizationUser, id)
-
-  @doc """
-  Creates a organization_user.
-
-  ## Examples
-
-      iex> create_organization_user(%{field: value})
-      {:ok, %OrganizationUser{}}
-
-      iex> create_organization_user(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def create_organization_user(attrs \\ %{}) do
-    %OrganizationUser{}
-    |> OrganizationUser.changeset(attrs)
+  def create_organization_member(attrs \\ %{}) do
+    %OrganizationMember{}
+    |> OrganizationMember.changeset(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a organization_user.
-
-  ## Examples
-
-      iex> update_organization_user(organization_user, %{field: new_value})
-      {:ok, %OrganizationUser{}}
-
-      iex> update_organization_user(organization_user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_organization_user(%OrganizationUser{} = organization_user, attrs) do
-    organization_user
-    |> OrganizationUser.changeset(attrs)
+  def update_organization_member(%OrganizationMember{} = organization_member, attrs) do
+    organization_member
+    |> OrganizationMember.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Deletes a OrganizationUser.
-
-  ## Examples
-
-      iex> delete_organization_user(organization_user)
-      {:ok, %OrganizationUser{}}
-
-      iex> delete_organization_user(organization_user)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_organization_user(%OrganizationUser{} = organization_user) do
-    Repo.delete(organization_user)
+  def delete_organization_member(%OrganizationMember{} = organization_member) do
+    Repo.delete(organization_member)
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking organization_user changes.
+  def change_organization_member(%OrganizationMember{} = organization_member) do
+    OrganizationMember.changeset(organization_member, %{})
+  end
 
-  ## Examples
+  def can_view?(%Organization{} = organization, %User{} = user) do
+    roles = get_member_roles(user, organization)
+    Enum.member?(roles, "viewer") or Enum.member?(roles, "editor")
+  end
 
-      iex> change_organization_user(organization_user)
-      %Ecto.Changeset{source: %OrganizationUser{}}
+  def can_edit?(%Organization{} = organization, %User{} = user) do
+    roles = get_member_roles(user, organization)
+    Enum.member?(roles, "editor")
+  end
 
-  """
-  def change_organization_user(%OrganizationUser{} = organization_user) do
-    OrganizationUser.changeset(organization_user, %{})
+  def add_member(%Organization{} = organization, %User{} = user, role \\ "viewer") do
+    create_organization_member(%{role: role, user_id: user.id, organization_id: organization.id})
+  end
+
+  defp get_member_roles(%User{} = user, %Organization{} = organization) do
+    from(
+      cm in OrganizationMember,
+      where: cm.organization_id == ^organization.id and cm.user_id == ^user.id
+    )
+    |> Repo.all()
+    |> Enum.map(fn m -> m.role end)
   end
 end

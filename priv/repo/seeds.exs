@@ -159,12 +159,8 @@ defmodule Seeds do
     pos = seed_positions()
     orgs = seed_organizations()
 
-    Organizations.create_organization_user(%{
-      user_id: users.user_1,
-      organization_id: orgs.pied_piper
-    })
-
-    Organizations.create_organization_user(%{user_id: users.user_2.id, organization_id: orgs.hooli.id})
+    Organizations.add_member(orgs.pied_piper, users.user_1, "editor")
+    Organizations.add_member(orgs.hooli, users.user_2, "editor")
 
     # Postion Backend
     Positions.add_member(pos.be, users.user_1, "editor")
