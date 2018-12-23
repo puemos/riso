@@ -98,7 +98,7 @@ defmodule RisoWeb.Mutations.OrganizationsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn args, %{context: context} ->
-        organization_member_args = args[:input]
+        params = args[:input]
 
         with organization when not is_nil(organization) <-
                Organizations.get_organization(args[:organization_id]),
@@ -106,7 +106,7 @@ defmodule RisoWeb.Mutations.OrganizationsMutations do
                Riso.Accounts.user_by_email(args[:member_email]),
              true <- Organizations.can_edit?(organization, context[:current_user]),
              {:ok, organization_member} <-
-               Organizations.add_member(organization, user, organization_member_args[:role]) do
+               Organizations.add_member(organization, user, params[:role]) do
           {:ok, organization_member}
         else
           {:error, %Ecto.Changeset{} = changeset} ->

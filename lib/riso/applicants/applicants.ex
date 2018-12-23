@@ -16,14 +16,6 @@ defmodule Riso.Applicants do
     queryable
   end
 
-  def set_position_stage(%Applicant{} = applicant, %PositionStage{} = position_stage) do
-    applicant
-    |> Repo.preload(:stage)
-    |> Riso.Applicants.change_applicant()
-    |> Ecto.Changeset.put_assoc(:stage, position_stage)
-    |> Repo.update()
-  end
-
   def list_applicants do
     Repo.all(Applicant)
   end
@@ -48,6 +40,11 @@ defmodule Riso.Applicants do
 
   def change_applicant(%Applicant{} = applicant) do
     Applicant.changeset(applicant, %{})
+  end
+
+  def set_position_stage(%Applicant{} = applicant, %PositionStage{} = position_stage) do
+    applicant
+    |> update_applicant(%{position_stage_id: position_stage.id})
   end
 
   def list_applicants_reviews do

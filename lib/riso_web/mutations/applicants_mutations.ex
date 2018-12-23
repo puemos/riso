@@ -12,6 +12,13 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
     field(:position_stage_id, non_null(:id))
   end
 
+  input_object :applicant_review_input do
+    field(:score, :integer)
+    field(:kpi_id, non_null(:id))
+    field(:position_id, non_null(:id))
+    field(:applicant_id, non_null(:id))
+  end
+
   object :applicants_mutations do
     @desc "Create an applicant"
     field :create_applicant, :applicant_payload do
@@ -27,6 +34,34 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
 
           {:error, msg} ->
             {:ok, generic_message(msg)}
+        end
+      end)
+    end
+
+    @desc "Add an applicant review for a KPI"
+    field :add_applicant_review, :applicant_payload do
+      arg(:input, :applicant_review_input)
+      middleware(Middleware.Authorize)
+
+      resolve(fn %{input: params}, %{context: context} ->
+        with applicant when not is_nil(applicant) <-
+               Applicants.get_applicant(params[:applicant_id]),
+             position when not is_nil(position) <- Positions.get_position(params[:position_id]),
+             true <- Positions.can_edit?(position, context[:current_user]),
+             {:ok, applicant} <- Applicants.create_applicant_review(params) do
+          {:ok, applicant}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
+
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "Unauthorize"}
+
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
