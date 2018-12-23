@@ -116,7 +116,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
           %{position_id: args[:position_id]}
           |> Enum.into(args[:input])
 
-        with position when not is_nil(position) <- Positions.get_position(args[:id]),
+        with position when not is_nil(position) <- Positions.get_position(args[:position_id]),
              true <- Positions.can_edit?(position, context[:current_user]),
              {:ok, position_stage} <- Positions.create_position_stage(position_stage_args) do
           {:ok, position_stage}

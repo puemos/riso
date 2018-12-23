@@ -224,6 +224,8 @@ defmodule Seeds do
     Positions.add_kpi(pos.fe, kpis.javascript)
     Applicants.set_position_stage(aplcs.applicant_6, Enum.at(pos.fe.stages, 0))
     Applicants.set_position_stage(aplcs.applicant_7, Enum.at(pos.fe.stages, 1))
+    Applicants.set_position_stage(aplcs.applicant_8, Enum.at(pos.fe.stages, 1))
+    Applicants.set_position_stage(aplcs.applicant_9, Enum.at(pos.fe.stages, 1))
   end
 end
 
