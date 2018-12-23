@@ -115,7 +115,7 @@ defmodule RisoWeb.Mutations.OrganizationsMutations do
           {:error, %Ecto.Query{}} ->
             {:ok, generic_message("The email #{args[:member_email]} was not found")}
 
-          {:error, msg} ->
+          {:error, msg} when is_binary(msg) ->
             {:ok, generic_message(msg)}
 
           false ->
@@ -123,6 +123,9 @@ defmodule RisoWeb.Mutations.OrganizationsMutations do
 
           nil ->
             {:error, "Not found"}
+
+          _ ->
+            {:ok, generic_message("Ops, error")}
         end
       end)
     end

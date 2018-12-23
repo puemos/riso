@@ -2,6 +2,7 @@ defmodule Riso.Positions.Position do
   use Ecto.Schema
   import Ecto.Changeset
   alias Riso.Kpis.Kpi
+  alias Riso.Organizations.Organization
   alias Riso.Positions.{PositionMember, PositionStage, PositionKpi}
 
   @options %{}
@@ -12,6 +13,7 @@ defmodule Riso.Positions.Position do
 
     has_many :stages, PositionStage
     has_many :members, PositionMember
+    belongs_to :organization, Organization
     many_to_many :kpis, Kpi, join_through: PositionKpi
 
     timestamps(type: :utc_datetime)
@@ -23,7 +25,7 @@ defmodule Riso.Positions.Position do
   @doc false
   def changeset(position, attrs) do
     position
-    |> cast(attrs, [:title])
+    |> cast(attrs, [:title, :organization_id])
     |> validate_required([:title])
   end
 end

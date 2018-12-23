@@ -6,9 +6,11 @@ defmodule RisoWeb.Mutations.PositionsMutations do
   alias RisoWeb.Schema.Middleware
   alias Riso.Positions
   alias Riso.Kpis
+  alias Riso.Repo
 
   input_object :position_input do
     field(:title, :string)
+    field(:organization_id, :id)
   end
 
   input_object :position_stage_input do
@@ -26,8 +28,13 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn %{input: params}, %{context: context} ->
-        with {:ok, position} <- Positions.create_position(params),
-             Positions.add_member(position, context[:current_user], "editor") do
+        current_user = context[:current_user]
+
+        with {:ok, organization} <- Riso.Organizations.get_organization(params[:organization_id]),
+             true <- Riso.Organizations.is_member?(organization, current_user),
+             params_with_organization <- Map.merge(params, %{organization_id: organization.id}),
+             {:ok, position} <- Positions.create_position(params_with_organization),
+             Positions.add_member(position, current_user, "editor") do
           {:ok, position}
         else
           {:error, %Ecto.Changeset{} = changeset} ->
@@ -35,6 +42,12 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
           {:error, msg} ->
             {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "Unauthorize"}
+
+          nil ->
+            {:error, "Not found"}
         end
       end)
     end
@@ -250,9 +263,11 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       resolve(fn args, %{context: context} ->
         position_member_args = args[:input]
 
-        with position when not is_nil(position) <- Positions.get_position(args[:position_id]),
+        with position when not is_nil(position) <-
+               Positions.get_position(args[:position_id]) |> Repo.preload(:organization),
              {:ok, user} when not is_nil(user) <-
                Riso.Accounts.user_by_email(args[:member_email]),
+             true <- Riso.Organizations.is_member?(position.organization, user),
              true <- Positions.can_edit?(position, context[:current_user]),
              {:ok, position_member} <-
                Positions.add_member(position, user, position_member_args[:role]) do
@@ -264,7 +279,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
           {:error, %Ecto.Query{}} ->
             {:ok, generic_message("The email #{args[:member_email]} was not found")}
 
-          {:error, msg} ->
+          {:error, msg} when is_binary(msg) ->
             {:ok, generic_message(msg)}
 
           false ->
@@ -272,6 +287,9 @@ defmodule RisoWeb.Mutations.PositionsMutations do
 
           nil ->
             {:error, "Not found"}
+
+          _ ->
+            {:ok, generic_message("Ops, error")}
         end
       end)
     end

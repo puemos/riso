@@ -3,7 +3,7 @@ defmodule Riso.Accounts.User do
   import Ecto.Changeset
   alias Riso.Accounts.User
   alias Riso.Positions.{Position, PositionMember}
-  alias Riso.Organizations.{Organization, OrganizationUser}
+  alias Riso.Organizations.{Organization, OrganizationMember}
 
   schema "users" do
     field :email, :string
@@ -26,7 +26,7 @@ defmodule Riso.Accounts.User do
     field :confirmation_sent_at, :naive_datetime
 
     many_to_many :positions, Position, join_through: PositionMember
-    many_to_many :organizations, Organization, join_through: OrganizationUser
+    many_to_many :organizations, Organization, join_through: OrganizationMember
 
     timestamps(type: :utc_datetime)
   end

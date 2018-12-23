@@ -3,10 +3,12 @@ defmodule Riso.Organizations.Organization do
   import Ecto.Changeset
   alias Riso.Accounts.User
   alias Riso.Organizations.OrganizationMember
+  alias Riso.Positions.Position
 
   schema "organizations" do
     field :name, :string
     has_many :members, OrganizationMember
+    has_many :positions, Position
 
     timestamps(type: :utc_datetime)
   end

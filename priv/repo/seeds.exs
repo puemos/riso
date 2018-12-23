@@ -38,11 +38,8 @@ defmodule Seeds do
     applicant_review
   end
 
-  def create_position(title) do
-    {:ok, position} =
-      Positions.create_position(%{
-        title: title
-      })
+  def create_position(args) do
+    {:ok, position} = Positions.create_position(args)
 
     Positions.create_position_stage(%{position_id: position.id, title: "Homework"})
     Positions.create_position_stage(%{position_id: position.id, title: "HR interview"})
@@ -63,15 +60,16 @@ defmodule Seeds do
     }
   end
 
-  def seed_positions() do
+  def seed_positions(orgs) do
     Position |> Repo.delete_all()
 
-    be = create_position("Back-end developer")
-    devops = create_position("Devops developer")
-    fe = create_position("Front-end developer")
-    ml = create_position("ML developer")
-    cto = create_position("CTO")
-    sys_admin = create_position("System admin")
+    be = create_position(%{title: "Back-end developer", organization_id: orgs.hooli.id})
+    devops = create_position(%{title: "Devops developer", organization_id: orgs.hooli.id})
+    fe = create_position(%{title: "Front-end developer", organization_id: orgs.hooli.id})
+    ml = create_position(%{title: "ML developer", organization_id: orgs.hooli.id})
+
+    cto = create_position(%{title: "CTO", organization_id: orgs.pied_piper.id})
+    sys_admin = create_position(%{title: "System admin", organization_id: orgs.pied_piper.id})
 
     %{
       be: be,
@@ -112,14 +110,6 @@ defmodule Seeds do
   def seed_users do
     User |> Repo.delete_all()
 
-    user_2 =
-      create_user(%{
-        name: "user_2",
-        email: "user_2@riso.com",
-        password: "password",
-        password_confirmation: "password"
-      })
-
     user_1 =
       create_user(%{
         name: "user_1",
@@ -128,9 +118,26 @@ defmodule Seeds do
         password_confirmation: "password"
       })
 
+    user_2 =
+      create_user(%{
+        name: "user_2",
+        email: "user_2@riso.com",
+        password: "password",
+        password_confirmation: "password"
+      })
+
+    user_3 =
+      create_user(%{
+        name: "user_3",
+        email: "user_3@riso.com",
+        password: "password",
+        password_confirmation: "password"
+      })
+
     %{
       user_1: user_1,
-      user_2: user_2
+      user_2: user_2,
+      user_3: user_3
     }
   end
 
@@ -156,14 +163,15 @@ defmodule Seeds do
     users = seed_users()
     aplcs = seed_applicants()
     kpis = seed_kpis()
-    pos = seed_positions()
     orgs = seed_organizations()
+    pos = seed_positions(orgs)
 
     Organizations.add_member(orgs.pied_piper, users.user_1, "editor")
     Organizations.add_member(orgs.hooli, users.user_2, "editor")
+    Organizations.add_member(orgs.hooli, users.user_3, "viewer")
 
-    # Postion Backend
-    Positions.add_member(pos.be, users.user_1, "editor")
+    # Postion Backend (hooli)
+    Positions.add_member(pos.be, users.user_2, "editor")
     Positions.add_kpi(pos.be, kpis.coding)
     Positions.add_kpi(pos.be, kpis.algo)
     Positions.add_kpi(pos.be, kpis.problem)
@@ -186,7 +194,7 @@ defmodule Seeds do
       score: 7
     })
 
-    # Postion System admin
+    # Postion System admin (pied piper)
     Positions.add_member(pos.sys_admin, users.user_1, "editor")
     Positions.add_kpi(pos.sys_admin, kpis.coding)
     Positions.add_kpi(pos.sys_admin, kpis.problem)
@@ -208,7 +216,7 @@ defmodule Seeds do
       score: 7
     })
 
-    # Postion Frontend
+    # Postion Frontend (hooli)
     Positions.add_member(pos.fe, users.user_2, "editor")
     Positions.add_kpi(pos.fe, kpis.coding)
     Positions.add_kpi(pos.fe, kpis.algo)

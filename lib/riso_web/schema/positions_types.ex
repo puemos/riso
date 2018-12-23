@@ -7,6 +7,7 @@ defmodule RisoWeb.Schema.PositionsTypes do
     field(:id, :id)
     field(:title, :string)
     field(:inserted_at, :datetime)
+    field(:organization, :organization, resolve: dataloader(Riso.Organizations))
     field(:members, list_of(:position_member), resolve: dataloader(Riso.Positions))
     field(:stages, list_of(:position_stage), resolve: dataloader(Riso.Positions))
     field(:kpis, list_of(:kpi), resolve: dataloader(Riso.Kpis))

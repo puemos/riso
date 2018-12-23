@@ -22,8 +22,8 @@ defmodule Riso.Organizations do
 
   def search(query, keywords) do
     from(
-      p in query,
-      where: ilike(p.title, ^"%#{keywords}%")
+      o in query,
+      where: ilike(o.title, ^"%#{keywords}%")
     )
   end
 
@@ -33,8 +33,9 @@ defmodule Riso.Organizations do
 
   def list_organizations_by_user(%User{} = user) do
     Organization
-    |> join(:left, [p], m in assoc(p, :members))
-    |> where([p, m], m.user_id == ^user.id)
+    |> join(:left, [o], m in assoc(o, :members))
+    |> where([o, m], m.user_id == ^user.id)
+    |> group_by([o, m], [m.user_id, o.id])
   end
 
   def get_organization(id), do: Repo.get(Organization, id)
@@ -83,6 +84,21 @@ defmodule Riso.Organizations do
 
   def change_organization_member(%OrganizationMember{} = organization_member) do
     OrganizationMember.changeset(organization_member, %{})
+  end
+
+  def is_member?(%Organization{} = organization, %User{} = user) do
+    query =
+      from(
+        cm in OrganizationMember,
+        where: cm.organization_id == ^organization.id and cm.user_id == ^user.id
+      )
+
+    IO.inspect(Repo.fetch(query))
+
+    case Repo.fetch(query) do
+      {:ok, _} -> true
+      _ -> false
+    end
   end
 
   def can_view?(%Organization{} = organization, %User{} = user) do

@@ -8,6 +8,7 @@ defmodule RisoWeb.Schema.OrganizationsTypes do
     field(:name, :string)
     field(:inserted_at, :datetime)
     field(:members, list_of(:organization_member), resolve: dataloader(Riso.Accounts))
+    field(:positions, list_of(:position), resolve: dataloader(Riso.Positions))
   end
 
   @desc "A memebr of a organization"

@@ -54,8 +54,11 @@ defmodule Riso.Positions do
     Position
     |> join(:left, [p], m in assoc(p, :members))
     |> where([p, m], m.user_id == ^user.id)
+    |> group_by([p, m], [m.user_id, p.id])
+
   end
 
+  @spec get_position(any()) :: Position.t() | nil
   def get_position(id) do
     Position
     |> Repo.get(id)
