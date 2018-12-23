@@ -9,7 +9,7 @@
 /test/screenshots
 /*.ez
 /.elixir_ls
-.env
+/.env
 .DS_Store
 
 # dependencies
