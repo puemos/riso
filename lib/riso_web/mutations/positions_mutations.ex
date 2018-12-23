@@ -30,7 +30,7 @@ defmodule RisoWeb.Mutations.PositionsMutations do
       resolve(fn %{input: params}, %{context: context} ->
         current_user = context[:current_user]
 
-        with {:ok, organization} <- Riso.Organizations.get_organization(params[:organization_id]),
+        with organization <- Riso.Organizations.get_organization(params[:organization_id]),
              true <- Riso.Organizations.is_member?(organization, current_user),
              params_with_organization <- Map.merge(params, %{organization_id: organization.id}),
              {:ok, position} <- Positions.create_position(params_with_organization),
