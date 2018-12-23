@@ -9,7 +9,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
 
   input_object :applicant_input do
     field(:name, :string)
-    field(:position_stage_id, :id)
+    field(:position_stage_id, non_null(:id))
   end
 
   object :applicants_mutations do
