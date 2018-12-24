@@ -120,3 +120,21 @@ export type SignInResult = {
 
   token: Maybe<string>;
 };
+
+export type PositionsVariables = {
+  keywords?: Maybe<string>;
+};
+
+export type PositionsQuery = {
+  __typename?: "Query";
+
+  positions: Maybe<PositionsPositions[]>;
+};
+
+export type PositionsPositions = {
+  __typename?: "Position";
+
+  id: Maybe<string>;
+
+  title: Maybe<string>;
+};
