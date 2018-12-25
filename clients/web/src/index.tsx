@@ -2,19 +2,21 @@ import React from "react";
 import { ApolloProvider } from "react-apollo";
 import { ApolloProvider as ApolloProviderHooks } from "react-apollo-hooks";
 import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
 import { client } from "./apolloClient";
-import LoginForm from "./components/LoginForm";
+import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import PositionList from "./components/PositionsList";
+import store from "./store/store";
 
-const App = () => (
+ReactDOM.render(
   <ApolloProvider client={client}>
     <ApolloProviderHooks client={client}>
-      <LoginForm />
-      <PositionList />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </ApolloProviderHooks>
-  </ApolloProvider>
+  </ApolloProvider>,
+  document.getElementById("root")
 );
-ReactDOM.render(<App />, document.getElementById("root"));
 
 serviceWorker.unregister();

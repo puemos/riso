@@ -2,7 +2,11 @@ import { ErrorMessage, Field, Form, Formik } from "formik";
 import gql from "graphql-tag";
 import React from "react";
 import { useMutation } from "react-apollo-hooks";
-import { SignInMutation, SignInVariables } from "../generated/types";
+import { connect } from "react-redux";
+import { SignInMutation, SignInVariables } from "../../../generated/types";
+import { getIsAuthenticated } from "../selectors";
+import { AuthActions } from "../actions";
+import { RootState } from "../../../store/root-reducer";
 
 const SIGNIN_MUTATION = gql`
   mutation signIn($input: SignInInput!) {
@@ -13,7 +17,11 @@ const SIGNIN_MUTATION = gql`
     }
   }
 `;
-
+type Props = {
+  isAuthenticated: boolean;
+  loggedIn: () => void;
+  loggedOut: () => void;
+};
 type LoginFormValues = {
   email: string;
   password: string;
@@ -21,7 +29,7 @@ type LoginFormValues = {
 
 class FormikLoginForm extends Formik<LoginFormValues> {}
 
-function LoginForm() {
+function LoginForm(props: Props) {
   const signIn = useMutation<SignInMutation, SignInVariables>(SIGNIN_MUTATION);
 
   return (
@@ -31,10 +39,11 @@ function LoginForm() {
         const { data } = await signIn({ variables: { input: values } });
         if (data!.signIn!.result) {
           localStorage.setItem("token", data!.signIn!.result!.token!);
+          props.loggedIn();
         } else {
           localStorage.removeItem("token");
+          props.loggedOut();
         }
-
         actions.setSubmitting(false);
       }}
     >
@@ -53,4 +62,14 @@ function LoginForm() {
   );
 }
 
-export default LoginForm;
+const mapStateToProps = (state: RootState) => ({
+  isAuthenticated: getIsAuthenticated(state.auth)
+});
+
+export default connect(
+  mapStateToProps,
+  {
+    loggedIn: AuthActions.loggedIn,
+    loggedOut: AuthActions.loggedOut
+  }
+)(LoginForm);

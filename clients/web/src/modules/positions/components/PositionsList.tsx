@@ -6,7 +6,7 @@ import {
   SignInVariables,
   PositionsQuery,
   PositionsVariables
-} from "../generated/types";
+} from "../../../generated/types";
 
 const POSITIONS_QUERY = gql`
   query positions($keywords: String) {
@@ -17,11 +17,12 @@ const POSITIONS_QUERY = gql`
   }
 `;
 
-function PositionList() {
+function PositionsList() {
   const { data, errors, loading } = useQuery<
     PositionsQuery,
     PositionsVariables
   >(POSITIONS_QUERY, { suspend: false });
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -38,4 +39,4 @@ function PositionList() {
   );
 }
 
-export default PositionList;
+export default PositionsList;
