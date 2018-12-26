@@ -1,9 +1,14 @@
+import { Router } from "@reach/router";
 import React from "react";
 import { connect } from "react-redux";
-import LoginForm from "./modules/auth/components/LoginForm";
-import PositionsList from "./modules/positions/components/PositionsList";
 import { getIsAuthenticated } from "./modules/auth/selectors";
 import { RootState } from "./store/root-reducer";
+import LoginView from "./views/LoginView";
+import PositionsView from "./views/PositionsView";
+
+const NotFound: React.SFC<{ default: boolean }> = () => (
+  <p>Sorry, nothing here</p>
+);
 
 type Props = {
   isAuthenticated: boolean;
@@ -12,12 +17,13 @@ type Props = {
 function App(props: Props) {
   const { isAuthenticated } = props;
   return (
-    <div>
-      {isAuthenticated.toString()}
-
-      <LoginForm />
-      {isAuthenticated && <PositionsList />}
-    </div>
+    <>
+      <Router>
+        <LoginView path="/login" />
+        {isAuthenticated && <PositionsView path="/positions" />}
+        <NotFound default />
+      </Router>
+    </>
   );
 }
 

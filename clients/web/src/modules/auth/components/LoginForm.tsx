@@ -7,6 +7,7 @@ import { SignInMutation, SignInVariables } from "../../../generated/types";
 import { getIsAuthenticated } from "../selectors";
 import { AuthActions } from "../actions";
 import { RootState } from "../../../store/root-reducer";
+import { navigate } from "@reach/router";
 
 const SIGNIN_MUTATION = gql`
   mutation signIn($input: SignInInput!) {
@@ -29,7 +30,7 @@ type LoginFormValues = {
 
 class FormikLoginForm extends Formik<LoginFormValues> {}
 
-function LoginForm(props: Props) {
+const LoginForm: React.SFC<Props> = React.memo(function(props) {
   const signIn = useMutation<SignInMutation, SignInVariables>(SIGNIN_MUTATION);
 
   return (
@@ -37,14 +38,15 @@ function LoginForm(props: Props) {
       initialValues={{ email: "", password: "" }}
       onSubmit={async (values, actions) => {
         const { data } = await signIn({ variables: { input: values } });
+        actions.setSubmitting(false);
         if (data!.signIn!.result) {
           localStorage.setItem("token", data!.signIn!.result!.token!);
           props.loggedIn();
+          navigate("/positions");
         } else {
           localStorage.removeItem("token");
           props.loggedOut();
         }
-        actions.setSubmitting(false);
       }}
     >
       {({ isSubmitting }) => (
@@ -60,7 +62,7 @@ function LoginForm(props: Props) {
       )}
     </FormikLoginForm>
   );
-}
+});
 
 const mapStateToProps = (state: RootState) => ({
   isAuthenticated: getIsAuthenticated(state.auth)
