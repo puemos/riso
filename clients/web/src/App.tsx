@@ -1,10 +1,11 @@
 import { Router } from "@reach/router";
 import React from "react";
 import { connect } from "react-redux";
-import { getIsAuthenticated } from "./modules/auth/selectors";
 import { RootState } from "./store/root-reducer";
 import LoginView from "./views/LoginView";
+import PositionBoardView from "./views/PositionBoardView";
 import PositionsView from "./views/PositionsView";
+import { getIsAuthenticated } from "./features/auth/selectors";
 
 const NotFound: React.SFC<{ default: boolean }> = () => (
   <p>Sorry, nothing here</p>
@@ -20,6 +21,7 @@ function App(props: Props) {
     <>
       <Router>
         <LoginView path="/login" />
+        {isAuthenticated && <PositionBoardView path="/position/:id" />}
         {isAuthenticated && <PositionsView path="/positions" />}
         <NotFound default />
       </Router>

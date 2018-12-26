@@ -121,6 +121,61 @@ export type SignInResult = {
   token: Maybe<string>;
 };
 
+export type GetPositionVariables = {
+  id: string;
+};
+
+export type GetPositionQuery = {
+  __typename?: "Query";
+
+  position: Maybe<GetPositionPosition>;
+};
+
+export type GetPositionPosition = {
+  __typename?: "Position";
+
+  id: Maybe<string>;
+
+  title: Maybe<string>;
+
+  stages: Maybe<GetPositionStages[]>;
+};
+
+export type GetPositionStages = {
+  __typename?: "PositionStage";
+
+  id: Maybe<string>;
+
+  title: Maybe<string>;
+
+  applicants: Maybe<GetPositionApplicants[]>;
+};
+
+export type GetPositionApplicants = {
+  __typename?: "Applicant";
+
+  id: Maybe<string>;
+
+  name: Maybe<string>;
+};
+
+export type ChangeApplicantStageVariables = {
+  applicantId: string;
+  positionStageId: string;
+};
+
+export type ChangeApplicantStageMutation = {
+  __typename?: "Mutation";
+
+  changeApplicantStage: Maybe<ChangeApplicantStageChangeApplicantStage>;
+};
+
+export type ChangeApplicantStageChangeApplicantStage = {
+  __typename?: "ApplicantPayload";
+
+  successful: boolean;
+};
+
 export type PositionsVariables = {
   keywords?: Maybe<string>;
 };

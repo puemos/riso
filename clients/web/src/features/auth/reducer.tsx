@@ -2,7 +2,7 @@ import * as fromActions from "./actions";
 import { Reducer } from "redux";
 
 const initialState = {
-  isAuthenticated: false
+  isAuthenticated: true
 };
 
 export type AuthState = typeof initialState;

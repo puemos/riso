@@ -1,23 +1,12 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import gql from "graphql-tag";
-import React from "react";
-import { useMutation } from "react-apollo-hooks";
-import { connect } from "react-redux";
-import { SignInMutation, SignInVariables } from "../../../generated/types";
-import { getIsAuthenticated } from "../selectors";
-import { AuthActions } from "../actions";
-import { RootState } from "../../../store/root-reducer";
 import { navigate } from "@reach/router";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import React from "react";
+import { connect } from "react-redux";
+import { RootState } from "../../../store/root-reducer";
+import { AuthActions } from "../actions";
+import useSignIn from "../hooks/useSignIn";
+import { getIsAuthenticated } from "../selectors";
 
-const SIGNIN_MUTATION = gql`
-  mutation signIn($input: SignInInput!) {
-    signIn(input: $input) {
-      result {
-        token
-      }
-    }
-  }
-`;
 type Props = {
   isAuthenticated: boolean;
   loggedIn: () => void;
@@ -31,21 +20,18 @@ type LoginFormValues = {
 class FormikLoginForm extends Formik<LoginFormValues> {}
 
 const LoginForm: React.SFC<Props> = React.memo(function(props) {
-  const signIn = useMutation<SignInMutation, SignInVariables>(SIGNIN_MUTATION);
+  const signIn = useSignIn();
 
   return (
     <FormikLoginForm
       initialValues={{ email: "", password: "" }}
       onSubmit={async (values, actions) => {
-        const { data } = await signIn({ variables: { input: values } });
+        const isAuthenticated = await signIn({ input: values });
         actions.setSubmitting(false);
-        if (data!.signIn!.result) {
-          localStorage.setItem("token", data!.signIn!.result!.token!);
-          props.loggedIn();
+        if (isAuthenticated) {
           navigate("/positions");
         } else {
-          localStorage.removeItem("token");
-          props.loggedOut();
+          actions.setError(new Error("super"));
         }
       }}
     >

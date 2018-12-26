@@ -1,5 +1,5 @@
 import React from "react";
-import PositionsList from "../modules/positions/components/PositionsList";
+import PositionsList from "../features/positions/components/PositionsList";
 
 const PositionsView: React.SFC<{ path: string }> = React.memo(function() {
   return (

@@ -1,13 +1,8 @@
-import React from "react";
 import gql from "graphql-tag";
+import React from "react";
 import { useQuery } from "react-apollo-hooks";
-import {
-  SignInMutation,
-  SignInVariables,
-  PositionsQuery,
-  PositionsVariables
-} from "../../../generated/types";
-
+import { PositionsQuery, PositionsVariables } from "../../../generated/types";
+import { Link } from "@reach/router";
 const POSITIONS_QUERY = gql`
   query positions($keywords: String) {
     positions(keywords: $keywords) {
@@ -17,7 +12,7 @@ const POSITIONS_QUERY = gql`
   }
 `;
 
-function PositionsList() {
+const PositionsList: React.SFC = React.memo(() => {
   const { data, errors, loading } = useQuery<
     PositionsQuery,
     PositionsVariables
@@ -33,10 +28,12 @@ function PositionsList() {
   return (
     <ul>
       {data!.positions!.map(position => (
-        <li key={position.id!}>{position.title}</li>
+        <li key={position.id!}>
+          <Link to={`/position/${position.id!}`}>{position.title}</Link>
+        </li>
       ))}
     </ul>
   );
-}
+});
 
 export default PositionsList;

@@ -1,3 +1,3 @@
-import { AuthActions } from "../modules/auth/actions";
+import { AuthActions } from "../features/auth/actions";
 
 export type RootAction = AuthActions;

@@ -1,5 +1,5 @@
 import React from "react";
-import LoginForm from "../modules/auth/components/LoginForm";
+import LoginForm from "../features/auth/components/LoginForm";
 
 const LoginView: React.SFC<{ path: string }> = React.memo(function() {
   return (
