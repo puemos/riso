@@ -172,15 +172,23 @@ defmodule Seeds do
 
     # Postion Backend (hooli)
     Positions.add_member(pos.be, users.user_2, "editor")
+
     Positions.add_kpi(pos.be, kpis.coding)
     Positions.add_kpi(pos.be, kpis.algo)
     Positions.add_kpi(pos.be, kpis.problem)
     Positions.add_kpi(pos.be, kpis.elixir)
+
+    Applicants.set_position(aplcs.applicant_1, pos.be)
     Applicants.set_position_stage(aplcs.applicant_1, Enum.at(pos.be.stages, 0))
+
+    Applicants.set_position(aplcs.applicant_2, pos.be)
     Applicants.set_position_stage(aplcs.applicant_2, Enum.at(pos.be.stages, 0))
+
+    Applicants.set_position(aplcs.applicant_3, pos.be)
     Applicants.set_position_stage(aplcs.applicant_3, Enum.at(pos.be.stages, 1))
 
     create_applicant_review(%{
+      reviewer_id: users.user_2.id,
       applicant_id: aplcs.applicant_2.id,
       position_id: pos.be.id,
       kpi_id: kpis.coding.id,
@@ -188,6 +196,7 @@ defmodule Seeds do
     })
 
     create_applicant_review(%{
+      reviewer_id: users.user_2.id,
       applicant_id: aplcs.applicant_2.id,
       position_id: pos.be.id,
       kpi_id: kpis.algo.id,
@@ -199,10 +208,15 @@ defmodule Seeds do
     Positions.add_kpi(pos.sys_admin, kpis.coding)
     Positions.add_kpi(pos.sys_admin, kpis.problem)
     Positions.add_kpi(pos.sys_admin, kpis.networking)
+
+    Applicants.set_position(aplcs.applicant_4, pos.sys_admin)
     Applicants.set_position_stage(aplcs.applicant_4, Enum.at(pos.sys_admin.stages, 0))
+
+    Applicants.set_position(aplcs.applicant_5, pos.sys_admin)
     Applicants.set_position_stage(aplcs.applicant_5, Enum.at(pos.sys_admin.stages, 1))
 
     create_applicant_review(%{
+      reviewer_id: users.user_1.id,
       applicant_id: aplcs.applicant_4.id,
       position_id: pos.sys_admin.id,
       kpi_id: kpis.coding.id,
@@ -210,6 +224,7 @@ defmodule Seeds do
     })
 
     create_applicant_review(%{
+      reviewer_id: users.user_1.id,
       applicant_id: aplcs.applicant_4.id,
       position_id: pos.sys_admin.id,
       kpi_id: kpis.networking.id,
@@ -222,9 +237,17 @@ defmodule Seeds do
     Positions.add_kpi(pos.fe, kpis.algo)
     Positions.add_kpi(pos.fe, kpis.problem)
     Positions.add_kpi(pos.fe, kpis.javascript)
+
+    Applicants.set_position(aplcs.applicant_6, pos.fe)
     Applicants.set_position_stage(aplcs.applicant_6, Enum.at(pos.fe.stages, 0))
+
+    Applicants.set_position(aplcs.applicant_7, pos.fe)
     Applicants.set_position_stage(aplcs.applicant_7, Enum.at(pos.fe.stages, 1))
+
+    Applicants.set_position(aplcs.applicant_8, pos.fe)
     Applicants.set_position_stage(aplcs.applicant_8, Enum.at(pos.fe.stages, 1))
+
+    Applicants.set_position(aplcs.applicant_9, pos.fe)
     Applicants.set_position_stage(aplcs.applicant_9, Enum.at(pos.fe.stages, 1))
   end
 end

@@ -1,9 +1,8 @@
 defmodule Riso.Organizations.Organization do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Riso.Accounts.User
-  alias Riso.Organizations.OrganizationMember
-  alias Riso.Positions.Position
+  alias Riso.Organizations.{OrganizationMember}
+  alias Riso.Positions.{Position}
 
   schema "organizations" do
     field :name, :string

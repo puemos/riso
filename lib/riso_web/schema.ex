@@ -16,6 +16,7 @@ defmodule RisoWeb.Schema do
   import_types(RisoWeb.Queries.AccountsQueries)
   import_types(RisoWeb.Queries.PositionsQueries)
   import_types(RisoWeb.Queries.KpisQueries)
+  import_types(RisoWeb.Queries.ApplicantsQueries)
   import_types(RisoWeb.Mutations.AuthMutations)
   import_types(RisoWeb.Mutations.KpisMutations)
   import_types(RisoWeb.Mutations.AccountsMutations)
@@ -40,6 +41,7 @@ defmodule RisoWeb.Schema do
     import_fields(:positions_queries)
     import_fields(:kpis_queries)
     import_fields(:organizations_queries)
+    import_fields(:applicants_queries)
   end
 
   mutation do

@@ -4,20 +4,22 @@ defmodule RisoWeb.Schema.ApplicantsTypes do
 
   @desc "An applicant"
   object :applicant do
-    field(:id, :id)
-    field(:name, :string)
-    field(:inserted_at, :datetime)
+    field(:id, non_null(:id))
+    field(:name, non_null(:string))
+    field(:inserted_at, non_null(:datetime))
+    field(:reviews, non_null(list_of(:review)), resolve: dataloader(Riso.Applicants))
+    field(:position, :position, resolve: dataloader(Riso.Positions))
     field(:stage, :position_stage, resolve: dataloader(Riso.Positions))
-    field(:reviews, list_of(:review), resolve: dataloader(Riso.Applicants))
   end
 
   @desc "A review of applicant for a position kpi"
   object :review do
-    field(:id, :id)
-    field(:score, :integer)
-    field(:inserted_at, :datetime)
-    field(:position, :position, resolve: dataloader(Riso.Positions))
-    field(:kpi, :kpi, resolve: dataloader(Riso.Kpis))
-    field(:applicant, :applicant, resolve: dataloader(Riso.Applicants))
+    field(:id, non_null(:id))
+    field(:score, non_null(:integer))
+    field(:inserted_at, non_null(:datetime))
+    field(:reviewer, non_null(:user), resolve: dataloader(Riso.Accounts))
+    field(:position, non_null(:position), resolve: dataloader(Riso.Positions))
+    field(:kpi, non_null(:kpi), resolve: dataloader(Riso.Kpis))
+    field(:applicant, non_null(:applicant), resolve: dataloader(Riso.Applicants))
   end
 end

@@ -3,8 +3,8 @@ defmodule RisoWeb.Schema.KpisTypes do
 
   @desc "A kpi"
   object :kpi do
-    field(:id, :id)
-    field(:title, :string)
-    field(:inserted_at, :datetime)
+    field(:id, non_null(:id))
+    field(:title, non_null(:string))
+    field(:inserted_at, non_null(:datetime))
   end
 end

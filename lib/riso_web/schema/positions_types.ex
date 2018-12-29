@@ -4,21 +4,21 @@ defmodule RisoWeb.Schema.PositionsTypes do
 
   @desc "A position with title and content"
   object :position do
-    field(:id, :id)
-    field(:title, :string)
-    field(:inserted_at, :datetime)
-    field(:organization, :organization, resolve: dataloader(Riso.Organizations))
-    field(:members, list_of(:position_member), resolve: dataloader(Riso.Positions))
-    field(:stages, list_of(:position_stage), resolve: dataloader(Riso.Positions))
-    field(:kpis, list_of(:kpi), resolve: dataloader(Riso.Kpis))
+    field(:id, non_null(:id))
+    field(:title, non_null(:string))
+    field(:inserted_at, non_null(:datetime))
+    field(:organization, non_null(:organization), resolve: dataloader(Riso.Organizations))
+    field(:members, non_null(list_of(:position_member)), resolve: dataloader(Riso.Positions))
+    field(:stages, non_null(list_of(:position_stage)), resolve: dataloader(Riso.Positions))
+    field(:kpis, non_null(list_of(:kpi)), resolve: dataloader(Riso.Kpis))
   end
 
   @desc "A memebr of a position"
   object :position_member do
-    field(:id, :id)
-    field(:user, :user, resolve: dataloader(Riso.Positions))
-    field(:role, :position_memebr_role)
-    field(:inserted_at, :datetime)
+    field(:id, non_null(:id))
+    field(:user, non_null(:user), resolve: dataloader(Riso.Positions))
+    field(:role, non_null(:position_memebr_role))
+    field(:inserted_at, non_null(:datetime))
   end
 
   enum :position_memebr_role do
@@ -30,10 +30,10 @@ defmodule RisoWeb.Schema.PositionsTypes do
 
   @desc "A stage of a position"
   object :position_stage do
-    field(:id, :id)
-    field(:title, :string)
-    field(:inserted_at, :datetime)
-    field(:applicants, list_of(:applicant), resolve: dataloader(Riso.Applicants))
-    field(:position, :position, resolve: dataloader(Riso.Positions))
+    field(:id, non_null(:id))
+    field(:title, non_null(:string))
+    field(:inserted_at, non_null(:datetime))
+    field(:applicants, non_null(list_of(:applicant)), resolve: dataloader(Riso.Applicants))
+    field(:position, non_null(:position), resolve: dataloader(Riso.Positions))
   end
 end

@@ -28,8 +28,8 @@ const PositionsList: React.SFC = React.memo(() => {
   return (
     <ul>
       {data!.positions!.map(position => (
-        <li key={position.id!}>
-          <Link to={`/position/${position.id!}`}>{position.title}</Link>
+        <li key={position.id}>
+          <Link to={`/position/${position.id}`}>{position.title}</Link>
         </li>
       ))}
     </ul>

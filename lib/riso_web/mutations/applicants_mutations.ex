@@ -9,7 +9,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
 
   input_object :applicant_input do
     field(:name, :string)
-    field(:position_stage_id, non_null(:id))
+    field(:position_id, non_null(:id))
   end
 
   input_object :applicant_review_input do
@@ -44,12 +44,13 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
       middleware(Middleware.Authorize)
 
       resolve(fn %{input: params}, %{context: context} ->
-        with applicant when not is_nil(applicant) <-
-               Applicants.get_applicant(params[:applicant_id]),
-             position when not is_nil(position) <- Positions.get_position(params[:position_id]),
-             true <- Positions.can_edit?(position, context[:current_user]),
-             {:ok, applicant} <- Applicants.create_applicant_review(params) do
-          {:ok, applicant}
+        reviewer = context[:current_user]
+
+        with position when not is_nil(position) <- Positions.get_position(params[:position_id]),
+             true <- Positions.can_edit?(position, reviewer),
+             {:ok, applicant_review} <- Applicants.create_applicant_review(params),
+             {:ok, applicant_review} <- Applicants.set_reviewer(applicant_review, reviewer) do
+          {:ok, applicant_review}
         else
           {:error, %Ecto.Changeset{} = changeset} ->
             {:ok, changeset}

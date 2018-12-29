@@ -4,19 +4,19 @@ defmodule RisoWeb.Schema.OrganizationsTypes do
 
   @desc "A organization with name and content"
   object :organization do
-    field(:id, :id)
-    field(:name, :string)
-    field(:inserted_at, :datetime)
-    field(:members, list_of(:organization_member), resolve: dataloader(Riso.Accounts))
-    field(:positions, list_of(:position), resolve: dataloader(Riso.Positions))
+    field(:id, non_null(:id))
+    field(:name, non_null(:string))
+    field(:inserted_at, non_null(:datetime))
+    field(:members, non_null(list_of(:organization_member)), resolve: dataloader(Riso.Accounts))
+    field(:positions, non_null(list_of(:position)), resolve: dataloader(Riso.Positions))
   end
 
   @desc "A memebr of a organization"
   object :organization_member do
-    field(:id, :id)
-    field(:user, :user, resolve: dataloader(Riso.Accounts))
-    field(:role, :organization_memebr_role)
-    field(:inserted_at, :datetime)
+    field(:id, non_null(:id))
+    field(:user, non_null(:user), resolve: dataloader(Riso.Accounts))
+    field(:role, non_null(:organization_memebr_role))
+    field(:inserted_at, non_null(:datetime))
   end
 
   enum :organization_memebr_role do

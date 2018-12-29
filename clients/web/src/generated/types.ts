@@ -99,6 +99,34 @@ export type DateTime = any;
 // Documents
 // ====================================================
 
+export type CurrentUserVariables = {};
+
+export type CurrentUserQuery = {
+  __typename?: "Query";
+
+  currentUser: Maybe<CurrentUserCurrentUser>;
+};
+
+export type CurrentUserCurrentUser = {
+  __typename?: "User";
+
+  email: string;
+
+  id: string;
+
+  name: Maybe<string>;
+
+  organizations: CurrentUserOrganizations[];
+};
+
+export type CurrentUserOrganizations = {
+  __typename?: "Organization";
+
+  id: string;
+
+  name: string;
+};
+
 export type SignInVariables = {
   input: SignInInput;
 };
@@ -118,7 +146,7 @@ export type SignInSignIn = {
 export type SignInResult = {
   __typename?: "Session";
 
-  token: Maybe<string>;
+  token: string;
 };
 
 export type GetPositionVariables = {
@@ -134,27 +162,27 @@ export type GetPositionQuery = {
 export type GetPositionPosition = {
   __typename?: "Position";
 
-  id: Maybe<string>;
+  id: string;
 
-  title: Maybe<string>;
+  title: string;
 
-  stages: Maybe<GetPositionStages[]>;
+  stages: GetPositionStages[];
 };
 
 export type GetPositionStages = {
   __typename?: "PositionStage";
 
-  id: Maybe<string>;
+  id: string;
 
-  title: Maybe<string>;
+  title: string;
 
-  applicants: Maybe<GetPositionApplicants[]>;
+  applicants: GetPositionApplicants[];
 };
 
 export type GetPositionApplicants = {
   __typename?: "Applicant";
 
-  id: Maybe<string>;
+  id: string;
 
   name: Maybe<string>;
 };
@@ -189,7 +217,7 @@ export type PositionsQuery = {
 export type PositionsPositions = {
   __typename?: "Position";
 
-  id: Maybe<string>;
+  id: string;
 
-  title: Maybe<string>;
+  title: string;
 };

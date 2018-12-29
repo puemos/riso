@@ -21,7 +21,7 @@ export default function useSignIn() {
   const signIn = async (variables: SignInVariables) => {
     const { data } = await mutation({ variables });
     if (data!.signIn!.result) {
-      localStorage.setItem("token", data!.signIn!.result!.token!);
+      localStorage.setItem("token", data!.signIn!.result!.token);
       store.dispatch(AuthActions.loggedIn());
       return true;
     } else {
