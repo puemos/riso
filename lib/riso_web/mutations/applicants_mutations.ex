@@ -8,12 +8,12 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
   alias Riso.Positions
 
   input_object :applicant_input do
-    field(:name, :string)
+    field(:name, non_null(:string))
     field(:position_id, non_null(:id))
   end
 
   input_object :applicant_review_input do
-    field(:score, :integer)
+    field(:score, non_null(:integer))
     field(:kpi_id, non_null(:id))
     field(:position_id, non_null(:id))
     field(:applicant_id, non_null(:id))
@@ -46,10 +46,14 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
       resolve(fn %{input: params}, %{context: context} ->
         reviewer = context[:current_user]
 
+        review_params =
+          Map.merge(params, %{
+            reviewer_id: reviewer.id
+          })
+
         with position when not is_nil(position) <- Positions.get_position(params[:position_id]),
              true <- Positions.can_edit?(position, reviewer),
-             {:ok, applicant_review} <- Applicants.create_applicant_review(params),
-             {:ok, applicant_review} <- Applicants.set_reviewer(applicant_review, reviewer) do
+             {:ok, applicant_review} <- Applicants.create_applicant_review(review_params) do
           {:ok, applicant_review}
         else
           {:error, %Ecto.Changeset{} = changeset} ->

@@ -6,6 +6,7 @@ defmodule Riso.Applicants.Applicant do
 
   schema "applicants" do
     field :name, :string
+    field :photo, :string
     belongs_to :position, Position, foreign_key: :position_id
     belongs_to :stage, PositionStage, foreign_key: :position_stage_id
     has_many :reviews, ApplicantReview
@@ -16,7 +17,7 @@ defmodule Riso.Applicants.Applicant do
   @doc false
   def changeset(applicant, attrs) do
     applicant
-    |> cast(attrs, [:name, :position_id, :position_stage_id])
+    |> cast(attrs, [:name, :photo, :position_id, :position_stage_id])
     |> foreign_key_constraint(:stage, name: :applicants_position_stage_id_fkey)
     |> foreign_key_constraint(:stage, name: :applicants_position_id_fkey)
     |> unique_constraint(:name)

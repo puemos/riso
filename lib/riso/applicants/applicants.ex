@@ -78,9 +78,4 @@ defmodule Riso.Applicants do
   def change_applicant_review(%ApplicantReview{} = applicant_review) do
     ApplicantReview.changeset(applicant_review, %{})
   end
-
-  def set_reviewer(%ApplicantReview{} = applicant_review, %User{} = user) do
-    applicant_review
-    |> update_applicant_review(%{applicant_review: user.id})
-  end
 end

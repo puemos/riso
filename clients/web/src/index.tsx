@@ -2,18 +2,21 @@ import React from "react";
 import { ApolloProvider } from "react-apollo";
 import { ApolloProvider as ApolloProviderHooks } from "react-apollo-hooks";
 import ReactDOM from "react-dom";
-import { Provider } from "react-redux";
+import { Provider as ReduxProvider } from "react-redux";
 import { client } from "./apolloClient";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
-import store from "./store/store";
+import store from "./redux/store";
+import { ReduxStoreProvider } from "./redux/context/ReduxStoreContext";
 
 ReactDOM.render(
   <ApolloProvider client={client}>
     <ApolloProviderHooks client={client}>
-      <Provider store={store}>
-        <App />
-      </Provider>
+      <ReduxProvider store={store}>
+        <ReduxStoreProvider>
+          <App />
+        </ReduxStoreProvider>
+      </ReduxProvider>
     </ApolloProviderHooks>
   </ApolloProvider>,
   document.getElementById("root")

@@ -6,6 +6,7 @@ defmodule RisoWeb.Schema.ApplicantsTypes do
   object :applicant do
     field(:id, non_null(:id))
     field(:name, non_null(:string))
+    field(:photo, :string)
     field(:inserted_at, non_null(:datetime))
     field(:reviews, non_null(list_of(:review)), resolve: dataloader(Riso.Applicants))
     field(:position, :position, resolve: dataloader(Riso.Positions))

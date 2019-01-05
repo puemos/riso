@@ -30,7 +30,10 @@ defmodule Riso.Applicants.ApplicantReview do
     |> foreign_key_constraint(:position, name: :applicants_reviews_position_id_fkey)
     |> foreign_key_constraint(:reviewer, name: :applicants_reviews_reviewer_id_fkey)
     |> foreign_key_constraint(:kpi, name: :applicants_reviews_kpi_id_fkey)
-    |> unique_constraint(:applicants_reviews, name: :positions_kpis_position_id_kpi_id_index)
+    |> unique_constraint(:applicants_reviews,
+      name: :applicants_reviews_applicant_id_kpi_id_position_id_index,
+      message: "The applicant has been already review for that kpi"
+    )
     |> validate_required([
       :applicant_id,
       :reviewer_id,

@@ -1,3 +1,4 @@
-import { AuthState } from "./reducer";
+import { RootState } from "../../redux/root-reducer";
 
-export const getIsAuthenticated = (state: AuthState) => state.isAuthenticated;
+export const getIsAuthenticated = (state: RootState) =>
+  state.auth.isAuthenticated;

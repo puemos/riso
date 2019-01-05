@@ -84,15 +84,32 @@ defmodule Seeds do
   def seed_applicants() do
     Applicant |> Repo.delete_all()
 
-    applicant_1 = create_applicant(%{name: Faker.Name.name()})
-    applicant_2 = create_applicant(%{name: Faker.Name.name()})
-    applicant_3 = create_applicant(%{name: Faker.Name.name()})
-    applicant_4 = create_applicant(%{name: Faker.Name.name()})
-    applicant_5 = create_applicant(%{name: Faker.Name.name()})
-    applicant_6 = create_applicant(%{name: Faker.Name.name()})
-    applicant_7 = create_applicant(%{name: Faker.Name.name()})
-    applicant_8 = create_applicant(%{name: Faker.Name.name()})
-    applicant_9 = create_applicant(%{name: Faker.Name.name()})
+    applicant_1 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_2 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_3 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_4 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_5 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_6 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_7 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_8 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
+
+    applicant_9 =
+      create_applicant(%{name: Faker.Name.name(), photo: Faker.Avatar.image_url(60, 60)})
 
     %{
       applicant_1: applicant_1,

@@ -43,6 +43,8 @@ defmodule Riso.Mixfile do
       {:plug_cowboy, "~> 2.0"},
       {:plug, "~> 1.7"},
       {:postgrex, "~> 0.13"},
+      {:arc, "~> 0.11.0"},
+      {:arc_ecto, "~> 0.11.1"},
 
       # Plugs
       {:cors_plug, "~> 1.5.2"},

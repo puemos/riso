@@ -4,6 +4,7 @@ defmodule Riso.Positions.Position do
   alias Riso.Kpis.Kpi
   alias Riso.Organizations.Organization
   alias Riso.Positions.{PositionMember, PositionStage, PositionKpi}
+  alias Riso.Applicants.{Applicant}
 
   @options %{}
   @default_values %{}
@@ -11,6 +12,7 @@ defmodule Riso.Positions.Position do
   schema "positions" do
     field :title, :string
 
+    has_many :applicants, Applicant, where: [position_stage_id: nil]
     has_many :stages, PositionStage
     has_many :members, PositionMember
     belongs_to :organization, Organization

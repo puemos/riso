@@ -17,9 +17,8 @@ defmodule RisoWeb.Queries.ApplicantsQueries do
         user = context[:current_user]
 
         with applicant when not is_nil(applicant) <- Applicants.get_applicant(args[:id]),
-             position_stage when not is_nil(position_stage) <-
-               Positions.get_position_stage(applicant.position_stage_id),
-             true <- Positions.can_view_resource?(position_stage, user) do
+             position when not is_nil(position) <- Positions.get_position(applicant.position_id),
+             true <- Positions.can_view?(position, user) do
           {:ok, applicant}
         else
           nil ->

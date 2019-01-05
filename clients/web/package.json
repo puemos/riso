@@ -48,6 +48,7 @@
   ],
   "devDependencies": {
     "graphql-code-generator": "0.15.1",
+    "graphql-codegen-typescript-server": "0.15.1",
     "graphql-codegen-typescript-client": "0.15.1",
     "graphql-codegen-typescript-common": "0.15.1",
     "redux-devtools-extension": "^2.13.7"

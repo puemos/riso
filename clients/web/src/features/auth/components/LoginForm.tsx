@@ -1,17 +1,8 @@
 import { navigate } from "@reach/router";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React from "react";
-import { connect } from "react-redux";
-import { RootState } from "../../../store/root-reducer";
-import { AuthActions } from "../actions";
 import useSignIn from "../hooks/useSignIn";
-import { getIsAuthenticated } from "../selectors";
 
-type Props = {
-  isAuthenticated: boolean;
-  loggedIn: () => void;
-  loggedOut: () => void;
-};
 type LoginFormValues = {
   email: string;
   password: string;
@@ -19,9 +10,8 @@ type LoginFormValues = {
 
 class FormikLoginForm extends Formik<LoginFormValues> {}
 
-const LoginForm: React.SFC<Props> = React.memo(function(props) {
+const LoginForm: React.SFC = React.memo(function(props) {
   const signIn = useSignIn();
-
   return (
     <FormikLoginForm
       initialValues={{ email: "", password: "" }}
@@ -50,14 +40,4 @@ const LoginForm: React.SFC<Props> = React.memo(function(props) {
   );
 });
 
-const mapStateToProps = (state: RootState) => ({
-  isAuthenticated: getIsAuthenticated(state.auth)
-});
-
-export default connect(
-  mapStateToProps,
-  {
-    loggedIn: AuthActions.loggedIn,
-    loggedOut: AuthActions.loggedOut
-  }
-)(LoginForm);
+export default LoginForm;

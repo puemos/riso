@@ -10,6 +10,7 @@ defmodule RisoWeb.Schema.PositionsTypes do
     field(:organization, non_null(:organization), resolve: dataloader(Riso.Organizations))
     field(:members, non_null(list_of(:position_member)), resolve: dataloader(Riso.Positions))
     field(:stages, non_null(list_of(:position_stage)), resolve: dataloader(Riso.Positions))
+    field(:applicants, non_null(list_of(:applicant)), resolve: dataloader(Riso.Applicants))
     field(:kpis, non_null(list_of(:kpi)), resolve: dataloader(Riso.Kpis))
   end
 

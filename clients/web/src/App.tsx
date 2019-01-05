@@ -1,24 +1,20 @@
 import { Router } from "@reach/router";
+import gql from "graphql-tag";
 import React, { useEffect } from "react";
-import { connect } from "react-redux";
-import { RootState } from "./store/root-reducer";
+import { useQuery } from "react-apollo-hooks";
+import { AuthActions } from "./features/auth/actions";
+import { getIsAuthenticated } from "./features/auth/selectors";
+import { CurrentUserQuery, CurrentUserVariables } from "./generated/types";
+import { useReduxAction } from "./redux/hooks/use-redux-action";
+import { useReduxState } from "./redux/hooks/use-redux-state";
 import LoginView from "./views/LoginView";
 import PositionBoardView from "./views/PositionBoardView";
 import PositionsView from "./views/PositionsView";
-import { getIsAuthenticated } from "./features/auth/selectors";
-import gql from "graphql-tag";
-import { useQuery } from "react-apollo-hooks";
-import { CurrentUserQuery, CurrentUserVariables } from "./generated/types";
-import { AuthActions } from "./features/auth/actions";
-import store from "./store/store";
+import ApplicantView from "./views/ApplicantView";
 
 const NotFound: React.SFC<{ default: boolean }> = () => (
   <p>Sorry, nothing here</p>
 );
-
-type Props = {
-  isAuthenticated: boolean;
-};
 
 const CURRENT_USER_QUERY = gql`
   query currentUser {
@@ -34,36 +30,34 @@ const CURRENT_USER_QUERY = gql`
   }
 `;
 
-function App(props: Props) {
+function App() {
   const { data, loading } = useQuery<CurrentUserQuery, CurrentUserVariables>(
     CURRENT_USER_QUERY,
     {
       suspend: false
     }
   );
+  const loggedIn = useReduxAction(AuthActions.loggedIn);
+  const isAuthenticated = useReduxState(getIsAuthenticated);
   useEffect(() => {
     if (data.currentUser) {
-      store.dispatch(AuthActions.loggedIn());
+      loggedIn();
     }
   });
 
   if (loading) {
     return <div>Loading...</div>;
   }
-  const { isAuthenticated } = props;
 
   return (
     <Router>
       <LoginView path="/login" />
-      {isAuthenticated && <PositionBoardView path="/position/:id" />}
+      {isAuthenticated && <ApplicantView path="/applicant/:id" />}
       {isAuthenticated && <PositionsView path="/positions" />}
+      {isAuthenticated && <PositionBoardView path="/positions/:id" />}
       <NotFound default />
     </Router>
   );
 }
 
-const mapStateToProps = (state: RootState) => ({
-  isAuthenticated: getIsAuthenticated(state.auth)
-});
-
-export default connect(mapStateToProps)(App);
+export default App;

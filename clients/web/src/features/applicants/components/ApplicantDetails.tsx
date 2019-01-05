@@ -1,39 +1,39 @@
 import gql from "graphql-tag";
 import React from "react";
-import { useQuery, useMutation } from "react-apollo-hooks";
+import { useQuery } from "react-apollo-hooks";
 import {
-  GetPositionQuery,
-  GetPositionVariables,
-  ChangeApplicantStageMutation,
-  ChangeApplicantStageVariables
+  GetApplicantQuery,
+  GetApplicantVariables
 } from "../../../generated/types";
+import ApplicantReviewForm from "./ApplicantReviewForm";
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-const GET_POSITION_QUERY = gql`
-  query getPosition($id: ID!) {
-    position(id: $id) {
+const GET_APPLICANT_QUERY = gql`
+  query getApplicant($id: ID!) {
+    applicant(id: $id) {
       id
-      title
-      stages {
+      name
+      reviews {
         id
-        title
-        applicants {
-          id
+        score
+        kpi {
+          title
+        }
+        reviewer {
           name
+          email
         }
       }
-    }
-  }
-`;
-
-const CHANGE_APPLICANT_STAGE_MUTATION = gql`
-  mutation changeApplicantStage($applicantId: ID!, $positionStageId: ID!) {
-    changeApplicantStage(
-      applicantId: $applicantId
-      positionStageId: $positionStageId
-    ) {
-      successful
+      position {
+        id
+        title
+        kpis {
+          id
+          title
+        }
+      }
+      stage {
+        title
+      }
     }
   }
 `;
@@ -42,82 +42,46 @@ type Props = {
   id?: string;
 };
 
-const PositionsBoard: React.SFC<Props> = React.memo(props => {
-  const { data, errors, loading, refetch } = useQuery<
-    GetPositionQuery,
-    GetPositionVariables
-  >(GET_POSITION_QUERY, {
+const ApplicantDetails: React.SFC<Props> = React.memo(props => {
+  const { data, errors, loading } = useQuery<
+    GetApplicantQuery,
+    GetApplicantVariables
+  >(GET_APPLICANT_QUERY, {
     suspend: false,
     variables: {
-      id: props.id!
+      id: props.id || "0"
     }
   });
-  const changeApplicantStage = useMutation<
-    ChangeApplicantStageMutation,
-    ChangeApplicantStageVariables
-  >(CHANGE_APPLICANT_STAGE_MUTATION);
-
   if (loading) {
     return <div>Loading...</div>;
   }
   if (errors) {
     return <div>{`Error! ${errors[0].message}`}</div>;
   }
+  const applicant = data!.applicant!;
 
   return (
     <>
-      <h2>{data!.position!.title}</h2>
-      <div>
-      <h3>Stages</h3>
-        <DragDropContext
-          onDragEnd={async dropResult => {
-            if (dropResult.destination) {
-              await changeApplicantStage({
-                variables: {
-                  applicantId: dropResult.draggableId,
-                  positionStageId: dropResult.destination.droppableId
-                }
-              });
-              refetch();
-            }
-          }}
-        >
-          {data!.position!.stages.map(stage => (
-            <div key={stage.id}>
-              <h3>{stage.title}</h3>
-              <Droppable droppableId={stage.id}>
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    style={{ height: 200, width: 200, background: "lightgrey" }}
-                  >
-                    {stage.applicants.map((applicant, index) => (
-                      <Draggable
-                        key={applicant.id}
-                        draggableId={applicant.id}
-                        index={index}
-                      >
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            {applicant.name}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </div>
-          ))}
-        </DragDropContext>
-      </div>
+      <h1>{applicant.name}</h1>
+      <h2>Current position</h2>
+      <h3>{applicant.position!.title}</h3>
+      <h2>Reviews</h2>
+      <ul>
+        {applicant.reviews.map(review => (
+          <li key={review.id}>
+            {`@${review.reviewer.name}: ${review.kpi.title} ${review.score}`}
+          </li>
+        ))}
+        <li>
+          <ApplicantReviewForm
+            position={applicant.position!}
+            kpis={applicant.position!.kpis!}
+            applicant={applicant}
+          />
+        </li>
+      </ul>
     </>
   );
 });
 
-export default PositionsBoard;
+export default ApplicantDetails;
