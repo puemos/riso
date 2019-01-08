@@ -31,12 +31,12 @@ const CURRENT_USER_QUERY = gql`
 `;
 
 function App() {
-  const { data, loading } = useQuery<CurrentUserQuery, CurrentUserVariables>(
-    CURRENT_USER_QUERY,
-    {
-      suspend: false
-    }
-  );
+  const { data, loading, errors } = useQuery<
+    CurrentUserQuery,
+    CurrentUserVariables
+  >(CURRENT_USER_QUERY, {
+    suspend: false
+  });
   const loggedIn = useReduxAction(AuthActions.loggedIn);
   const isAuthenticated = useReduxState(getIsAuthenticated);
   useEffect(() => {
@@ -44,7 +44,9 @@ function App() {
       loggedIn();
     }
   });
-
+  if (errors) {
+    return <div>super</div>;
+  }
   if (loading) {
     return <div>Loading...</div>;
   }

@@ -5,10 +5,17 @@ import {
   GetPositionQuery,
   GetPositionVariables,
   ChangeApplicantStageMutation,
-  ChangeApplicantStageVariables
+  ChangeApplicantStageVariables,
+  RemoveApplicantStageMutation,
+  RemoveApplicantStageVariables
 } from "../../../generated/types";
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from "react-beautiful-dnd";
 import ApplicantCard from "./ApplicantCard";
 import ApplicantForm from "../../applicants/components/ApplicantForm";
 
@@ -46,9 +53,19 @@ const CHANGE_APPLICANT_STAGE_MUTATION = gql`
   }
 `;
 
+const REMOVE_APPLICANT_STAGE_MUTATION = gql`
+  mutation removeApplicantStage($applicantId: ID!) {
+    removeApplicantStage(applicantId: $applicantId) {
+      successful
+    }
+  }
+`;
+
 type Props = {
   id?: string;
 };
+
+const UNASSIGN = "UNASSIGN";
 
 const PositionsBoard: React.SFC<Props> = React.memo(props => {
   const { data, errors, loading, refetch } = useQuery<
@@ -64,12 +81,37 @@ const PositionsBoard: React.SFC<Props> = React.memo(props => {
     ChangeApplicantStageMutation,
     ChangeApplicantStageVariables
   >(CHANGE_APPLICANT_STAGE_MUTATION);
+  const removeApplicantStage = useMutation<
+    RemoveApplicantStageMutation,
+    RemoveApplicantStageVariables
+  >(REMOVE_APPLICANT_STAGE_MUTATION);
 
+  if (errors) {
+    return <div>{`Error! ${errors[0].message}`}</div>;
+  }
   if (loading) {
     return <div>Loading...</div>;
   }
-  if (errors) {
-    return <div>{`Error! ${errors[0].message}`}</div>;
+  async function onDragEnd(dropResult: DropResult) {
+    if (dropResult.destination) {
+      const positionStageId = dropResult.destination.droppableId;
+      if (positionStageId === UNASSIGN) {
+        await removeApplicantStage({
+          variables: {
+            applicantId: dropResult.draggableId
+          }
+        });
+      } else {
+        await changeApplicantStage({
+          variables: {
+            applicantId: dropResult.draggableId,
+            positionStageId: positionStageId
+          }
+        });
+      }
+
+      refetch();
+    }
   }
   const position = data!.position!;
   return (
@@ -83,26 +125,18 @@ const PositionsBoard: React.SFC<Props> = React.memo(props => {
       />
       <div>
         <h3>Stages</h3>
-        <DragDropContext
-          onDragEnd={async dropResult => {
-            if (dropResult.destination) {
-              await changeApplicantStage({
-                variables: {
-                  applicantId: dropResult.draggableId,
-                  positionStageId: dropResult.destination.droppableId
-                }
-              });
-              refetch();
-            }
-          }}
-        >
+        <DragDropContext onDragEnd={onDragEnd}>
           <div key={"Pool"}>
             <h3>{"Pool"}</h3>
-            <Droppable droppableId={"Pool"}>
+            <Droppable droppableId={UNASSIGN}>
               {(provided, _snapshot) => (
                 <div
                   ref={provided.innerRef}
-                  style={{ height: 200, width: 200, background: "lightgrey" }}
+                  style={{
+                    minHeight: 50,
+                    width: 200,
+                    background: "lightgrey"
+                  }}
                 >
                   {position.applicants.map((applicant, index) => (
                     <Draggable
@@ -136,7 +170,11 @@ const PositionsBoard: React.SFC<Props> = React.memo(props => {
                 {(provided, _snapshot) => (
                   <div
                     ref={provided.innerRef}
-                    style={{ height: 200, width: 200, background: "lightgrey" }}
+                    style={{
+                      minHeight: 200,
+                      width: 200,
+                      background: "lightgrey"
+                    }}
                   >
                     {stage.applicants.map((applicant, index) => (
                       <Draggable

@@ -100,5 +100,34 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
         end
       end)
     end
+
+    @desc "Remove applicant position stage"
+    field :remove_applicant_stage, :applicant_payload do
+      arg(:applicant_id, :id)
+      middleware(Middleware.Authorize)
+
+      resolve(fn args, %{context: context} ->
+        with applicant when not is_nil(applicant) <-
+               Applicants.get_applicant(args[:applicant_id]),
+             position_stage when not is_nil(position_stage) <-
+               Positions.get_position_stage(applicant.position_stage_id),
+             true <- Positions.can_edit_resource?(position_stage, context[:current_user]),
+             {:ok, applicant} <- Applicants.update_applicant(applicant, %{position_stage_id: nil}) do
+          {:ok, applicant}
+        else
+          {:error, %Ecto.Changeset{} = changeset} ->
+            {:ok, changeset}
+
+          {:error, msg} ->
+            {:ok, generic_message(msg)}
+
+          false ->
+            {:error, "Unauthorize"}
+
+          nil ->
+            {:error, "Not found"}
+        end
+      end)
+    end
   end
 end

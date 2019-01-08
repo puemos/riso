@@ -324,6 +324,54 @@ export type ChangeApplicantStageChangeApplicantStage = {
   successful: boolean;
 };
 
+export type RemoveApplicantStageVariables = {
+  applicantId: string;
+};
+
+export type RemoveApplicantStageMutation = {
+  __typename?: "Mutation";
+
+  removeApplicantStage: Maybe<RemoveApplicantStageRemoveApplicantStage>;
+};
+
+export type RemoveApplicantStageRemoveApplicantStage = {
+  __typename?: "ApplicantPayload";
+
+  successful: boolean;
+};
+
+export type GetCurrentUserOrgsVariables = {};
+
+export type GetCurrentUserOrgsQuery = {
+  __typename?: "Query";
+
+  organizations: Maybe<GetCurrentUserOrgsOrganizations[]>;
+};
+
+export type GetCurrentUserOrgsOrganizations = {
+  __typename?: "Organization";
+
+  id: string;
+
+  name: string;
+};
+
+export type CreatePositionVariables = {
+  input: PositionInput;
+};
+
+export type CreatePositionMutation = {
+  __typename?: "Mutation";
+
+  createPosition: Maybe<CreatePositionCreatePosition>;
+};
+
+export type CreatePositionCreatePosition = {
+  __typename?: "PositionPayload";
+
+  successful: boolean;
+};
+
 export type PositionsVariables = {
   keywords?: Maybe<string>;
 };
@@ -534,6 +582,8 @@ export interface RootMutationType {
   deletePosition?: Maybe<PositionPayload>;
   /** Destroy a position stage */
   deletePositionStage?: Maybe<PositionStagePayload>;
+  /** Remove applicant position stage */
+  removeApplicantStage?: Maybe<ApplicantPayload>;
   /** Remove a kpi from a position */
   removePositionKpi?: Maybe<PositionPayload>;
   /** Resend confirmation */
@@ -762,6 +812,9 @@ export interface DeletePositionRootMutationTypeArgs {
 }
 export interface DeletePositionStageRootMutationTypeArgs {
   id: string;
+}
+export interface RemoveApplicantStageRootMutationTypeArgs {
+  applicantId?: Maybe<string>;
 }
 export interface RemovePositionKpiRootMutationTypeArgs {
   kpiId: string;
