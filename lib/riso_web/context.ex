@@ -3,7 +3,6 @@ defmodule RisoWeb.Plugs.Context do
 
   alias RisoWeb.Helpers.StringHelpers
   alias Riso.Accounts.User
-  alias Riso.Repo
   import Plug.Conn
 
   def init(opts), do: opts
@@ -29,17 +28,12 @@ defmodule RisoWeb.Plugs.Context do
   defp add_user_to_context(%{} = context, conn) do
     with ["Bearer " <> token] <- get_req_header(conn, "authorization"),
          true <- StringHelpers.present?(token),
-         {:ok, user} <- get_user(token) do
+         {:ok, claims} <- Riso.Accounts.Guardian.decode_and_verify(token),
+         {:ok, user} <- Riso.Accounts.Guardian.resource_from_claims(claims) do
       Map.put(context, :current_user, user)
     else
       _ -> context
     end
-  end
-
-  @spec get_user(String.t()) :: {:ok, User}
-  defp get_user(token) do
-    user = User |> Repo.get_by(access_token: token)
-    {:ok, user}
   end
 
   defp get_string_ip(address) when is_tuple(address) do

@@ -59,6 +59,7 @@ defmodule Riso.Mixfile do
       # Utils
       {:bcrypt_elixir, "~> 1.0.7"},
       {:comeonin, "~> 4.1.1"},
+      {:guardian, "~> 1.1.1"},
       {:gettext, "~> 0.15.0"},
       {:poison, "~> 3.1.0"},
       {:hackney, "~> 1.12.1", override: true},

@@ -93,8 +93,6 @@ defmodule Riso.Organizations do
         where: cm.organization_id == ^organization.id and cm.user_id == ^user.id
       )
 
-    IO.inspect(Repo.fetch(query))
-
     case Repo.fetch(query) do
       {:ok, _} -> true
       _ -> false

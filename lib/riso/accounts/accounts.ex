@@ -11,6 +11,11 @@ defmodule Riso.Accounts do
     queryable
   end
 
+  def get_user(id) do
+    User
+    |> Repo.get(id)
+  end
+
   def create_user(attrs) do
     %User{}
     |> User.changeset(attrs, :password)
@@ -40,21 +45,28 @@ defmodule Riso.Accounts do
   end
 
   @doc """
+  Update the user's access token
+  """
+  @spec update_access_token(User.t(), String.t()) :: {:ok, User.t()}
+  def update_access_token(user, access_token) do
+    user_modified = Ecto.Changeset.change(user, access_token: access_token)
+    Repo.update(user_modified)
+  end
+
+  @doc """
   Generate an access token and associates it with the user
   """
   @spec generate_access_token(User.t()) :: {:ok, String.t(), User.t()}
   def generate_access_token(user) do
     access_token = generate_token(user)
-    user_modified = Ecto.Changeset.change(user, access_token: access_token)
-    {:ok, user} = Repo.update(user_modified)
+    {:ok, user} = update_access_token(user, access_token)
     {:ok, access_token, user}
   end
 
   @spec generate_token(User.t()) :: String.t()
   defp generate_token(user) do
-    Base.encode64(
-      :erlang.md5("#{:os.system_time(:milli_seconds)}-#{user.id}-#{SecureRandom.hex()}")
-    )
+    {:ok, jwt, _} = Riso.Accounts.Guardian.encode_and_sign(user)
+    jwt
   end
 
   @spec revoke_access_token(User.t()) :: {:ok, User.t()} | {:error, any()}

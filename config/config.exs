@@ -26,6 +26,10 @@ config :logger, :console,
 
 config :riso, RisoWeb.Gettext, default_locale: "en"
 
+config :riso, Riso.Accounts.Guardian,
+  issuer: "Riso",
+  secret_key: "s/ci1KqlhFBNMRhirlJT6MNmetm59TawElXbPANcErNTue6LLN4MepRYy3QdL89o"
+
 config :phoenix, :json_library, Jason
 
 # Import environment specific config. This must remain at the bottom

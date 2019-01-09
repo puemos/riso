@@ -35,7 +35,8 @@ function App() {
     CurrentUserQuery,
     CurrentUserVariables
   >(CURRENT_USER_QUERY, {
-    suspend: false
+    suspend: false,
+    fetchPolicy: "network-only"
   });
   const loggedIn = useReduxAction(AuthActions.loggedIn);
   const isAuthenticated = useReduxState(getIsAuthenticated);
