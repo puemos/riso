@@ -76,6 +76,7 @@ const PositionForm: React.SFC<Props> = React.memo(function(props) {
         });
         props.onFinished();
         actions.setSubmitting(false);
+        actions.resetForm();
       }}
     >
       {({ isSubmitting }) => (
@@ -90,7 +91,7 @@ const PositionForm: React.SFC<Props> = React.memo(function(props) {
           <Field type="text" name="title" />
           <ErrorMessage name="title" component="div" />
           <button type="submit" disabled={isSubmitting}>
-            Add
+            Add position
           </button>
         </Form>
       )}

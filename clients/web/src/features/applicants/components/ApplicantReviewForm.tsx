@@ -51,19 +51,22 @@ const ApplicantReviewForm: React.SFC<Props> = React.memo(function(props) {
           }
         });
         actions.setSubmitting(false);
+        actions.resetForm();
       }}
     >
       {({ isSubmitting }) => (
         <Form>
           <Field component="select" name="kpi" id="kpi">
             {kpis.map(kpi => (
-              <option key={kpi.id} value={kpi.id}>{kpi.title}</option>
+              <option key={kpi.id} value={kpi.id}>
+                {kpi.title}
+              </option>
             ))}
           </Field>
           <Field type="number" max={7} min={0} name="score" />
           <ErrorMessage name="score" component="div" />
           <button type="submit" disabled={isSubmitting}>
-            Submit
+            Submit review
           </button>
         </Form>
       )}

@@ -12,12 +12,15 @@ class FormikLoginForm extends Formik<LoginFormValues> {}
 
 const LoginForm: React.SFC = React.memo(function(props) {
   const signIn = useSignIn();
+
   return (
     <FormikLoginForm
       initialValues={{ email: "", password: "" }}
       onSubmit={async (values, actions) => {
         const isAuthenticated = await signIn({ input: values });
         actions.setSubmitting(false);
+        actions.resetForm();
+
         if (isAuthenticated) {
           navigate("/positions");
         } else {

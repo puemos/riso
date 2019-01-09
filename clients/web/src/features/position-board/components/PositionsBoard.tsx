@@ -18,6 +18,7 @@ import {
 } from "react-beautiful-dnd";
 import ApplicantCard from "./ApplicantCard";
 import ApplicantForm from "../../applicants/components/ApplicantForm";
+import PositionStageForm from "../../positions/components/PositionStageForm";
 
 const GET_POSITION_QUERY = gql`
   query getPosition($id: ID!) {
@@ -117,6 +118,12 @@ const PositionsBoard: React.SFC<Props> = React.memo(props => {
   return (
     <>
       <h2>{position.title}</h2>
+      <PositionStageForm
+        positionId={position.id}
+        onFinished={() => {
+          refetch();
+        }}
+      />
       <ApplicantForm
         positionId={position.id}
         onFinished={() => {

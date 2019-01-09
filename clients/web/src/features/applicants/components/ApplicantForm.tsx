@@ -51,6 +51,7 @@ const ApplicantForm: React.SFC<Props> = React.memo(function(props) {
         });
         props.onFinished();
         actions.setSubmitting(false);
+        actions.resetForm();
       }}
     >
       {({ isSubmitting }) => (
@@ -58,7 +59,7 @@ const ApplicantForm: React.SFC<Props> = React.memo(function(props) {
           <Field type="text" name="name" />
           <ErrorMessage name="score" component="div" />
           <button type="submit" disabled={isSubmitting}>
-            Add
+            Add applicant
           </button>
         </Form>
       )}

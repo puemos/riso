@@ -390,6 +390,23 @@ export type PositionsPositions = {
   title: string;
 };
 
+export type AddPositionStageVariables = {
+  input: PositionStageInput;
+  positionId: string;
+};
+
+export type AddPositionStageMutation = {
+  __typename?: "Mutation";
+
+  addPositionStage: Maybe<AddPositionStageAddPositionStage>;
+};
+
+export type AddPositionStageAddPositionStage = {
+  __typename?: "PositionStagePayload";
+
+  successful: boolean;
+};
+
 // ====================================================
 // Scalars
 // ====================================================
@@ -582,6 +599,8 @@ export interface RootMutationType {
   deletePosition?: Maybe<PositionPayload>;
   /** Destroy a position stage */
   deletePositionStage?: Maybe<PositionStagePayload>;
+  /** Refresh token */
+  refreshToken?: Maybe<SessionPayload>;
   /** Remove applicant position stage */
   removeApplicantStage?: Maybe<ApplicantPayload>;
   /** Remove a kpi from a position */
@@ -812,6 +831,9 @@ export interface DeletePositionRootMutationTypeArgs {
 }
 export interface DeletePositionStageRootMutationTypeArgs {
   id: string;
+}
+export interface RefreshTokenRootMutationTypeArgs {
+  token?: Maybe<string>;
 }
 export interface RemoveApplicantStageRootMutationTypeArgs {
   applicantId?: Maybe<string>;

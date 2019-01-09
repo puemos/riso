@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { useMutation } from "react-apollo-hooks";
+import { useMutation, useApolloClient } from "react-apollo-hooks";
 import { SignInMutation, SignInVariables } from "../../../generated/types";
 import { useReduxAction } from "../../../redux/hooks/use-redux-action";
 import { AuthActions } from "../actions";
@@ -15,6 +15,7 @@ const SIGNIN_MUTATION = gql`
 `;
 
 export default function useSignIn() {
+  const client = useApolloClient();
   const mutation = useMutation<SignInMutation, SignInVariables>(
     SIGNIN_MUTATION
   );
@@ -24,6 +25,7 @@ export default function useSignIn() {
     const { data } = await mutation({ variables });
     if (data!.signIn!.result) {
       localStorage.setItem("token", data!.signIn!.result!.token);
+      client!.resetStore();
       loggedIn();
       return true;
     } else {
