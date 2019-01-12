@@ -12,7 +12,7 @@ defmodule Riso.Positions.Position do
   schema "positions" do
     field :title, :string
 
-    has_many :applicants, Applicant, where: [position_stage_id: nil]
+    has_many :applicants, Applicant
     has_many :stages, PositionStage
     has_many :members, PositionMember
     belongs_to :organization, Organization
