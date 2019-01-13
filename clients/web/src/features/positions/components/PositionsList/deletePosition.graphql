@@ -1,0 +1,9 @@
+mutation deletePosition($id: ID!) {
+  deletePosition(id: $id) {
+    successful
+    messages {
+      message
+      field
+    }
+  }
+}

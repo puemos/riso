@@ -402,6 +402,32 @@ export type RemoveApplicantStageRemoveApplicantStage = {
   successful: boolean;
 };
 
+export type DeletePositionVariables = {
+  id: string;
+};
+
+export type DeletePositionMutation = {
+  __typename?: "Mutation";
+
+  deletePosition: Maybe<DeletePositionDeletePosition>;
+};
+
+export type DeletePositionDeletePosition = {
+  __typename?: "PositionPayload";
+
+  successful: boolean;
+
+  messages: Maybe<DeletePositionMessages[]>;
+};
+
+export type DeletePositionMessages = {
+  __typename?: "ValidationMessage";
+
+  message: Maybe<string>;
+
+  field: Maybe<string>;
+};
+
 export type GetPositionsVariables = {
   keywords?: Maybe<string>;
 };
