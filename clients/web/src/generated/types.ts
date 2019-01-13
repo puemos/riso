@@ -208,13 +208,23 @@ export type CreateApplicantVariables = {
 export type CreateApplicantMutation = {
   __typename?: "Mutation";
 
-  createApplicant: Maybe<CreateApplicantCreateApplicant>;
+  createApplicant: CreateApplicantCreateApplicant;
 };
 
 export type CreateApplicantCreateApplicant = {
   __typename?: "ApplicantPayload";
 
   successful: boolean;
+
+  messages: Maybe<CreateApplicantMessages[]>;
+};
+
+export type CreateApplicantMessages = {
+  __typename?: "ValidationMessage";
+
+  message: Maybe<string>;
+
+  field: Maybe<string>;
 };
 
 export type AddApplicantReviewVariables = {
@@ -224,13 +234,23 @@ export type AddApplicantReviewVariables = {
 export type AddApplicantReviewMutation = {
   __typename?: "Mutation";
 
-  addApplicantReview: Maybe<AddApplicantReviewAddApplicantReview>;
+  addApplicantReview: AddApplicantReviewAddApplicantReview;
 };
 
 export type AddApplicantReviewAddApplicantReview = {
   __typename?: "ApplicantPayload";
 
   successful: boolean;
+
+  messages: Maybe<AddApplicantReviewMessages[]>;
+};
+
+export type AddApplicantReviewMessages = {
+  __typename?: "ValidationMessage";
+
+  message: Maybe<string>;
+
+  field: Maybe<string>;
 };
 
 export type SignInVariables = {
@@ -255,6 +275,81 @@ export type SignInResult = {
   token: string;
 };
 
+export type CreatePositionVariables = {
+  input: PositionInput;
+};
+
+export type CreatePositionMutation = {
+  __typename?: "Mutation";
+
+  createPosition: Maybe<CreatePositionCreatePosition>;
+};
+
+export type CreatePositionCreatePosition = {
+  __typename?: "PositionPayload";
+
+  successful: boolean;
+
+  messages: Maybe<CreatePositionMessages[]>;
+};
+
+export type CreatePositionMessages = {
+  __typename?: "ValidationMessage";
+
+  message: Maybe<string>;
+
+  field: Maybe<string>;
+};
+
+export type GetCurrentUserOrgsVariables = {};
+
+export type GetCurrentUserOrgsQuery = {
+  __typename?: "Query";
+
+  organizations: Maybe<GetCurrentUserOrgsOrganizations[]>;
+};
+
+export type GetCurrentUserOrgsOrganizations = {
+  __typename?: "Organization";
+
+  id: string;
+
+  name: string;
+};
+
+export type ChangeApplicantStageVariables = {
+  applicantId: string;
+  positionStageId: string;
+};
+
+export type ChangeApplicantStageMutation = {
+  __typename?: "Mutation";
+
+  changeApplicantStage: ChangeApplicantStageChangeApplicantStage;
+};
+
+export type ChangeApplicantStageChangeApplicantStage = {
+  __typename?: "ApplicantPayload";
+
+  successful: boolean;
+};
+
+export type DeletePositionStageVariables = {
+  id: string;
+};
+
+export type DeletePositionStageMutation = {
+  __typename?: "Mutation";
+
+  deletePositionStage: Maybe<DeletePositionStageDeletePositionStage>;
+};
+
+export type DeletePositionStageDeletePositionStage = {
+  __typename?: "PositionStagePayload";
+
+  successful: boolean;
+};
+
 export type GetPositionVariables = {
   id: string;
 };
@@ -277,15 +372,7 @@ export type GetPositionPosition = {
   stages: GetPositionStages[];
 };
 
-export type GetPositionApplicants = {
-  __typename?: "Applicant";
-
-  id: string;
-
-  name: string;
-
-  photo: Maybe<string>;
-};
+export type GetPositionApplicants = PositionsBoardApplicantFragment;
 
 export type GetPositionStages = {
   __typename?: "PositionStage";
@@ -297,32 +384,7 @@ export type GetPositionStages = {
   applicants: GetPosition_Applicants[];
 };
 
-export type GetPosition_Applicants = {
-  __typename?: "Applicant";
-
-  id: string;
-
-  name: string;
-
-  photo: Maybe<string>;
-};
-
-export type ChangeApplicantStageVariables = {
-  applicantId: string;
-  positionStageId: string;
-};
-
-export type ChangeApplicantStageMutation = {
-  __typename?: "Mutation";
-
-  changeApplicantStage: Maybe<ChangeApplicantStageChangeApplicantStage>;
-};
-
-export type ChangeApplicantStageChangeApplicantStage = {
-  __typename?: "ApplicantPayload";
-
-  successful: boolean;
-};
+export type GetPosition_Applicants = PositionsBoardApplicantFragment;
 
 export type RemoveApplicantStageVariables = {
   applicantId: string;
@@ -331,7 +393,7 @@ export type RemoveApplicantStageVariables = {
 export type RemoveApplicantStageMutation = {
   __typename?: "Mutation";
 
-  removeApplicantStage: Maybe<RemoveApplicantStageRemoveApplicantStage>;
+  removeApplicantStage: RemoveApplicantStageRemoveApplicantStage;
 };
 
 export type RemoveApplicantStageRemoveApplicantStage = {
@@ -340,49 +402,17 @@ export type RemoveApplicantStageRemoveApplicantStage = {
   successful: boolean;
 };
 
-export type GetCurrentUserOrgsVariables = {};
-
-export type GetCurrentUserOrgsQuery = {
-  __typename?: "Query";
-
-  organizations: Maybe<GetCurrentUserOrgsOrganizations[]>;
-};
-
-export type GetCurrentUserOrgsOrganizations = {
-  __typename?: "Organization";
-
-  id: string;
-
-  name: string;
-};
-
-export type CreatePositionVariables = {
-  input: PositionInput;
-};
-
-export type CreatePositionMutation = {
-  __typename?: "Mutation";
-
-  createPosition: Maybe<CreatePositionCreatePosition>;
-};
-
-export type CreatePositionCreatePosition = {
-  __typename?: "PositionPayload";
-
-  successful: boolean;
-};
-
-export type PositionsVariables = {
+export type GetPositionsVariables = {
   keywords?: Maybe<string>;
 };
 
-export type PositionsQuery = {
+export type GetPositionsQuery = {
   __typename?: "Query";
 
-  positions: Maybe<PositionsPositions[]>;
+  positions: Maybe<GetPositionsPositions[]>;
 };
 
-export type PositionsPositions = {
+export type GetPositionsPositions = {
   __typename?: "Position";
 
   id: string;
@@ -405,6 +435,34 @@ export type AddPositionStageAddPositionStage = {
   __typename?: "PositionStagePayload";
 
   successful: boolean;
+
+  messages: Maybe<AddPositionStageMessages[]>;
+};
+
+export type AddPositionStageMessages = {
+  __typename?: "ValidationMessage";
+
+  message: Maybe<string>;
+
+  field: Maybe<string>;
+};
+
+export type PositionsBoardApplicantFragment = {
+  __typename?: "Applicant";
+
+  id: string;
+
+  name: string;
+
+  photo: Maybe<string>;
+
+  stage: Maybe<PositionsBoardApplicantStage>;
+};
+
+export type PositionsBoardApplicantStage = {
+  __typename?: "PositionStage";
+
+  id: string;
 };
 
 // ====================================================
@@ -568,7 +626,7 @@ export interface Option {
 
 export interface RootMutationType {
   /** Add an applicant review for a KPI */
-  addApplicantReview?: Maybe<ApplicantPayload>;
+  addApplicantReview: ApplicantPayload;
   /** Add a member to a organization */
   addOrganizationMember?: Maybe<OrganizationMemberPayload>;
   /** Add a kpi to a position */
@@ -580,13 +638,13 @@ export interface RootMutationType {
   /** Cancel Account */
   cancelAccount?: Maybe<boolean>;
   /** Change applicant position stage */
-  changeApplicantStage?: Maybe<ApplicantPayload>;
+  changeApplicantStage: ApplicantPayload;
   /** Change user password */
   changePassword?: Maybe<UserPayload>;
   /** confirm account */
   confirmAccount?: Maybe<SessionPayload>;
   /** Create an applicant */
-  createApplicant?: Maybe<ApplicantPayload>;
+  createApplicant: ApplicantPayload;
   /** Create an kpi */
   createKpi?: Maybe<KpiPayload>;
   /** Create a organization */
@@ -602,7 +660,7 @@ export interface RootMutationType {
   /** Refresh token */
   refreshToken?: Maybe<SessionPayload>;
   /** Remove applicant position stage */
-  removeApplicantStage?: Maybe<ApplicantPayload>;
+  removeApplicantStage: ApplicantPayload;
   /** Remove a kpi from a position */
   removePositionKpi?: Maybe<PositionPayload>;
   /** Resend confirmation */

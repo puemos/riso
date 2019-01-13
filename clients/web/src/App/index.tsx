@@ -2,33 +2,22 @@ import { Router } from "@reach/router";
 import gql from "graphql-tag";
 import React, { useEffect } from "react";
 import { useQuery } from "react-apollo-hooks";
-import { AuthActions } from "./features/auth/actions";
-import { getIsAuthenticated } from "./features/auth/selectors";
-import { CurrentUserQuery, CurrentUserVariables } from "./generated/types";
-import { useReduxAction } from "./redux/hooks/use-redux-action";
-import { useReduxState } from "./redux/hooks/use-redux-state";
-import LoginView from "./views/LoginView";
-import PositionBoardView from "./views/PositionBoardView";
-import PositionsView from "./views/PositionsView";
-import ApplicantView from "./views/ApplicantView";
+import { AuthActions } from "../features/auth/actions";
+import { getIsAuthenticated } from "../features/auth/selectors";
+import { CurrentUserQuery, CurrentUserVariables } from "../generated/types";
+import { useReduxAction } from "../redux/hooks/use-redux-action";
+import { useReduxState } from "../redux/hooks/use-redux-state";
+import LoginView from "../views/LoginView";
+import PositionBoardView from "../views/PositionBoardView";
+import PositionsView from "../views/PositionsView";
+import ApplicantView from "../views/ApplicantView";
+import { loader } from "graphql.macro";
+
+const CURRENT_USER_QUERY = loader("./currentUser.graphql");
 
 const NotFound: React.SFC<{ default: boolean }> = () => (
   <p>Sorry, nothing here</p>
 );
-
-const CURRENT_USER_QUERY = gql`
-  query currentUser {
-    currentUser {
-      email
-      id
-      name
-      organizations {
-        id
-        name
-      }
-    }
-  }
-`;
 
 function App() {
   const { data, loading, errors } = useQuery<

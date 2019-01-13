@@ -1,0 +1,6 @@
+query getCurrentUserOrgs {
+  organizations {
+    id
+    name
+  }
+}

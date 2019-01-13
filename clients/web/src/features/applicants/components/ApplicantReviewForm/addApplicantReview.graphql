@@ -1,0 +1,9 @@
+mutation addApplicantReview($input: ApplicantReviewInput!) {
+  addApplicantReview(input: $input) {
+    successful
+    messages {
+      message
+      field
+    }
+  }
+}

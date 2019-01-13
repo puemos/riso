@@ -1,0 +1,28 @@
+query getApplicant($id: ID!) {
+  applicant(id: $id) {
+    id
+    name
+    reviews {
+      id
+      score
+      kpi {
+        title
+      }
+      reviewer {
+        name
+        email
+      }
+    }
+    position {
+      id
+      title
+      kpis {
+        id
+        title
+      }
+    }
+    stage {
+      title
+    }
+  }
+}

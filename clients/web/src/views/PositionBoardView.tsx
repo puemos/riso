@@ -1,11 +1,13 @@
-import React from "react";
-import PositionsBoard from "../features/position-board/components/PositionsBoard";
+import React, { Suspense } from "react";
+import PositionsBoard from "../features/positions/components/PositionsBoard";
 
 const PositionBoardView: React.SFC<{ path: string; id?: string }> = React.memo(
   function(props) {
     return (
       <div>
-        <PositionsBoard id={props.id} />
+        <Suspense fallback="Loading...">
+          <PositionsBoard id={props.id!} />
+        </Suspense>
       </div>
     );
   }

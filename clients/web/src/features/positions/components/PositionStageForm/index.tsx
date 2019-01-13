@@ -1,19 +1,14 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import gql from "graphql-tag";
+import { loader } from "graphql.macro";
 import React from "react";
 import { useMutation } from "react-apollo-hooks";
 import {
   AddPositionStageMutation,
   AddPositionStageVariables
-} from "../../../generated/types";
+} from "../../../../generated/types";
+import { absintheToFormikErrors } from "../../../forms/updateFormWithError";
 
-const ADD_POSITION_STAGE_MUTATION = gql`
-  mutation AddPositionStage($input: PositionStageInput!, $positionId: ID!) {
-    addPositionStage(input: $input, positionId: $positionId) {
-      successful
-    }
-  }
-`;
+const ADD_POSITION_STAGE_MUTATION = loader("./addPositionStage.graphql");
 
 type Props = {
   onFinished: () => void;
@@ -36,7 +31,7 @@ const PositionStageForm: React.SFC<Props> = React.memo(function(props) {
     <FormikPositionStageForm
       initialValues={{ title: "" }}
       onSubmit={async (values, actions) => {
-        await createPosition({
+        const { data } = await createPosition({
           variables: {
             positionId: props.positionId,
             input: {
@@ -44,9 +39,15 @@ const PositionStageForm: React.SFC<Props> = React.memo(function(props) {
             }
           }
         });
-        props.onFinished();
+        const messages = data!.addPositionStage!.messages;
+        const successful = data!.addPositionStage!.successful;
+        if (successful) {
+          actions.resetForm();
+          props.onFinished();
+        } else {
+          actions.setErrors(absintheToFormikErrors(messages));
+        }
         actions.setSubmitting(false);
-        actions.resetForm();
       }}
     >
       {({ isSubmitting }) => (

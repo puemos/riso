@@ -21,7 +21,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
 
   object :applicants_mutations do
     @desc "Create an applicant"
-    field :create_applicant, :applicant_payload do
+    field :create_applicant, non_null(:applicant_payload) do
       arg(:input, :applicant_input)
       middleware(Middleware.Authorize)
 
@@ -39,7 +39,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
     end
 
     @desc "Add an applicant review for a KPI"
-    field :add_applicant_review, :applicant_payload do
+    field :add_applicant_review, non_null(:applicant_payload) do
       arg(:input, :applicant_review_input)
       middleware(Middleware.Authorize)
 
@@ -72,7 +72,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
     end
 
     @desc "Change applicant position stage"
-    field :change_applicant_stage, :applicant_payload do
+    field :change_applicant_stage, non_null(:applicant_payload) do
       arg(:position_stage_id, :id)
       arg(:applicant_id, :id)
       middleware(Middleware.Authorize)
@@ -102,7 +102,7 @@ defmodule RisoWeb.Mutations.ApplicantsMutations do
     end
 
     @desc "Remove applicant position stage"
-    field :remove_applicant_stage, :applicant_payload do
+    field :remove_applicant_stage, non_null(:applicant_payload) do
       arg(:applicant_id, :id)
       middleware(Middleware.Authorize)
 

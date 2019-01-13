@@ -1,0 +1,8 @@
+mutation changeApplicantStage($applicantId: ID!, $positionStageId: ID!) {
+  changeApplicantStage(
+    applicantId: $applicantId
+    positionStageId: $positionStageId
+  ) {
+    successful
+  }
+}

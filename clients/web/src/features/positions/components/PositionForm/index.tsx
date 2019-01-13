@@ -1,29 +1,16 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import gql from "graphql-tag";
+import { loader } from "graphql.macro";
 import React from "react";
 import { useMutation, useQuery } from "react-apollo-hooks";
 import {
   CreatePositionMutation,
   CreatePositionVariables,
   GetCurrentUserOrgsQuery
-} from "../../../generated/types";
+} from "../../../../generated/types";
+import { absintheToFormikErrors } from "../../../forms/updateFormWithError";
 
-const GET_CURRENT_USER_ORGS_QUERY = gql`
-  query getCurrentUserOrgs {
-    organizations {
-      id
-      name
-    }
-  }
-`;
-
-const CREATE_POSITION_MUTATION = gql`
-  mutation CreatePosition($input: PositionInput!) {
-    createPosition(input: $input) {
-      successful
-    }
-  }
-`;
+const GET_CURRENT_USER_ORGS_QUERY = loader("./getCurrentUserOrgs.graphql");
+const CREATE_POSITION_MUTATION = loader("./createPosition.graphql");
 
 type Props = {
   onFinished: () => void;
@@ -38,24 +25,12 @@ class FormikPositionForm extends Formik<PositionFormValues> {}
 
 const PositionForm: React.SFC<Props> = React.memo(function(props) {
   const {
-    data: { organizations },
-    errors,
-    loading,
-    refetch
-  } = useQuery<GetCurrentUserOrgsQuery>(GET_CURRENT_USER_ORGS_QUERY, {
-    suspend: false
-  });
+    data: { organizations }
+  } = useQuery<GetCurrentUserOrgsQuery>(GET_CURRENT_USER_ORGS_QUERY, {});
   const createPosition = useMutation<
     CreatePositionMutation,
     CreatePositionVariables
   >(CREATE_POSITION_MUTATION);
-
-  if (errors) {
-    return <div>{`Error! ${errors[0].message}`}</div>;
-  }
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <FormikPositionForm
@@ -66,7 +41,7 @@ const PositionForm: React.SFC<Props> = React.memo(function(props) {
           actions.setError(new Error("missing organization id"));
           return;
         }
-        await createPosition({
+        const { data } = await createPosition({
           variables: {
             input: {
               organizationId,
@@ -74,9 +49,15 @@ const PositionForm: React.SFC<Props> = React.memo(function(props) {
             }
           }
         });
-        props.onFinished();
+        const messages = data!.createPosition!.messages;
+        const successful = data!.createPosition!.successful;
+        if (successful) {
+          actions.resetForm();
+          props.onFinished();
+        } else {
+          actions.setErrors(absintheToFormikErrors(messages));
+        }
         actions.setSubmitting(false);
-        actions.resetForm();
       }}
     >
       {({ isSubmitting }) => (

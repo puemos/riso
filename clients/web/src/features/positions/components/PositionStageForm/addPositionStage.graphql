@@ -1,0 +1,9 @@
+mutation addPositionStage($input: PositionStageInput!, $positionId: ID!) {
+  addPositionStage(input: $input, positionId: $positionId) {
+    successful
+    messages {
+      message
+      field
+    }
+  }
+}

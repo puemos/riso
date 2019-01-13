@@ -1,0 +1,5 @@
+mutation deletePositionStage($id: ID!) {
+  deletePositionStage(id: $id) {
+    successful
+  }
+}

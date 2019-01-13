@@ -1,0 +1,24 @@
+query getPosition($id: ID!) {
+  position(id: $id) {
+    id
+    title
+    applicants {
+      ...PositionsBoardApplicant
+    }
+    stages {
+      id
+      title
+      applicants {
+        ...PositionsBoardApplicant
+      }
+    }
+  }
+}
+fragment PositionsBoardApplicant on Applicant {
+  id
+  name
+  photo
+  stage {
+    id
+  }
+}

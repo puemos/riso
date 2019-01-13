@@ -5,7 +5,6 @@ defmodule Riso.Applicants do
 
   import Ecto.Query, warn: false
   alias Riso.Repo
-  alias Riso.Accounts.{User}
   alias Riso.Applicants.{Applicant, ApplicantReview}
   alias Riso.Positions.{Position, PositionStage}
 

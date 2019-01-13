@@ -1,18 +1,10 @@
-import gql from "graphql-tag";
-import { useMutation, useApolloClient } from "react-apollo-hooks";
-import { SignInMutation, SignInVariables } from "../../../generated/types";
-import { useReduxAction } from "../../../redux/hooks/use-redux-action";
-import { AuthActions } from "../actions";
+import { loader } from "graphql.macro";
+import { useApolloClient, useMutation } from "react-apollo-hooks";
+import { SignInMutation, SignInVariables } from "../../../../generated/types";
+import { useReduxAction } from "../../../../redux/hooks/use-redux-action";
+import { AuthActions } from "../../actions";
 
-const SIGNIN_MUTATION = gql`
-  mutation signIn($input: SignInInput!) {
-    signIn(input: $input) {
-      result {
-        token
-      }
-    }
-  }
-`;
+const SIGNIN_MUTATION = loader("./signIn.graphql");
 
 export default function useSignIn() {
   const client = useApolloClient();

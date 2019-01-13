@@ -1,0 +1,5 @@
+mutation removeApplicantStage($applicantId: ID!) {
+  removeApplicantStage(applicantId: $applicantId) {
+    successful
+  }
+}

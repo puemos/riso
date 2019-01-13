@@ -1,0 +1,9 @@
+mutation createPosition($input: PositionInput!) {
+  createPosition(input: $input) {
+    successful
+    messages {
+      message
+      field
+    }
+  }
+}

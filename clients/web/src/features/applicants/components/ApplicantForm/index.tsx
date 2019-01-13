@@ -1,19 +1,14 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import gql from "graphql-tag";
+import { loader } from "graphql.macro";
 import React from "react";
 import { useMutation } from "react-apollo-hooks";
 import {
   CreateApplicantMutation,
   CreateApplicantVariables
-} from "../../../generated/types";
+} from "../../../../generated/types";
+import { absintheToFormikErrors } from "../../../forms/updateFormWithError";
 
-const CREATE_APPLICANT_MUTATION = gql`
-  mutation CreateApplicant($input: ApplicantInput!) {
-    createApplicant(input: $input) {
-      successful
-    }
-  }
-`;
+const CREATE_APPLICANT_MUTATION = loader("./createApplicant.graphql");
 
 type Props = {
   positionId?: string;
@@ -41,7 +36,7 @@ const ApplicantForm: React.SFC<Props> = React.memo(function(props) {
           actions.setError(new Error("missing position id"));
           return;
         }
-        await createApplicant({
+        const { data } = await createApplicant({
           variables: {
             input: {
               name: values.name,
@@ -49,15 +44,21 @@ const ApplicantForm: React.SFC<Props> = React.memo(function(props) {
             }
           }
         });
-        props.onFinished();
+        const messages = data!.createApplicant.messages;
+        const successful = data!.createApplicant.successful;
+        if (successful) {
+          actions.resetForm();
+          props.onFinished();
+        } else {
+          actions.setErrors(absintheToFormikErrors(messages));
+        }
         actions.setSubmitting(false);
-        actions.resetForm();
       }}
     >
       {({ isSubmitting }) => (
         <Form>
           <Field type="text" name="name" />
-          <ErrorMessage name="score" component="div" />
+          <ErrorMessage name="name" component="div" />
           <button type="submit" disabled={isSubmitting}>
             Add applicant
           </button>

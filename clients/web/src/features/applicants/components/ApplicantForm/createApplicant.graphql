@@ -1,0 +1,9 @@
+mutation createApplicant($input: ApplicantInput!) {
+  createApplicant(input: $input) {
+    successful
+    messages {
+      message
+      field
+    }
+  }
+}

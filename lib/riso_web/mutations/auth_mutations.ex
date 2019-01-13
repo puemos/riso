@@ -3,7 +3,6 @@ defmodule RisoWeb.Mutations.AuthMutations do
 
   import RisoWeb.Helpers.ValidationMessageHelpers
 
-  alias Riso.Repo
   alias RisoWeb.Schema.Middleware
   alias RisoWeb.Email
   alias Riso.{Accounts, Confirmations, Mailer}

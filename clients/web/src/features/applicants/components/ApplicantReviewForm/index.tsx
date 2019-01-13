@@ -1,21 +1,16 @@
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import { loader } from "graphql.macro";
 import React from "react";
-import {
-  Kpi,
-  Applicant,
-  AddApplicantReviewMutation,
-  AddApplicantReviewVariables
-} from "../../../generated/types";
-import { Formik, Field, ErrorMessage, Form } from "formik";
-import gql from "graphql-tag";
 import { useMutation } from "react-apollo-hooks";
+import {
+  AddApplicantReviewMutation,
+  AddApplicantReviewVariables,
+  Applicant,
+  Kpi
+} from "../../../../generated/types";
+import { absintheToFormikErrors } from "../../../forms/updateFormWithError";
 
-const ADD_APPLICANT_REVIEW_MUTATION = gql`
-  mutation AddApplicantReview($input: ApplicantReviewInput!) {
-    addApplicantReview(input: $input) {
-      successful
-    }
-  }
-`;
+const ADD_APPLICANT_REVIEW_MUTATION = loader("./addApplicantReview.graphql");
 
 type Props = {
   kpis: Pick<Kpi, "title" | "id">[];
@@ -40,7 +35,7 @@ const ApplicantReviewForm: React.SFC<Props> = React.memo(function(props) {
     <FormikApplicantReviewForm
       initialValues={{ score: 0, kpi: kpis[0].id }}
       onSubmit={async (values, actions) => {
-        await addReview({
+        const { data } = await addReview({
           variables: {
             input: {
               applicantId: applicant.id,
@@ -50,8 +45,14 @@ const ApplicantReviewForm: React.SFC<Props> = React.memo(function(props) {
             }
           }
         });
+        const messages = data!.addApplicantReview.messages;
+        const successful = data!.addApplicantReview.successful;
+        if (successful) {
+          actions.resetForm();
+        } else {
+          actions.setErrors(absintheToFormikErrors(messages));
+        }
         actions.setSubmitting(false);
-        actions.resetForm();
       }}
     >
       {({ isSubmitting }) => (

@@ -1,0 +1,6 @@
+query getPositions($keywords: String) {
+  positions(keywords: $keywords) {
+    id
+    title
+  }
+}
